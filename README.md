@@ -1,4 +1,4 @@
-# Ataraxia
+# Ataraxia :-)
 
 Plataforma de sesiones de psicología (terapia individual y grupal).
 
