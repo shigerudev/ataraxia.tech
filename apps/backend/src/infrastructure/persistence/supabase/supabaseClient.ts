@@ -12,7 +12,7 @@ export function getServiceClient(): SupabaseClient {
       auth: { autoRefreshToken: false, persistSession: false },
       // No usamos Realtime, pero supabase-js inicializa su cliente en el
       // constructor y necesita WebSocket (ausente en Node < 22).
-      realtime: { transport: WebSocket as unknown as typeof globalThis.WebSocket },
+      realtime: { transport: WebSocket as unknown as never },
     });
   }
   return serviceClient;
