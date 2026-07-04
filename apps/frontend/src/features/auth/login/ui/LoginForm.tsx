@@ -19,7 +19,7 @@ export function LoginForm() {
 
     try {
       await login(email, password);
-      navigate(ROUTES.dashboard);
+      navigate(ROUTES.staffDashboard);
     } catch (err) {
       if (err instanceof ApiError) {
         setError(

@@ -32,7 +32,7 @@ export function DashboardPage() {
   }
 
   if (!user) {
-    return <Navigate to={ROUTES.login} replace />;
+    return <Navigate to={ROUTES.staffLogin} replace />;
   }
 
   return (

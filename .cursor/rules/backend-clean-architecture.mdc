@@ -8,15 +8,16 @@ alwaysApply: false
 
 ## Capas
 
-- `domain/` — entidades, interfaces de repositorio, interfaces de servicio (`IPasswordHasher`), casos de uso. Sin imports de infrastructure.
+- `domain/` — entidades, interfaces de repositorio y servicio (`ISessionRepository`, `ILlmService`, `IRiskClassifier`, `ICrisisProtocol`), scoring y casos de uso. Sin imports de infrastructure.
 - `application/` — DTOs y mappers.
-- `infrastructure/` — Express, MongoDB, JWT, bcrypt, config, composition root (`container.ts`).
+- `infrastructure/` — Express, Supabase, OpenAI, seguridad (riesgo/crisis), config, composition root (`container.ts`).
 
-## Reglas de persistencia
+## Reglas de persistencia y servicios
 
-- Persistencia con MongoDB (driver oficial); repositorios implementan interfaces de `domain/`.
-- Contraseñas siempre con bcrypt (`IPasswordHasher`); la comparación vive en el caso de uso, no en el repositorio.
-- Instanciación y wiring solo en `container.ts`; controladores/middleware reciben dependencias por parámetro.
+- Persistencia con **Supabase** (service_role en el server); repositorios implementan interfaces de `domain/`.
+- LLM/embeddings detrás de interfaces de dominio; sustituibles sin tocar casos de uso.
+- Clasificación de riesgo determinística + LLM; el protocolo de crisis se registra en `risk_events`.
+- Instanciación y wiring solo en `container.ts`; controladores/middleware reciben dependencias por parámetro. Si Supabase no está configurado, `container.flow` es `null`.
 
 ## Patrón para nuevos endpoints
 

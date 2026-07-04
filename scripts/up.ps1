@@ -1,7 +1,8 @@
 #Requires -Version 5.1
 <#
 .SYNOPSIS
-  Levanta el stack de Ataraxia (MongoDB + backend + frontend) con Docker Compose.
+  Levanta el stack de Ataraxia (backend + frontend) con Docker Compose.
+  Supabase es gestionado/cloud; configura las claves en apps/backend/.env.
 
 .PARAMETER Build
   Fuerza la reconstrucción de las imágenes.
@@ -29,7 +30,7 @@ if (-not (Get-Command docker -ErrorAction SilentlyContinue)) {
   exit 1
 }
 
-Write-Host "==> Levantando Ataraxia (MongoDB + backend + frontend)..." -ForegroundColor Cyan
+Write-Host "==> Levantando Ataraxia (backend + frontend)..." -ForegroundColor Cyan
 
 $composeArgs = @('compose', 'up', '-d')
 if ($Build) { $composeArgs += '--build' }
@@ -41,8 +42,7 @@ docker compose ps
 
 Write-Host ""
 Write-Host "Frontend: http://localhost:5173" -ForegroundColor Green
-Write-Host "Backend:  http://localhost:3001/health" -ForegroundColor Green
-Write-Host "MongoDB:  mongodb://localhost:27017" -ForegroundColor Green
+Write-Host "Backend:  http://localhost:5173/api (proxy nginx)" -ForegroundColor Green
 
 if ($Logs) {
   Write-Host ""

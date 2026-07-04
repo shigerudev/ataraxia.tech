@@ -1,74 +1,85 @@
 # Ataraxia :-)
 
-Plataforma de sesiones de psicología (terapia individual y grupal).
+Plataforma de acompañamiento psicológico: flujo anónimo con cribado clínico,
+conversación CBT (LLM + RAG) con protocolo de crisis, y registro final.
 
 ## Monorepo
 
 | App | Stack | Puerto |
 |-----|-------|--------|
-| `apps/backend` | Node.js, TypeScript, Express, Clean Architecture, MongoDB | 3001 |
+| `apps/backend` | Node.js, TypeScript, Express, Clean Architecture | 3001 |
 | `apps/frontend` | React, TypeScript, Vite, Feature-Sliced Design | 5173 |
-| MongoDB | Base de datos (Docker) | 27017 |
+| Supabase | Postgres + Auth anónima + pgvector + RLS (gestionado) | — |
+| OpenAI | LLM (CBT) + embeddings (RAG) | — |
 
-## Inicio rápido con Docker (recomendado)
+## Requisitos previos
 
-Levanta MongoDB, backend y frontend en un solo comando:
+1. **Supabase**: crea un proyecto, aplica las migraciones de [`supabase/`](./supabase/README.md)
+   y habilita *Anonymous sign-ins*.
+2. **OpenAI**: una `OPENAI_API_KEY`.
+3. Configura las variables de entorno (abajo).
+
+## Variables de entorno
+
+```bash
+cp apps/backend/.env.example apps/backend/.env      # SUPABASE_*, OPENAI_API_KEY, CRISIS_HOTLINES
+cp apps/frontend/.env.example apps/frontend/.env     # VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY
+```
+
+## Desarrollo local
+
+```bash
+npm install
+npm run dev          # backend :3001 + frontend :5173
+```
+
+Sin claves de Supabase el server arranca, pero el flujo clínico (`/api/sessions`)
+queda deshabilitado (ver `/health`).
+
+## Docker
 
 ```powershell
 ./scripts/up.ps1 -Build     # primera vez (construye imágenes)
 ./scripts/up.ps1            # arranques posteriores
-./scripts/down.ps1          # detener (conserva datos)
-./scripts/down.ps1 -Volumes # detener y borrar la base de datos
+./scripts/down.ps1          # detener
 ```
 
-- Frontend: http://localhost:5173
-- Backend: http://localhost:3001/health
-- MongoDB: `mongodb://localhost:27017`
+- Frontend: http://localhost:5173 (nginx sirve la SPA y proxya `/api` al backend)
 
-## Desarrollo local (sin Docker)
+## Ingesta del corpus (RAG)
 
-Requiere una instancia de MongoDB accesible (ajusta `apps/backend/.env`).
+Coloca estudios `.txt`/`.md` en `apps/backend/knowledge/` y ejecuta:
 
 ```bash
-npm install
-npm run dev
+npm run ingest -w @ataraxia/backend -- ./apps/backend/knowledge
 ```
 
-## Variables de entorno
+## Auth de staff (temporal)
 
-Copia los ejemplos y ajústalos según tu entorno:
+Consola de staff en `/staff/login` (se migrará a Supabase Auth en Fase 2).
 
-```bash
-cp apps/backend/.env.example apps/backend/.env
-cp apps/frontend/.env.example apps/frontend/.env
-```
+| Email | Password |
+|-------|----------|
+| `psicologo@ataraxia.tech` / `admin@ataraxia.tech` | `STAFF_DEFAULT_PASSWORD` (por defecto `Ataraxia2024!`) |
 
-## Credenciales de ejemplo (seed)
+## Documentación
 
-Se crean automáticamente al iniciar si la base está vacía. La contraseña es el valor de `SEED_DEFAULT_PASSWORD` (por defecto `Ataraxia2024!`) y se almacena encriptada con bcrypt.
-
-| Email | Rol |
-|-------|-----|
-| `psicologo@ataraxia.tech` | Psicólogo/a |
-| `paciente@ataraxia.tech` | Paciente |
-| `admin@ataraxia.tech` | Administrador |
-
-## Documentación para agentes
-
-Ver [`AGENT.md`](./AGENT.md) para arquitectura, convenciones y reglas de extensión.
+- [`AGENT.md`](./AGENT.md) — arquitectura, convenciones y extensión.
+- [`docs/ataraxia_prototipo_tecnico.md`](./docs/ataraxia_prototipo_tecnico.md) — diagrama de secuencia, vistas y system prompt CBT.
+- [`supabase/README.md`](./supabase/README.md) — esquema y puesta en marcha.
 
 ## Estructura
 
 ```
 apps/backend/src/
-  domain/           # Entidades, casos de uso, interfaces (repos y servicios)
+  domain/           # Entidades, casos de uso, interfaces (repos y servicios), scoring
   application/      # DTOs
-  infrastructure/   # HTTP, MongoDB, JWT, bcrypt, container (DI)
+  infrastructure/   # HTTP, Supabase, OpenAI, seguridad (riesgo/crisis), container (DI)
 
 apps/frontend/src/
-  shared/           # UI base, API client, config
-  entities/         # Modelos de dominio UI
-  features/         # Login y futuras acciones
-  pages/            # Composición por ruta
+  shared/           # UI base, API client (SSE), cliente Supabase, config
+  entities/         # session, screening
+  features/         # session (flujo), screening, chat, crisis, registration, auth/login
+  pages/            # welcome, mode-select, therapy, thank-you, login/dashboard (staff)
   app/              # Router, providers, estilos globales
 ```

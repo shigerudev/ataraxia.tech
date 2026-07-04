@@ -1,0 +1,25 @@
+# Configuración mínima para Supabase CLI (supabase start / db reset).
+project_id = "ataraxia"
+
+[api]
+enabled = true
+port = 54321
+schemas = ["public"]
+extra_search_path = ["public", "extensions"]
+
+[db]
+port = 54322
+major_version = 15
+
+[studio]
+enabled = true
+port = 54323
+
+[auth]
+enabled = true
+site_url = "http://localhost:5173"
+additional_redirect_urls = ["http://localhost:5173"]
+
+# Habilita el inicio de sesión anónimo (sesión sin email hasta el registro final).
+[auth.anonymous]
+enabled = true

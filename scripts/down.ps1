@@ -4,7 +4,7 @@
   Detiene el stack de Ataraxia levantado con Docker Compose.
 
 .PARAMETER Volumes
-  Elimina también el volumen de datos de MongoDB (borra la base de datos).
+  Elimina también los volúmenes de Docker asociados al stack.
 
 .EXAMPLE
   ./scripts/down.ps1
@@ -25,10 +25,10 @@ if (-not (Get-Command docker -ErrorAction SilentlyContinue)) {
 }
 
 if ($Volumes) {
-  Write-Host "==> Deteniendo Ataraxia y eliminando datos de MongoDB..." -ForegroundColor Yellow
+  Write-Host "==> Deteniendo Ataraxia y eliminando volúmenes..." -ForegroundColor Yellow
   docker compose down --volumes
 } else {
-  Write-Host "==> Deteniendo Ataraxia (los datos de MongoDB se conservan)..." -ForegroundColor Cyan
+  Write-Host "==> Deteniendo Ataraxia..." -ForegroundColor Cyan
   docker compose down
 }
 

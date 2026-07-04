@@ -7,15 +7,17 @@
     "dev": "tsx watch src/main.ts",
     "build": "tsc",
     "start": "node dist/main.js",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "ingest": "tsx src/scripts/ingestKnowledge.ts"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.49.1",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "jsonwebtoken": "^9.0.2",
-    "mongodb": "^6.14.2"
+    "openai": "^4.86.2"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",

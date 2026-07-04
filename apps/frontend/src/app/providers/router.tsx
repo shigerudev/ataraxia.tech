@@ -3,6 +3,7 @@ import { ROUTES } from '@/shared/config';
 import { useAuth } from '@/features/auth/login';
 import { LoginPage } from '@/pages/login';
 import { DashboardPage } from '@/pages/dashboard';
+import { TherapyFlowPage } from '@/pages/therapy';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, isLoading } = useAuth();
@@ -12,7 +13,7 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   }
 
   if (!isAuthenticated) {
-    return <Navigate to={ROUTES.login} replace />;
+    return <Navigate to={ROUTES.staffLogin} replace />;
   }
 
   return children;
@@ -26,7 +27,7 @@ function PublicRoute({ children }: { children: React.ReactNode }) {
   }
 
   if (isAuthenticated) {
-    return <Navigate to={ROUTES.dashboard} replace />;
+    return <Navigate to={ROUTES.staffDashboard} replace />;
   }
 
   return children;
@@ -35,8 +36,9 @@ function PublicRoute({ children }: { children: React.ReactNode }) {
 export function AppRouter() {
   return (
     <Routes>
+      <Route path={ROUTES.home} element={<TherapyFlowPage />} />
       <Route
-        path={ROUTES.login}
+        path={ROUTES.staffLogin}
         element={
           <PublicRoute>
             <LoginPage />
@@ -44,14 +46,14 @@ export function AppRouter() {
         }
       />
       <Route
-        path={ROUTES.dashboard}
+        path={ROUTES.staffDashboard}
         element={
           <ProtectedRoute>
             <DashboardPage />
           </ProtectedRoute>
         }
       />
-      <Route path="*" element={<Navigate to={ROUTES.dashboard} replace />} />
+      <Route path="*" element={<Navigate to={ROUTES.home} replace />} />
     </Routes>
   );
 }

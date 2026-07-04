@@ -20,14 +20,21 @@ Lee `AGENT.md` en la raíz antes de cambios estructurales.
 - Cambios mínimos y focalizados; extender capas existentes.
 - Nuevas features: seguir el checklist de extensión en `AGENT.md`.
 
-## Persistencia y auth
+## Persistencia y servicios
 
-- Backend: MongoDB vía driver oficial (`MongoAuthRepository`). Sin ORM.
-- Contraseñas encriptadas con bcrypt (`BcryptPasswordHasher`); nunca en texto plano.
-- Usuarios de ejemplo se crean con seed al iniciar si la colección está vacía.
+- Backend: **Supabase** (Postgres + Auth anónima + pgvector + RLS). Migraciones en `supabase/migrations/`. Sin ORM.
+- El backend usa la service_role key y verifica el JWT anónimo del frontend; RLS por `auth.uid()` como backstop.
+- LLM/embeddings (OpenAI) detrás de interfaces de dominio (`ILlmService`, `IEmbeddingService`).
+- Auth de staff temporal en memoria (`InMemoryStaffAuthRepository`, bcrypt); se migrará a Supabase Auth. No añadir ORM/DB para staff sin solicitud explícita.
 - Dependencias inyectadas desde el composition root (`infrastructure/container.ts`).
+
+## Seguridad clínica (primera clase)
+
+- Clasificación de riesgo **determinística** además del LLM; nunca solo el LLM.
+- Chequeo de crisis en cada turno; `CrisisOverlay` bloqueante; registrar `risk_events`.
+- System prompt y protocolo de crisis requieren revisión clínica + red-teaming antes de producción.
 
 ## Docker
 
-- `docker-compose.yml` levanta `mongo`, `backend` y `frontend`.
+- `docker-compose.yml` levanta `backend` y `frontend` (Supabase es gestionado/cloud).
 - Usar `scripts/up.ps1` / `scripts/down.ps1` para gestionar el stack.

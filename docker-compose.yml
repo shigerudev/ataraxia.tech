@@ -1,61 +1,26 @@
 services:
-  mongo:
-    image: mongo:7
-    container_name: ataraxia-mongo
-    restart: unless-stopped
-    volumes:
-      - mongo-data:/data/db
-    healthcheck:
-      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping')"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 20s
-    networks:
-      - backnet
-
-  # Ejecuta los scripts de /mongo/init en CADA `up` (idempotentes).
-  # Es la única fuente de verdad de usuarios y datos base.
-  mongo-seed:
-    image: mongo:7
-    container_name: ataraxia-mongo-seed
-    depends_on:
-      mongo:
-        condition: service_healthy
-    volumes:
-      - ./mongo/init:/scripts:ro
-    entrypoint:
-      - bash
-      - -c
-      - |
-        set -e
-        for f in /scripts/*.js; do
-          echo "==> ejecutando $$f"
-          mongosh "mongodb://mongo:27017/ataraxia" "$$f"
-        done
-        echo "==> seed completado"
-    restart: "no"
-    networks:
-      - backnet
-
   backend:
     build:
       context: ./apps/backend
     container_name: ataraxia-backend
     restart: unless-stopped
-    depends_on:
-      mongo:
-        condition: service_healthy
     environment:
       PORT: "3001"
       CORS_ORIGIN: "http://localhost:5173"
       JWT_SECRET: "${JWT_SECRET:-ataraxia-dev-secret-change-in-production}"
       BCRYPT_SALT_ROUNDS: "10"
-      MONGO_URI: "mongodb://mongo:27017"
-      MONGO_DB_NAME: "ataraxia"
+      STAFF_DEFAULT_PASSWORD: "${STAFF_DEFAULT_PASSWORD:-Ataraxia2024!}"
+      SUPABASE_URL: "${SUPABASE_URL:-}"
+      SUPABASE_SERVICE_ROLE_KEY: "${SUPABASE_SERVICE_ROLE_KEY:-}"
+      SUPABASE_ANON_KEY: "${SUPABASE_ANON_KEY:-}"
+      OPENAI_API_KEY: "${OPENAI_API_KEY:-}"
+      OPENAI_MODEL: "${OPENAI_MODEL:-gpt-4o}"
+      EMBEDDING_MODEL: "${EMBEDDING_MODEL:-text-embedding-3-small}"
+      CRISIS_HOTLINES: "${CRISIS_HOTLINES:-}"
+    # No se publica el puerto: el backend solo es accesible vía el proxy de nginx.
+    # Necesita salida a internet (Supabase / OpenAI), por eso usa la red bridge por defecto.
     networks:
-      - backnet
-      - webnet
+      - appnet
 
   frontend:
     build:
@@ -67,15 +32,8 @@ services:
     ports:
       - "5173:80"
     networks:
-      - webnet
-
-volumes:
-  mongo-data:
+      - appnet
 
 networks:
-  # Red interna backend <-> mongo (sin salida a internet)
-  backnet:
-    internal: true
-  # Red interna frontend <-> backend (sin salida a internet)
-  webnet:
-    internal: true
+  appnet:
+    driver: bridge

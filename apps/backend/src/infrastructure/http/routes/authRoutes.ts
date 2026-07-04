@@ -8,9 +8,9 @@ export function createAuthRoutes(container: AppContainer): Router {
   const authController = new AuthController(
     container.loginUseCase,
     container.jwtService,
-    container.authRepository,
+    container.staffAuthRepository,
   );
-  const authMiddleware = createAuthMiddleware(container.jwtService, container.authRepository);
+  const authMiddleware = createAuthMiddleware(container.jwtService, container.staffAuthRepository);
 
   router.post('/login', authController.login);
   router.get('/me', authMiddleware, authController.me);
