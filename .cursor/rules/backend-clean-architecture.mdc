@@ -1,0 +1,39 @@
+---
+description: Clean Architecture para apps/backend
+globs: apps/backend/**/*
+alwaysApply: false
+---
+
+# Backend — Clean Architecture
+
+## Capas
+
+- `domain/` — entidades, interfaces de repositorio, interfaces de servicio (`IPasswordHasher`), casos de uso. Sin imports de infrastructure.
+- `application/` — DTOs y mappers.
+- `infrastructure/` — Express, MongoDB, JWT, bcrypt, config, composition root (`container.ts`).
+
+## Reglas de persistencia
+
+- Persistencia con MongoDB (driver oficial); repositorios implementan interfaces de `domain/`.
+- Contraseñas siempre con bcrypt (`IPasswordHasher`); la comparación vive en el caso de uso, no en el repositorio.
+- Instanciación y wiring solo en `container.ts`; controladores/middleware reciben dependencias por parámetro.
+
+## Patrón para nuevos endpoints
+
+1. Entidad + interfaz de repositorio en `domain/`
+2. Caso de uso que recibe la interfaz por constructor
+3. Implementación concreta en `infrastructure/persistence/`
+4. Controller delgado en `infrastructure/http/`
+
+```typescript
+// ✅ Controller delgado
+async login(req: Request, res: Response) {
+  const result = await this.loginUseCase.execute(req.body);
+  return res.json(result);
+}
+
+// ❌ Lógica de negocio en controller
+async login(req: Request, res: Response) {
+  if (req.body.password !== 'secret') { ... }
+}
+```

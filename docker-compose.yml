@@ -1,0 +1,47 @@
+services:
+  mongo:
+    image: mongo:7
+    container_name: ataraxia-mongo
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  backend:
+    build:
+      context: ./apps/backend
+    container_name: ataraxia-backend
+    restart: unless-stopped
+    depends_on:
+      mongo:
+        condition: service_healthy
+    environment:
+      PORT: "3001"
+      CORS_ORIGIN: "http://localhost:5173"
+      JWT_SECRET: "${JWT_SECRET:-ataraxia-dev-secret-change-in-production}"
+      BCRYPT_SALT_ROUNDS: "10"
+      MONGO_URI: "mongodb://mongo:27017"
+      MONGO_DB_NAME: "ataraxia"
+      SEED_DEFAULT_PASSWORD: "${SEED_DEFAULT_PASSWORD:-Ataraxia2024!}"
+    ports:
+      - "3001:3001"
+
+  frontend:
+    build:
+      context: ./apps/frontend
+    container_name: ataraxia-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "5173:80"
+
+volumes:
+  mongo-data:

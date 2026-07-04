@@ -1,0 +1,113 @@
+.dashboard-page {
+  min-height: 100vh;
+  background: var(--color-bg);
+}
+
+.dashboard-page--loading {
+  display: grid;
+  place-items: center;
+  color: var(--color-text-muted);
+}
+
+.dashboard-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 2rem;
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-surface);
+}
+
+.dashboard-header__brand {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--color-primary);
+  letter-spacing: 0.02em;
+}
+
+.dashboard-header__logout {
+  border: 1px solid var(--color-border);
+  background: transparent;
+  color: var(--color-text-muted);
+  padding: 0.45rem 0.9rem;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font: inherit;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.dashboard-header__logout:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.dashboard-main {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.dashboard-welcome h1 {
+  margin: 0.25rem 0 0.5rem;
+  font-size: 2rem;
+  color: var(--color-text);
+}
+
+.dashboard-welcome__greeting {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 0.95rem;
+}
+
+.dashboard-welcome__role {
+  display: inline-block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-primary);
+  background: var(--color-primary-soft);
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
+}
+
+.dashboard-welcome__hint {
+  margin: 1rem 0 0;
+  color: var(--color-text-muted);
+  max-width: 52ch;
+  line-height: 1.55;
+}
+
+.dashboard-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1rem;
+}
+
+.dashboard-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 1.25rem;
+}
+
+.dashboard-card h2 {
+  margin: 0 0 0.5rem;
+  font-size: 1.1rem;
+}
+
+.dashboard-card p {
+  margin: 0 0 1rem;
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.dashboard-card__status {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-text-muted);
+}

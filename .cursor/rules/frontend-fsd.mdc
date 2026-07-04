@@ -1,0 +1,29 @@
+---
+description: Feature-Sliced Design para apps/frontend
+globs: apps/frontend/**/*
+alwaysApply: false
+---
+
+# Frontend — FSD
+
+## Importaciones permitidas
+
+`app` → `pages` → `features` → `entities` → `shared`
+
+Nunca importar hacia arriba ni entre slices del mismo nivel.
+
+## Estructura de slice
+
+```
+features/auth/login/
+  ui/          # componentes
+  model/       # hooks, estado local
+  api/         # llamadas al backend
+  index.ts     # public API del slice
+```
+
+## Reglas
+
+- Páginas solo componen features; sin lógica de negocio.
+- API client compartido en `shared/api/`.
+- Exportar solo lo necesario desde `index.ts` de cada slice.

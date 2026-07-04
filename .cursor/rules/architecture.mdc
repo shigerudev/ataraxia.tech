@@ -1,0 +1,33 @@
+---
+description: Reglas globales de arquitectura del monorepo Ataraxia
+alwaysApply: true
+---
+
+# Ataraxia — Reglas globales
+
+Lee `AGENT.md` en la raíz antes de cambios estructurales.
+
+## Monorepo
+
+- `apps/backend` → Clean Architecture (domain → application → infrastructure)
+- `apps/frontend` → FSD (shared → entities → features → pages → app)
+- No cruzar imports entre apps; comunicación solo vía HTTP/API.
+
+## Convenciones
+
+- TypeScript estricto; evitar `any`.
+- Código en inglés; UI y docs de producto en español.
+- Cambios mínimos y focalizados; extender capas existentes.
+- Nuevas features: seguir el checklist de extensión en `AGENT.md`.
+
+## Persistencia y auth
+
+- Backend: MongoDB vía driver oficial (`MongoAuthRepository`). Sin ORM.
+- Contraseñas encriptadas con bcrypt (`BcryptPasswordHasher`); nunca en texto plano.
+- Usuarios de ejemplo se crean con seed al iniciar si la colección está vacía.
+- Dependencias inyectadas desde el composition root (`infrastructure/container.ts`).
+
+## Docker
+
+- `docker-compose.yml` levanta `mongo`, `backend` y `frontend`.
+- Usar `scripts/up.ps1` / `scripts/down.ps1` para gestionar el stack.

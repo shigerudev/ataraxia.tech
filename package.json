@@ -1,0 +1,23 @@
+{
+  "name": "ataraxia",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Plataforma de sesiones de psicología — monorepo Ataraxia",
+  "workspaces": [
+    "apps/backend",
+    "apps/frontend"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev -w @ataraxia/backend\" \"npm run dev -w @ataraxia/frontend\"",
+    "dev:backend": "npm run dev -w @ataraxia/backend",
+    "dev:frontend": "npm run dev -w @ataraxia/frontend",
+    "build": "npm run build -w @ataraxia/backend && npm run build -w @ataraxia/frontend",
+    "typecheck": "npm run typecheck -w @ataraxia/backend && npm run typecheck -w @ataraxia/frontend"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
