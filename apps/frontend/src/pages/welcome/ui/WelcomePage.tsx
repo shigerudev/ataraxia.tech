@@ -18,7 +18,6 @@ export function WelcomePage() {
         <h2>Antes de empezar, ten en cuenta:</h2>
         <ul>
           <li>Este servicio no sustituye la atención de un profesional de salud mental.</li>
-          <li>En una emergencia, contacta a los servicios de emergencia de tu localidad.</li>
           <li>Tu conversación es privada y anónima.</li>
         </ul>
       </div>

@@ -4,19 +4,9 @@ services:
       context: ./apps/backend
     container_name: ataraxia-backend
     restart: unless-stopped
-    environment:
-      PORT: "3001"
-      CORS_ORIGIN: "http://localhost:5173"
-      JWT_SECRET: "${JWT_SECRET:-ataraxia-dev-secret-change-in-production}"
-      BCRYPT_SALT_ROUNDS: "10"
-      STAFF_DEFAULT_PASSWORD: "${STAFF_DEFAULT_PASSWORD:-Ataraxia2024!}"
-      SUPABASE_URL: "${SUPABASE_URL:-}"
-      SUPABASE_SERVICE_ROLE_KEY: "${SUPABASE_SERVICE_ROLE_KEY:-}"
-      SUPABASE_ANON_KEY: "${SUPABASE_ANON_KEY:-}"
-      OPENAI_API_KEY: "${OPENAI_API_KEY:-}"
-      OPENAI_MODEL: "${OPENAI_MODEL:-gpt-4o}"
-      EMBEDDING_MODEL: "${EMBEDDING_MODEL:-text-embedding-3-small}"
-      CRISIS_HOTLINES: "${CRISIS_HOTLINES:-}"
+    # Todas las variables (Supabase, OpenAI, etc.) se inyectan desde el .env del backend.
+    env_file:
+      - ./apps/backend/.env
     # No se publica el puerto: el backend solo es accesible vía el proxy de nginx.
     # Necesita salida a internet (Supabase / OpenAI), por eso usa la red bridge por defecto.
     networks:

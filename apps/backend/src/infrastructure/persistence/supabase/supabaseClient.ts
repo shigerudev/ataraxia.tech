@@ -1,4 +1,5 @@
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
+import WebSocket from 'ws';
 import { assertSupabaseConfigured, env } from '../../config/env.js';
 
 let serviceClient: SupabaseClient | null = null;
@@ -9,6 +10,9 @@ export function getServiceClient(): SupabaseClient {
   if (!serviceClient) {
     serviceClient = createClient(env.supabaseUrl, env.supabaseServiceRoleKey, {
       auth: { autoRefreshToken: false, persistSession: false },
+      // No usamos Realtime, pero supabase-js inicializa su cliente en el
+      // constructor y necesita WebSocket (ausente en Node < 22).
+      realtime: { transport: WebSocket as unknown as typeof globalThis.WebSocket },
     });
   }
   return serviceClient;
