@@ -3,8 +3,6 @@ services:
     image: mongo:7
     container_name: ataraxia-mongo
     restart: unless-stopped
-    ports:
-      - "27017:27017"
     volumes:
       - mongo-data:/data/db
     healthcheck:
@@ -13,6 +11,32 @@ services:
       timeout: 5s
       retries: 5
       start_period: 20s
+    networks:
+      - backnet
+
+  # Ejecuta los scripts de /mongo/init en CADA `up` (idempotentes).
+  # Es la única fuente de verdad de usuarios y datos base.
+  mongo-seed:
+    image: mongo:7
+    container_name: ataraxia-mongo-seed
+    depends_on:
+      mongo:
+        condition: service_healthy
+    volumes:
+      - ./mongo/init:/scripts:ro
+    entrypoint:
+      - bash
+      - -c
+      - |
+        set -e
+        for f in /scripts/*.js; do
+          echo "==> ejecutando $$f"
+          mongosh "mongodb://mongo:27017/ataraxia" "$$f"
+        done
+        echo "==> seed completado"
+    restart: "no"
+    networks:
+      - backnet
 
   backend:
     build:
@@ -29,9 +53,9 @@ services:
       BCRYPT_SALT_ROUNDS: "10"
       MONGO_URI: "mongodb://mongo:27017"
       MONGO_DB_NAME: "ataraxia"
-      SEED_DEFAULT_PASSWORD: "${SEED_DEFAULT_PASSWORD:-Ataraxia2024!}"
-    ports:
-      - "3001:3001"
+    networks:
+      - backnet
+      - webnet
 
   frontend:
     build:
@@ -42,6 +66,16 @@ services:
       - backend
     ports:
       - "5173:80"
+    networks:
+      - webnet
 
 volumes:
   mongo-data:
+
+networks:
+  # Red interna backend <-> mongo (sin salida a internet)
+  backnet:
+    internal: true
+  # Red interna frontend <-> backend (sin salida a internet)
+  webnet:
+    internal: true

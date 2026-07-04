@@ -15,5 +15,4 @@ export const env = {
   mongoUri: required('MONGO_URI', 'mongodb://localhost:27017'),
   mongoDbName: process.env.MONGO_DB_NAME ?? 'ataraxia',
   bcryptSaltRounds: Number(process.env.BCRYPT_SALT_ROUNDS ?? 10),
-  seedPassword: process.env.SEED_DEFAULT_PASSWORD ?? 'Ataraxia2024!',
 } as const;
