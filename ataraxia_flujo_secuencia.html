@@ -1,0 +1,84 @@
+<div id="seq"></div>
+<script type="module">
+import mermaid from 'https://esm.sh/mermaid@11/dist/mermaid.esm.min.mjs';
+const dark = matchMedia('(prefers-color-scheme: dark)').matches;
+await document.fonts.ready;
+mermaid.initialize({
+  startOnLoad: false,
+  theme: 'base',
+  fontFamily: '"Anthropic Sans", sans-serif',
+  themeVariables: {
+    darkMode: dark,
+    fontSize: '13px',
+    fontFamily: '"Anthropic Sans", sans-serif',
+    lineColor: dark ? '#9c9a92' : '#73726c',
+    textColor: dark ? '#c2c0b6' : '#3d3d3a',
+    actorBkg: dark ? '#3C3489' : '#EEEDFE',
+    actorBorder: dark ? '#AFA9EC' : '#534AB7',
+    actorTextColor: dark ? '#EEEDFE' : '#26215C',
+    signalColor: dark ? '#c2c0b6' : '#3d3d3a',
+    signalTextColor: dark ? '#c2c0b6' : '#3d3d3a',
+    labelBoxBkgColor: dark ? '#085041' : '#E1F5EE',
+    labelBoxBorderColor: dark ? '#5DCAA5' : '#0F6E56',
+    labelTextColor: dark ? '#E1F5EE' : '#04342C',
+    noteBkgColor: dark ? '#712B13' : '#FAECE7',
+    noteBorderColor: dark ? '#F0997B' : '#993C1D',
+    noteTextColor: dark ? '#FAECE7' : '#4A1B0C',
+  },
+});
+const src = `sequenceDiagram
+  actor U as Usuario
+  participant QR as Landing (QR)
+  participant FE as Frontend React
+  participant API as Backend API
+  participant BOT as Motor CBT (LLM)
+  participant CRISIS as Protocolo de crisis
+  participant DB as Supabase
+
+  U->>QR: Escanea código QR
+  QR->>FE: Redirige a la Web App
+  FE->>U: Pantalla de bienvenida y consentimiento
+  U->>FE: Acepta y elige modo (Voz o Chat)
+  FE->>API: Crea sesión anónima
+  API->>DB: Inserta sesion_id, canal, timestamp
+  DB-->>API: OK
+
+  rect rgb(238,237,254)
+  Note over FE,BOT: Fase de cribado inicial
+  FE->>U: Preguntas de cribado (PHQ-9 / GAD-7 breve)
+  U->>FE: Respuestas
+  FE->>API: Envia respuestas de cribado
+  API->>BOT: Calcula nivel de riesgo inicial
+  BOT-->>API: Riesgo bajo / medio / alto
+  API->>DB: Guarda resultado de cribado
+  end
+
+  alt Riesgo alto o ideacion suicida detectada
+    BOT->>CRISIS: Activa protocolo de crisis
+    CRISIS->>FE: Muestra lineas de ayuda y contacto de emergencia
+    CRISIS->>API: Registra evento de riesgo (flag critico)
+    API->>DB: Guarda alerta con marca de tiempo
+    FE->>U: Ofrece contacto inmediato con linea de crisis
+  else Riesgo bajo o medio
+    loop Conversacion terapeutica CBT
+      U->>FE: Mensaje de voz o texto
+      FE->>API: Envia turno de conversacion
+      API->>BOT: Genera respuesta bajo marco CBT
+      BOT->>BOT: Chequeo continuo de senales de riesgo
+      BOT-->>API: Respuesta + etiquetas emocionales
+      API->>DB: Guarda turno de la sesion
+      API-->>FE: Respuesta del bot
+      FE-->>U: Muestra respuesta (texto o audio)
+    end
+  end
+
+  FE->>U: Cierre de sesion y formulario final
+  U->>FE: Completa datos de registro y feedback
+  FE->>API: Envia formulario final
+  API->>DB: Actualiza perfil de usuario y cierra sesion
+  DB-->>API: Confirmacion
+  API-->>FE: Sesion guardada
+  FE->>U: Pantalla de agradecimiento y recursos`;
+const { svg } = await mermaid.render('seq-svg', src);
+document.getElementById('seq').innerHTML = svg;
+</script>
