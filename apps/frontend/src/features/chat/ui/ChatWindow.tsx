@@ -1,5 +1,5 @@
 import { FormEvent, lazy, Suspense, useEffect, useRef, useState } from 'react';
-import { BrandMark, IconLock, IconMic, IconSend } from '@/shared/ui';
+import { BrandMark, IconLock, IconPhone, IconSend } from '@/shared/ui';
 import { useTherapyFlow } from '@/features/session';
 import { useChat } from '../model/useChat';
 
@@ -30,7 +30,7 @@ export function ChatWindow() {
   // Reinicia la animación de "despegue" del icono de enviar en cada envío.
   const [flightSeq, setFlightSeq] = useState(0);
   const scrollRef = useRef<HTMLDivElement>(null);
-  const micButtonRef = useRef<HTMLButtonElement>(null);
+  const callButtonRef = useRef<HTMLButtonElement>(null);
   const voiceWasOpen = useRef(false);
 
   useEffect(() => {
@@ -45,7 +45,7 @@ export function ChatWindow() {
 
   // Ciclo de foco del diálogo modal: al cerrar la voz, regresa al micrófono.
   useEffect(() => {
-    if (voiceWasOpen.current && !voiceOpen) micButtonRef.current?.focus();
+    if (voiceWasOpen.current && !voiceOpen) callButtonRef.current?.focus();
     voiceWasOpen.current = voiceOpen;
   }, [voiceOpen]);
 
@@ -160,20 +160,20 @@ export function ChatWindow() {
           />
           <button
             type="button"
-            ref={micButtonRef}
+            ref={callButtonRef}
             onClick={() => setVoiceOpen(true)}
             disabled={sending}
-            aria-label="Iniciar conversación por voz"
-            title="Hablar con Ataraxia"
-            className="grid h-11 w-11 shrink-0 place-items-center rounded-full border border-hairline bg-white text-primary-dark transition hover:bg-lavender focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/25 disabled:cursor-not-allowed disabled:opacity-40"
+            aria-label="Llamar a Ataraxia"
+            title="Llamar a Ataraxia"
+            className="grid h-14 w-14 shrink-0 place-items-center rounded-full bg-brand text-white shadow-soft transition hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/30 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:translate-y-0 sm:h-16 sm:w-16"
           >
-            <IconMic className="h-5 w-5" />
+            <IconPhone className="h-7 w-7 sm:h-8 sm:w-8" />
           </button>
           <button
             type="submit"
             disabled={!canSend}
             aria-label="Enviar mensaje"
-            className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-brand text-white transition hover:-translate-y-0.5 hover:shadow-soft active:translate-y-0 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/30 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:translate-y-0"
+            className="grid h-11 w-11 shrink-0 place-items-center rounded-full border border-hairline bg-white text-primary-dark transition hover:bg-lavender focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/25 disabled:cursor-not-allowed disabled:opacity-40"
           >
             <span key={flightSeq} className={`grid place-items-center ${flightSeq > 0 ? 'animate-send-fly' : ''}`}>
               <IconSend className="h-[18px] w-[18px] -translate-x-px" />
