@@ -38,10 +38,25 @@ queda deshabilitado (ver `/health`).
 
 ## Docker
 
+Windows (PowerShell):
+
 ```powershell
 ./scripts/up.ps1 -Build     # primera vez (construye imágenes)
 ./scripts/up.ps1            # arranques posteriores
+./scripts/up.ps1 -Logs      # levanta y muestra logs
 ./scripts/down.ps1          # detener
+./scripts/down.ps1 -Volumes # detener y borrar volúmenes
+```
+
+macOS / Linux (bash):
+
+```bash
+chmod +x scripts/*.sh       # solo la primera vez
+./scripts/up.sh --build     # primera vez (construye imágenes)
+./scripts/up.sh             # arranques posteriores
+./scripts/up.sh --logs      # levanta y muestra logs
+./scripts/down.sh           # detener
+./scripts/down.sh --volumes # detener y borrar volúmenes
 ```
 
 - Frontend: http://localhost:5173 (nginx sirve la SPA y proxya `/api` al backend)
