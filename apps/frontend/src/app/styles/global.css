@@ -135,4 +135,104 @@
   .typing-dot {
     @apply inline-block h-1.5 w-1.5 rounded-full bg-muted/70 animate-typing;
   }
+
+  /* ---- Modo voz: overlay sobre la tarjeta del chat ---- */
+  .voice-overlay {
+    @apply absolute inset-0 z-40 flex flex-col items-center justify-center gap-7
+           bg-navy/70 px-6 text-center backdrop-blur-md;
+  }
+
+  /* ---- Orbe de voz ----
+     Capas apiladas en una celda de grid. La intensidad llega por la variable
+     --voice-level (0..1), escrita vía requestAnimationFrame sin re-render. */
+  .voice-orb {
+    --voice-level: 0;
+    @apply relative grid h-44 w-44 place-items-center sm:h-52 sm:w-52;
+  }
+  .voice-orb > * {
+    @apply col-start-1 row-start-1;
+  }
+  /* Envoltorio de respiración: su transform (animación CSS) se compone por
+     anidamiento con el transform del núcleo (dirigido por --voice-level). */
+  .voice-orb__breath {
+    @apply grid place-items-center;
+  }
+  .voice-orb__core {
+    @apply block h-32 w-32 rounded-full bg-orb shadow-orb sm:h-36 sm:w-36;
+    transform: scale(calc(1 + var(--voice-level) * 0.16));
+  }
+  .voice-orb__halo {
+    @apply h-32 w-32 rounded-full bg-lavender/40 blur-2xl sm:h-36 sm:w-36;
+    transform: scale(calc(1.15 + var(--voice-level) * 0.45));
+    opacity: calc(0.35 + var(--voice-level) * 0.45);
+  }
+  .voice-orb__ring {
+    @apply h-32 w-32 rounded-full border border-blue/60 sm:h-36 sm:w-36;
+    transform: scale(calc(1.08 + var(--voice-level) * 0.5));
+    opacity: calc(var(--voice-level) * 0.7);
+  }
+  .voice-orb__ring--far {
+    @apply border-lavender/50;
+    transform: scale(calc(1.16 + var(--voice-level) * 0.9));
+    opacity: calc(var(--voice-level) * 0.4);
+  }
+
+  /* Variantes por estado */
+  .voice-orb--connecting .voice-orb__breath {
+    @apply animate-breathe;
+  }
+  .voice-orb--connecting .voice-orb__ring,
+  .voice-orb--connecting .voice-orb__ring--far {
+    @apply opacity-0;
+  }
+  .voice-orb--listening .voice-orb__breath,
+  .voice-orb--demo .voice-orb__breath {
+    @apply animate-breathe;
+  }
+  .voice-orb--speaking .voice-orb__halo {
+    opacity: calc(0.45 + var(--voice-level) * 0.5);
+  }
+  .voice-orb--error .voice-orb__ring,
+  .voice-orb--error .voice-orb__ring--far {
+    @apply opacity-0;
+  }
+  .voice-orb--error .voice-orb__halo {
+    @apply bg-pink/30;
+    transform: scale(1.12);
+    opacity: 0.5;
+  }
+  .voice-orb--error .voice-orb__core {
+    @apply ring-4 ring-pink/40;
+  }
+
+  /* ---- Controles circulares del modo voz (sobre el velo oscuro) ---- */
+  .btn-voice {
+    @apply grid h-12 w-12 place-items-center rounded-full border border-white/25 bg-white/15 text-white transition
+           hover:bg-white/25 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-white/40;
+  }
+  .btn-voice.is-muted {
+    @apply border-transparent bg-white text-navy hover:bg-lavender;
+  }
+  .btn-voice--danger {
+    @apply border-transparent bg-pink hover:bg-pink/90 focus-visible:ring-pink/50;
+  }
+}
+
+/* Modo voz bajo prefers-reduced-motion: la regla global ya apaga la animación
+   de respiración; aquí se congelan las escalas dirigidas por rAF (movimiento
+   vestibular) y solo la opacidad del halo sigue sutilmente a la voz. */
+@media (prefers-reduced-motion: reduce) {
+  .voice-orb__core,
+  .voice-orb__ring,
+  .voice-orb__ring--far {
+    transform: none !important;
+  }
+  .voice-orb__ring,
+  .voice-orb__ring--far {
+    opacity: 0 !important;
+  }
+  .voice-orb__halo {
+    transform: scale(1.15) !important;
+    opacity: calc(0.3 + var(--voice-level) * 0.25) !important;
+  }
 }

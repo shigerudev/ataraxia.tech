@@ -1,7 +1,13 @@
-import { FormEvent, useEffect, useRef, useState } from 'react';
-import { BrandMark, IconLock, IconSend } from '@/shared/ui';
+import { FormEvent, lazy, Suspense, useEffect, useRef, useState } from 'react';
+import { BrandMark, IconLock, IconMic, IconSend } from '@/shared/ui';
 import { useTherapyFlow } from '@/features/session';
 import { useChat } from '../model/useChat';
+
+// Carga diferida: el SDK de voz (ElevenLabs + WebRTC) solo se descarga cuando
+// el usuario abre el modo voz, no en la carga inicial de la página.
+const VoiceOverlay = lazy(() =>
+  import('@/features/voice').then((m) => ({ default: m.VoiceOverlay })),
+);
 
 function AssistantAvatar({ size = 'md' }: { size?: 'sm' | 'md' }) {
   const dims = size === 'md' ? 'h-10 w-10' : 'h-7 w-7';
@@ -17,14 +23,29 @@ function AssistantAvatar({ size = 'md' }: { size?: 'sm' | 'md' }) {
 }
 
 export function ChatWindow() {
-  const { goToRegistration } = useTherapyFlow();
-  const { messages, sending, error, send } = useChat();
+  const { goToRegistration, step } = useTherapyFlow();
+  const { messages, sending, error, send, appendLocal } = useChat();
   const [draft, setDraft] = useState('');
+  const [voiceOpen, setVoiceOpen] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const micButtonRef = useRef<HTMLButtonElement>(null);
+  const voiceWasOpen = useRef(false);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
   }, [messages]);
+
+  // Ante una crisis, el overlay de voz se cierra (desmonta y cuelga la sesión);
+  // el CrisisOverlay del flujo toma el primer plano.
+  useEffect(() => {
+    if (step === 'crisis') setVoiceOpen(false);
+  }, [step]);
+
+  // Ciclo de foco del diálogo modal: al cerrar la voz, regresa al micrófono.
+  useEffect(() => {
+    if (voiceWasOpen.current && !voiceOpen) micButtonRef.current?.focus();
+    voiceWasOpen.current = voiceOpen;
+  }, [voiceOpen]);
 
   const canSend = draft.trim().length > 0 && !sending;
 
@@ -37,97 +58,120 @@ export function ChatWindow() {
   }
 
   return (
-    <div className="card flex min-h-[520px] flex-1 flex-col overflow-hidden p-0 sm:p-0">
-      <header className="flex items-center justify-between gap-3 border-b border-hairline bg-white px-4 py-3.5 sm:px-6">
-        <div className="flex items-center gap-3">
-          <AssistantAvatar />
-          <div className="flex flex-col leading-tight">
-            <span className="font-display font-bold text-navy">Ataraxia</span>
-            <span className="inline-flex items-center gap-1 text-xs text-muted">
-              <IconLock className="h-3 w-3" />
-              Conversación confidencial
-            </span>
-          </div>
-        </div>
-        <button type="button" className="btn--light px-4 py-2 text-sm" onClick={goToRegistration}>
-          Finalizar sesión
-        </button>
-      </header>
-
-      <div
-        className="flex-1 space-y-4 overflow-y-auto bg-bg px-4 py-5 sm:px-6"
-        ref={scrollRef}
-        aria-live="polite"
-      >
-        {messages.map((msg, i) => {
-          const isUser = msg.role === 'user';
-          const typing = !isUser && sending && msg.content === '';
-          return (
-            <div key={i} className={`flex items-end gap-2.5 ${isUser ? 'justify-end' : 'justify-start'}`}>
-              {!isUser && <AssistantAvatar size="sm" />}
-              <div
-                className={`max-w-[82%] rounded-2xl px-4 py-3 text-[15px] leading-relaxed ${
-                  isUser
-                    ? 'rounded-br-md bg-navy text-white'
-                    : 'rounded-bl-md border border-hairline bg-white text-ink shadow-soft'
-                }`}
-              >
-                {typing ? (
-                  <span className="flex items-center gap-1 py-1" aria-label="Ataraxia está escribiendo">
-                    <span className="typing-dot" />
-                    <span className="typing-dot [animation-delay:0.15s]" />
-                    <span className="typing-dot [animation-delay:0.3s]" />
-                  </span>
-                ) : (
-                  msg.content
-                )}
-              </div>
+    <div className="card relative flex min-h-[520px] flex-1 flex-col overflow-hidden p-0 sm:p-0">
+      {/* El contenido queda inerte (sin foco ni interacción) mientras el modo voz está activo. */}
+      <div className="flex min-h-0 flex-1 flex-col" inert={voiceOpen}>
+        <header className="flex items-center justify-between gap-3 border-b border-hairline bg-white px-4 py-3.5 sm:px-6">
+          <div className="flex items-center gap-3">
+            <AssistantAvatar />
+            <div className="flex flex-col leading-tight">
+              <span className="font-display font-bold text-navy">Ataraxia</span>
+              <span className="inline-flex items-center gap-1 text-xs text-muted">
+                <IconLock className="h-3 w-3" />
+                Conversación confidencial
+              </span>
             </div>
-          );
-        })}
+          </div>
+          <button type="button" className="btn--light px-4 py-2 text-sm" onClick={goToRegistration}>
+            Finalizar sesión
+          </button>
+        </header>
+
+        <div
+          className="flex-1 space-y-4 overflow-y-auto bg-bg px-4 py-5 sm:px-6"
+          ref={scrollRef}
+          aria-live="polite"
+        >
+          {messages.map((msg, i) => {
+            const isUser = msg.role === 'user';
+            const typing = !isUser && sending && msg.content === '';
+            return (
+              <div key={i} className={`flex items-end gap-2.5 ${isUser ? 'justify-end' : 'justify-start'}`}>
+                {!isUser && <AssistantAvatar size="sm" />}
+                <div
+                  className={`max-w-[82%] rounded-2xl px-4 py-3 text-[15px] leading-relaxed ${
+                    isUser
+                      ? 'rounded-br-md bg-navy text-white'
+                      : 'rounded-bl-md border border-hairline bg-white text-ink shadow-soft'
+                  }`}
+                >
+                  {typing ? (
+                    <span className="flex items-center gap-1 py-1" aria-label="Ataraxia está escribiendo">
+                      <span className="typing-dot" />
+                      <span className="typing-dot [animation-delay:0.15s]" />
+                      <span className="typing-dot [animation-delay:0.3s]" />
+                    </span>
+                  ) : (
+                    msg.content
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {error && (
+          <p className="form-error px-4 pt-3 sm:px-6" role="alert">
+            {error}
+          </p>
+        )}
+
+        <form
+          className="flex items-end gap-2.5 border-t border-hairline bg-white px-4 py-4 sm:px-6"
+          onSubmit={handleSubmit}
+        >
+          <label htmlFor="chat-draft" className="sr-only">
+            Escribe tu mensaje
+          </label>
+          <textarea
+            id="chat-draft"
+            value={draft}
+            onChange={(e) => setDraft(e.target.value)}
+            placeholder="Escribe cómo te sientes…"
+            rows={2}
+            className="max-h-36 flex-1 resize-none rounded-md2 border border-hairline px-4 py-2.5 text-[15px] text-ink transition placeholder:text-muted/60 focus:border-navy focus:outline-none focus:ring-4 focus:ring-navy/10"
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                void handleSubmit(e);
+              }
+            }}
+          />
+          <button
+            type="button"
+            ref={micButtonRef}
+            onClick={() => setVoiceOpen(true)}
+            disabled={sending}
+            aria-label="Iniciar conversación por voz"
+            title="Hablar con Ataraxia"
+            className="grid h-11 w-11 shrink-0 place-items-center rounded-full border border-hairline bg-white text-navy transition hover:bg-lavender focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-navy/20 disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            <IconMic className="h-5 w-5" />
+          </button>
+          <button
+            type="submit"
+            disabled={!canSend}
+            aria-label="Enviar mensaje"
+            className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-navy text-white transition hover:bg-navy-2 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-navy/25 disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            <IconSend className="h-[18px] w-[18px] -translate-x-px" />
+          </button>
+        </form>
+
+        <p className="bg-white px-6 pb-3 text-center text-xs text-muted">
+          Si estás en una emergencia, contacta de inmediato a los servicios de
+          emergencia de tu localidad.
+        </p>
       </div>
 
-      {error && (
-        <p className="form-error px-4 pt-3 sm:px-6" role="alert">
-          {error}
-        </p>
+      {voiceOpen && (
+        <Suspense fallback={<div className="voice-overlay" aria-hidden="true" />}>
+          <VoiceOverlay
+            onTranscript={(role, content) => appendLocal({ role, content })}
+            onClose={() => setVoiceOpen(false)}
+          />
+        </Suspense>
       )}
-
-      <form
-        className="flex items-end gap-2.5 border-t border-hairline bg-white px-4 py-4 sm:px-6"
-        onSubmit={handleSubmit}
-      >
-        <label htmlFor="chat-draft" className="sr-only">
-          Escribe tu mensaje
-        </label>
-        <textarea
-          id="chat-draft"
-          value={draft}
-          onChange={(e) => setDraft(e.target.value)}
-          placeholder="Escribe cómo te sientes…"
-          rows={2}
-          className="max-h-36 flex-1 resize-none rounded-md2 border border-hairline px-4 py-2.5 text-[15px] text-ink transition placeholder:text-muted/60 focus:border-navy focus:outline-none focus:ring-4 focus:ring-navy/10"
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' && !e.shiftKey) {
-              e.preventDefault();
-              void handleSubmit(e);
-            }
-          }}
-        />
-        <button
-          type="submit"
-          disabled={!canSend}
-          aria-label="Enviar mensaje"
-          className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-navy text-white transition hover:bg-navy-2 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-navy/25 disabled:cursor-not-allowed disabled:opacity-40"
-        >
-          <IconSend className="h-[18px] w-[18px] -translate-x-px" />
-        </button>
-      </form>
-
-      <p className="bg-white px-6 pb-3 text-center text-xs text-muted">
-        Si estás en una emergencia, contacta de inmediato a los servicios de
-        emergencia de tu localidad.
-      </p>
     </div>
   );
 }

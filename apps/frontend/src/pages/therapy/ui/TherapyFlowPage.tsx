@@ -3,23 +3,20 @@ import { ChatWindow } from '@/features/chat';
 import { CrisisOverlay } from '@/features/crisis';
 import { RegistrationForm } from '@/features/registration';
 import { WelcomePage } from '@/pages/welcome';
-import { ModeSelectPage } from '@/pages/mode-select';
 import { ThankYouPage } from '@/pages/thank-you';
 import { BrandLogo, IconLock } from '@/shared/ui';
 
-const PROGRESS_STEPS = ['Bienvenida', 'Modalidad', 'Conversación', 'Registro'];
+const PROGRESS_STEPS = ['Bienvenida', 'Conversación', 'Registro'];
 
 function progressIndex(step: FlowStep): number {
   switch (step) {
     case 'welcome':
       return 0;
-    case 'mode':
-      return 1;
     case 'chat':
     case 'crisis':
-      return 2;
+      return 1;
     case 'registration':
-      return 3;
+      return 2;
     default:
       return PROGRESS_STEPS.length;
   }
@@ -59,8 +56,6 @@ function FlowStepView() {
   switch (step) {
     case 'welcome':
       return <WelcomePage />;
-    case 'mode':
-      return <ModeSelectPage />;
     case 'chat':
     case 'crisis':
       return <ChatWindow />;

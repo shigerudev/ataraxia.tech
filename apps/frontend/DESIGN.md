@@ -37,9 +37,13 @@ Se cargan en `index.html` vía Google Fonts. Todos los `h1–h5` usan `font-disp
 - Radios: `rounded-lg2` (24px, tarjetas), `rounded-md2` (16px, campos/sub-bloques), `rounded-full` (pills).
 - Sombras: `shadow-soft` (sutil), `shadow-card` (elevación de tarjeta).
 - Fondo de página: `bg-bg bg-aurora bg-no-repeat` (degradado radial lavanda superior).
-- Animaciones: `animate-ping-soft` (halo pulsante rosa; ícono de crisis) y
-  `animate-typing` (puntos del indicador de escritura; ver `.typing-dot`).
-- Se respeta `prefers-reduced-motion` (desactiva animaciones/transiciones).
+- Orbe de voz: `bg-orb` (esfera radial lavanda→azul→navy) y `shadow-orb`.
+- Animaciones: `animate-ping-soft` (halo pulsante rosa; ícono de crisis),
+  `animate-typing` (puntos del indicador de escritura; ver `.typing-dot`) y
+  `animate-breathe` (respiración lenta del orbe de voz, 3.4 s).
+- Se respeta `prefers-reduced-motion` (desactiva animaciones/transiciones; el
+  orbe de voz además congela sus escalas por CSS y solo la opacidad del halo
+  sigue a la voz).
 
 ## Clases de componente (en `global.css`)
 
@@ -53,6 +57,9 @@ Se cargan en `index.html` vía Google Fonts. Todos los `h1–h5` usan `font-disp
 | `.icon-tile` | Cuadro de 44px con icono centrado; combínalo con `bg-*`/`text-*` de la paleta. |
 | `.form-error` | Mensaje de error inline (rosa, `role="alert"`). |
 | `.typing-dot` | Punto del indicador "escribiendo…" del chat (usa `animate-typing`). |
+| `.voice-overlay` | Overlay del modo voz sobre la card del chat (`absolute`, velo navy + blur). |
+| `.voice-orb` + `__core/__halo/__ring/__breath` | Orbe de voz por capas; la intensidad llega por la variable `--voice-level` (0..1) escrita vía rAF. Variantes `--connecting/--listening/--speaking/--demo/--error`. |
+| `.btn-voice` / `.btn-voice--danger` / `.is-muted` | Controles circulares del modo voz sobre el velo oscuro (silenciar / colgar). |
 | `.app-loading` | Pantalla de carga centrada. |
 
 ## Primitivas React (`@/shared/ui`)
@@ -73,8 +80,9 @@ import { Button, Input, Card, Chip, BrandLogo, BrandMark } from '@/shared/ui';
 Set propio de iconos de línea (24px, trazo 2, `currentColor`), exportado desde `@/shared/ui`.
 **No usar emojis en la interfaz.**
 
-`IconChat` · `IconMic` · `IconShield` · `IconLock` · `IconHeart` · `IconPhone` ·
-`IconCheck` · `IconArrowRight` · `IconSend` · `IconUser` · `IconUsers`
+`IconChat` · `IconMic` · `IconMicOff` · `IconShield` · `IconLock` · `IconHeart` ·
+`IconPhone` · `IconPhoneOff` · `IconCheck` · `IconArrowRight` · `IconSend` ·
+`IconUser` · `IconUsers`
 
 ```tsx
 <IconChat className="h-5 w-5" />
@@ -91,6 +99,13 @@ Set propio de iconos de línea (24px, trazo 2, `currentColor`), exportado desde 
   de foco visible (`focus-visible:ring-4`).
 - **Jerarquía**: eyebrow (`Chip`) → `h1` display → párrafo `text-muted`.
 - **Chat**: avatar del asistente con `BrandMark`, burbujas navy (usuario) / blancas (asistente),
-  indicador de escritura con `.typing-dot`, envío con botón circular `IconSend`.
-- **Crisis**: overlay bloqueante (`bg-navy/70` + blur), acento rosa, no descartable.
+  indicador de escritura con `.typing-dot`, envío con botón circular `IconSend` y botón de
+  micrófono (`IconMic`) que abre el modo voz.
+- **Modo voz**: overlay `absolute` sobre la card del chat (no `fixed`; la voz es una modalidad
+  de la conversación), `role="dialog"` modal con el resto del chat `inert`. Sin cierre por clic
+  en el fondo (colgar es deliberado); Escape cuelga. Orbe decorativo (`aria-hidden`) + leyenda
+  de estado con `aria-live`. Con `VITE_ELEVENLABS_AGENT_ID` conversa vía ElevenLabs; sin él,
+  modo demostración con micrófono local.
+- **Crisis**: overlay bloqueante (`bg-navy/70` + blur, `fixed z-50` — siempre por encima del
+  modo voz), acento rosa, no descartable.
 - **Responsive**: móvil primero; grids colapsan a 1 columna con `sm:`/`md:`.

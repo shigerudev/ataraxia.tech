@@ -27,9 +27,11 @@ export default {
       boxShadow: {
         soft: '0 1px 2px rgba(16,18,59,0.04)',
         card: '0 12px 32px rgba(16,18,59,0.08)',
+        orb: '0 24px 60px rgba(16,18,59,0.35)',
       },
       backgroundImage: {
         aurora: 'radial-gradient(1100px 560px at 50% -10%, #E7E5FA, transparent)',
+        orb: 'radial-gradient(circle at 32% 28%, #E7E5FA 0%, #A9C8FF 22%, #2E5AAC 52%, #10123B 82%)',
       },
       keyframes: {
         'ping-soft': {
@@ -41,10 +43,15 @@ export default {
           '0%, 60%, 100%': { transform: 'translateY(0)', opacity: '0.4' },
           '30%': { transform: 'translateY(-3px)', opacity: '1' },
         },
+        breathe: {
+          '0%, 100%': { transform: 'scale(1)' },
+          '50%': { transform: 'scale(1.045)' },
+        },
       },
       animation: {
         'ping-soft': 'ping-soft 1.8s infinite',
         typing: 'typing 1.2s ease-in-out infinite',
+        breathe: 'breathe 3.4s ease-in-out infinite',
       },
     },
   },

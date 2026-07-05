@@ -23,7 +23,7 @@ const HIGHLIGHTS = [
 ];
 
 export function WelcomePage() {
-  const { acceptConsent } = useTherapyFlow();
+  const { acceptConsent, loading, error } = useTherapyFlow();
 
   return (
     <div className="card flex flex-col gap-6">
@@ -57,10 +57,25 @@ export function WelcomePage() {
       </ul>
 
       <div className="flex flex-col gap-3">
-        <Button type="button" onClick={acceptConsent} className="self-start">
+        <Button
+          type="button"
+          onClick={() => void acceptConsent()}
+          loading={loading}
+          className="self-start"
+        >
           Acepto y quiero continuar
-          <IconArrowRight className="h-4 w-4" />
+          {!loading && <IconArrowRight className="h-4 w-4" />}
         </Button>
+        {loading && (
+          <p className="text-sm text-muted" aria-live="polite">
+            Preparando tu espacio seguro…
+          </p>
+        )}
+        {error && (
+          <p className="form-error" role="alert">
+            {error}
+          </p>
+        )}
         <p className="text-xs text-muted">
           Al continuar, confirmas que conoces los alcances del servicio y aceptas
           conversar de forma anónima.

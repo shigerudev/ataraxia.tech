@@ -59,5 +59,12 @@ export function useChat() {
     [sending, sessionId, accessToken, appendAssistantToken, reportCrisis],
   );
 
-  return { messages, sending, error, send };
+  // Inserta en el hilo mensajes generados localmente (transcripciones del modo
+  // de voz). TODO(voz): estos mensajes no se persisten en el backend ni pasan
+  // por el clasificador de crisis; solo existen en el cliente.
+  const appendLocal = useCallback((message: ChatMessage) => {
+    setMessages((prev) => [...prev, message]);
+  }, []);
+
+  return { messages, sending, error, send, appendLocal };
 }

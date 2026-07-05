@@ -12,7 +12,6 @@ import { closeSession, createSession, type RegistrationPayload } from '../api/se
 
 export type FlowStep =
   | 'welcome'
-  | 'mode'
   | 'chat'
   | 'crisis'
   | 'registration'
@@ -30,8 +29,7 @@ interface FlowState {
 }
 
 interface FlowContextValue extends FlowState {
-  acceptConsent: () => void;
-  selectMode: (channel: SessionChannel) => Promise<void>;
+  acceptConsent: () => Promise<void>;
   reportCrisis: (crisis: CrisisInfo) => void;
   goToRegistration: () => void;
   register: (payload: RegistrationPayload) => Promise<void>;
@@ -62,29 +60,24 @@ export function TherapyFlowProvider({ children }: { children: ReactNode }) {
     setState((prev) => ({ ...prev, ...next }));
   }, []);
 
-  const acceptConsent = useCallback(() => {
-    patch({ step: 'mode', error: null });
+  // El consentimiento crea la sesión anónima y entra directo a la conversación
+  // (canal fijo 'chat'; la voz vive dentro del propio chat).
+  const acceptConsent = useCallback(async () => {
+    patch({ loading: true, error: null });
+    try {
+      const accessToken = await ensureAnonymousSession();
+      const { session } = await createSession(accessToken, 'chat');
+      patch({
+        accessToken,
+        sessionId: session.id,
+        channel: 'chat',
+        step: 'chat',
+        loading: false,
+      });
+    } catch (err) {
+      patch({ loading: false, error: errorMessage(err) });
+    }
   }, [patch]);
-
-  const selectMode = useCallback(
-    async (channel: SessionChannel) => {
-      patch({ loading: true, error: null });
-      try {
-        const accessToken = await ensureAnonymousSession();
-        const { session } = await createSession(accessToken, channel);
-        patch({
-          accessToken,
-          sessionId: session.id,
-          channel,
-          step: 'chat',
-          loading: false,
-        });
-      } catch (err) {
-        patch({ loading: false, error: errorMessage(err) });
-      }
-    },
-    [patch],
-  );
 
   const reportCrisis = useCallback(
     (crisis: CrisisInfo) => {
@@ -117,13 +110,12 @@ export function TherapyFlowProvider({ children }: { children: ReactNode }) {
     () => ({
       ...state,
       acceptConsent,
-      selectMode,
       reportCrisis,
       goToRegistration,
       register,
       reset,
     }),
-    [state, acceptConsent, selectMode, reportCrisis, goToRegistration, register, reset],
+    [state, acceptConsent, reportCrisis, goToRegistration, register, reset],
   );
 
   return <FlowContext.Provider value={value}>{children}</FlowContext.Provider>;
