@@ -1,0 +1,29 @@
+<svg width="220" height="220" viewBox="0 0 220 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+
+  <defs>
+    <linearGradient id="ataraxiaGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#8D7FFF"></stop>
+      <stop offset="100%" stop-color="#5B4CF0"></stop>
+    </linearGradient>
+  </defs>
+
+  <!-- pétalo superior -->
+  <ellipse cx="110" cy="55" rx="32" ry="42" fill="url(#ataraxiaGradient)" transform="rotate(0 110 55)"></ellipse>
+
+  <!-- pétalo derecho -->
+  <ellipse cx="165" cy="110" rx="32" ry="42" fill="url(#ataraxiaGradient)" transform="rotate(90 165 110)"></ellipse>
+
+  <!-- pétalo inferior -->
+  <ellipse cx="110" cy="165" rx="32" ry="42" fill="url(#ataraxiaGradient)"></ellipse>
+
+  <!-- pétalo izquierdo -->
+  <ellipse cx="55" cy="110" rx="32" ry="42" fill="url(#ataraxiaGradient)" transform="rotate(90 55 110)"></ellipse>
+
+  <!-- Psi integrada -->
+  <path d="M90 85
+       C90 110 100 125 110 125
+       C120 125 130 110 130 85
+       M110 125
+       V165" stroke="white" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"></path>
+
+</svg>
