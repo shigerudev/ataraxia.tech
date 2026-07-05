@@ -28,6 +28,7 @@ export const AUTH_TOKEN_KEY = 'ataraxia_auth_token';
 
 export const ROUTES = {
   home: '/',
+  start: '/comenzar',
   staffLogin: '/staff/login',
   staffDashboard: '/staff',
 } as const;

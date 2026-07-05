@@ -1,6 +1,7 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { ROUTES } from '@/shared/config';
 import { useAuth } from '@/features/auth/login';
+import { LandingPage } from '@/pages/landing';
 import { LoginPage } from '@/pages/login';
 import { DashboardPage } from '@/pages/dashboard';
 import { TherapyFlowPage } from '@/pages/therapy';
@@ -36,7 +37,8 @@ function PublicRoute({ children }: { children: React.ReactNode }) {
 export function AppRouter() {
   return (
     <Routes>
-      <Route path={ROUTES.home} element={<TherapyFlowPage />} />
+      <Route path={ROUTES.home} element={<LandingPage />} />
+      <Route path={ROUTES.start} element={<TherapyFlowPage />} />
       <Route
         path={ROUTES.staffLogin}
         element={
