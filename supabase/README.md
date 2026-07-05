@@ -11,6 +11,7 @@ Persistencia del flujo clínico: Auth anónima, Postgres, pgvector (RAG) y RLS.
 | `migrations/0003_rls.sql` | Políticas RLS (backstop; el backend usa la service_role key) |
 | `migrations/0004_conversational_intake.sql` | Migración desde cribado por formulario a indagación conversacional |
 | `migrations/0005_session_scheduling.sql` | Campos de agenda de sesión en `profiles` |
+| `migrations/0006_scheduling_consistency.sql` | Constraint de consistencia para agenda |
 
 ## Puesta en marcha
 
