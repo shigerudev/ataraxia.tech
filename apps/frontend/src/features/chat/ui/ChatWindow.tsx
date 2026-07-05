@@ -16,7 +16,7 @@ function AssistantAvatar({ size = 'md' }: { size?: 'sm' | 'md' }) {
     <span className={`relative grid shrink-0 place-items-center rounded-full bg-brand text-white ${dims}`} aria-hidden="true">
       <BrandMark className={mark} />
       {size === 'md' && (
-        <span className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full border-2 border-white bg-green" />
+        <span className="absolute bottom-0 right-0 h-2.5 w-2.5 animate-ping-green rounded-full border-2 border-white bg-green" />
       )}
     </span>
   );
@@ -27,6 +27,8 @@ export function ChatWindow() {
   const { messages, sending, error, send, appendLocal } = useChat();
   const [draft, setDraft] = useState('');
   const [voiceOpen, setVoiceOpen] = useState(false);
+  // Reinicia la animación de "despegue" del icono de enviar en cada envío.
+  const [flightSeq, setFlightSeq] = useState(0);
   const scrollRef = useRef<HTMLDivElement>(null);
   const micButtonRef = useRef<HTMLButtonElement>(null);
   const voiceWasOpen = useRef(false);
@@ -54,11 +56,12 @@ export function ChatWindow() {
     if (!canSend) return;
     const value = draft;
     setDraft('');
+    setFlightSeq((seq) => seq + 1);
     await send(value);
   }
 
   return (
-    <div className="card relative flex min-h-[520px] flex-1 flex-col overflow-hidden p-0 sm:p-0">
+    <div className="card relative flex min-h-[440px] flex-1 flex-col overflow-hidden p-0 sm:min-h-[520px] sm:p-0">
       {/* El contenido queda inerte (sin foco ni interacción) mientras el modo voz está activo. */}
       <div className="flex min-h-0 flex-1 flex-col" inert={voiceOpen}>
         <header className="flex items-center justify-between gap-3 border-b border-hairline bg-white px-4 py-3.5 sm:px-6">
@@ -72,7 +75,11 @@ export function ChatWindow() {
               </span>
             </div>
           </div>
-          <button type="button" className="btn--light px-4 py-2 text-sm" onClick={goToRegistration}>
+          <button
+            type="button"
+            className="btn--light whitespace-nowrap px-3 py-2 text-sm sm:px-4"
+            onClick={goToRegistration}
+          >
             Finalizar sesión
           </button>
         </header>
@@ -85,8 +92,14 @@ export function ChatWindow() {
           {messages.map((msg, i) => {
             const isUser = msg.role === 'user';
             const typing = !isUser && sending && msg.content === '';
+            const streaming = !isUser && sending && msg.content !== '' && i === messages.length - 1;
             return (
-              <div key={i} className={`flex items-end gap-2.5 ${isUser ? 'justify-end' : 'justify-start'}`}>
+              <div
+                key={i}
+                className={`flex items-end gap-2.5 ${
+                  isUser ? 'animate-message-in-right justify-end' : 'animate-message-in-left justify-start'
+                }`}
+              >
                 {!isUser && <AssistantAvatar size="sm" />}
                 <div
                   className={`max-w-[82%] rounded-2xl px-4 py-3 text-[15px] leading-relaxed ${
@@ -102,7 +115,15 @@ export function ChatWindow() {
                       <span className="typing-dot [animation-delay:0.3s]" />
                     </span>
                   ) : (
-                    msg.content
+                    <>
+                      {msg.content}
+                      {streaming && (
+                        <span
+                          className="ml-0.5 inline-block h-[1em] w-[2px] translate-y-[2px] animate-caret rounded-full bg-primary/70"
+                          aria-hidden="true"
+                        />
+                      )}
+                    </>
                   )}
                 </div>
               </div>
@@ -129,7 +150,7 @@ export function ChatWindow() {
             onChange={(e) => setDraft(e.target.value)}
             placeholder="Escribe cómo te sientes…"
             rows={2}
-            className="max-h-36 flex-1 resize-none rounded-md2 border border-hairline px-4 py-2.5 text-[15px] text-ink transition placeholder:text-muted/60 focus:border-primary focus:outline-none focus:ring-4 focus:ring-primary/15"
+            className="max-h-36 flex-1 resize-none rounded-md2 border border-hairline px-4 py-2.5 text-base text-ink transition placeholder:text-muted/60 focus:border-primary focus:outline-none focus:ring-4 focus:ring-primary/15 sm:text-[15px]"
             onKeyDown={(e) => {
               if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();
@@ -154,7 +175,9 @@ export function ChatWindow() {
             aria-label="Enviar mensaje"
             className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-brand text-white transition hover:-translate-y-0.5 hover:shadow-soft active:translate-y-0 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/30 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:translate-y-0"
           >
-            <IconSend className="h-[18px] w-[18px] -translate-x-px" />
+            <span key={flightSeq} className={`grid place-items-center ${flightSeq > 0 ? 'animate-send-fly' : ''}`}>
+              <IconSend className="h-[18px] w-[18px] -translate-x-px" />
+            </span>
           </button>
         </form>
 

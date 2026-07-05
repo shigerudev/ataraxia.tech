@@ -57,7 +57,7 @@
 
   /* Tarjeta base: superficie blanca con borde hairline */
   .card {
-    @apply bg-white border border-hairline rounded-lg2 p-6 sm:p-8 shadow-card;
+    @apply bg-white border border-hairline rounded-lg2 p-5 sm:p-8 shadow-card;
   }
 
   /* ---- Chips / badges ---- */
@@ -151,8 +151,8 @@
 
   /* ---- Modo voz: overlay claro sobre la tarjeta del chat ---- */
   .voice-overlay {
-    @apply absolute inset-0 z-40 flex flex-col items-center justify-center gap-7
-           bg-bg/90 bg-voice-glow px-6 text-center backdrop-blur-md;
+    @apply absolute inset-0 z-40 flex animate-fade-in flex-col items-center justify-center
+           bg-bg/90 bg-voice-glow px-5 text-center backdrop-blur-md sm:px-6;
   }
 
   /* ---- Orbe de voz ----

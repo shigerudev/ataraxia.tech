@@ -89,68 +89,70 @@ export function VoicePanel({ session, onClose }: VoicePanelProps) {
       aria-label="Conversación por voz con Ataraxia"
       onKeyDown={handleKeyDown}
     >
-      <VoiceOrb state={state} getLevel={session.getLevel} />
+      <div className="flex animate-scale-in flex-col items-center gap-5 sm:gap-7">
+        <VoiceOrb state={state} getLevel={session.getLevel} />
 
-      <div aria-live="polite" className="flex flex-col items-center gap-2.5">
-        <p className="font-display text-xl font-semibold tracking-tight text-navy">
-          {statusText(session)}
-        </p>
-        {session.mode === 'demo' && session.status !== 'error' && (
-          <span className="chip-brand">Modo demostración — la voz aún no está conectada</span>
-        )}
-        {session.status === 'error' && (
-          <p className="max-w-xs text-sm leading-relaxed text-muted">
-            {session.error ?? 'Revisa los permisos del micrófono en tu navegador e intenta de nuevo.'}
+        <div aria-live="polite" className="flex flex-col items-center gap-2.5">
+          <p className="font-display text-xl font-semibold tracking-tight text-navy">
+            {statusText(session)}
           </p>
+          {session.mode === 'demo' && session.status !== 'error' && (
+            <span className="chip-brand">Modo demostración — la voz aún no está conectada</span>
+          )}
+          {session.status === 'error' && (
+            <p className="max-w-xs text-sm leading-relaxed text-muted">
+              {session.error ?? 'Revisa los permisos del micrófono en tu navegador e intenta de nuevo.'}
+            </p>
+          )}
+        </div>
+
+        {session.status === 'error' ? (
+          <div className="flex flex-wrap items-center justify-center gap-3">
+            <button
+              type="button"
+              className="btn--light px-5 py-2.5 text-sm"
+              onClick={() => void session.start()}
+            >
+              Reintentar
+            </button>
+            <button type="button" className="btn--ghost px-5 py-2.5 text-sm" onClick={endCall}>
+              Volver al chat
+            </button>
+          </div>
+        ) : (
+          <div className="flex items-start gap-6">
+            <div className="flex flex-col items-center gap-1.5">
+              <button
+                type="button"
+                onClick={session.toggleMute}
+                aria-pressed={session.isMuted}
+                aria-label={session.isMuted ? 'Reactivar micrófono' : 'Silenciar micrófono'}
+                className={`btn-voice ${session.isMuted ? 'is-muted' : ''}`}
+              >
+                {session.isMuted ? <IconMicOff className="h-5 w-5" /> : <IconMic className="h-5 w-5" />}
+              </button>
+              <span className="text-[11px] font-medium text-muted" aria-hidden="true">
+                {session.isMuted ? 'Reactivar' : 'Silenciar'}
+              </span>
+            </div>
+            <div className="flex flex-col items-center gap-1.5">
+              <button
+                type="button"
+                onClick={endCall}
+                aria-label="Terminar conversación por voz"
+                className="btn-voice btn-voice--danger"
+              >
+                <IconPhone className="h-5 w-5 rotate-[135deg]" />
+              </button>
+              <span className="text-[11px] font-medium text-muted" aria-hidden="true">
+                Colgar
+              </span>
+            </div>
+          </div>
         )}
+
+        <p className="text-xs text-muted">Al terminar, regresarás a la conversación por texto.</p>
       </div>
-
-      {session.status === 'error' ? (
-        <div className="flex flex-wrap items-center justify-center gap-3">
-          <button
-            type="button"
-            className="btn--light px-5 py-2.5 text-sm"
-            onClick={() => void session.start()}
-          >
-            Reintentar
-          </button>
-          <button type="button" className="btn--ghost px-5 py-2.5 text-sm" onClick={endCall}>
-            Volver al chat
-          </button>
-        </div>
-      ) : (
-        <div className="flex items-start gap-6">
-          <div className="flex flex-col items-center gap-1.5">
-            <button
-              type="button"
-              onClick={session.toggleMute}
-              aria-pressed={session.isMuted}
-              aria-label={session.isMuted ? 'Reactivar micrófono' : 'Silenciar micrófono'}
-              className={`btn-voice ${session.isMuted ? 'is-muted' : ''}`}
-            >
-              {session.isMuted ? <IconMicOff className="h-5 w-5" /> : <IconMic className="h-5 w-5" />}
-            </button>
-            <span className="text-[11px] font-medium text-muted" aria-hidden="true">
-              {session.isMuted ? 'Reactivar' : 'Silenciar'}
-            </span>
-          </div>
-          <div className="flex flex-col items-center gap-1.5">
-            <button
-              type="button"
-              onClick={endCall}
-              aria-label="Terminar conversación por voz"
-              className="btn-voice btn-voice--danger"
-            >
-              <IconPhone className="h-5 w-5 rotate-[135deg]" />
-            </button>
-            <span className="text-[11px] font-medium text-muted" aria-hidden="true">
-              Colgar
-            </span>
-          </div>
-        </div>
-      )}
-
-      <p className="text-xs text-muted">Al terminar, regresarás a la conversación por texto.</p>
     </div>
   );
 }

@@ -61,7 +61,7 @@ export function WelcomePage() {
           type="button"
           onClick={() => void acceptConsent()}
           loading={loading}
-          className="self-start"
+          className="self-stretch sm:self-start"
         >
           Acepto y quiero continuar
           {!loading && <IconArrowRight className="h-4 w-4" />}

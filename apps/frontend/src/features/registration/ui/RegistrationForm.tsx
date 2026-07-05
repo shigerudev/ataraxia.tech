@@ -134,7 +134,7 @@ export function RegistrationForm() {
           </p>
         )}
 
-        <Button type="submit" loading={loading} className="self-start">
+        <Button type="submit" loading={loading} className="self-stretch sm:self-start">
           Confirmar
           <IconArrowRight className="h-4 w-4" />
         </Button>

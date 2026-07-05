@@ -39,7 +39,7 @@ export function ThankYouPage() {
         </ul>
       </div>
 
-      <Button type="button" variant="ghost" onClick={reset}>
+      <Button type="button" variant="ghost" onClick={reset} className="w-full sm:w-auto">
         Volver al inicio
       </Button>
     </div>

@@ -27,15 +27,15 @@ function StepProgress({ step }: { step: FlowStep }) {
   if (current >= PROGRESS_STEPS.length) return null;
 
   return (
-    <nav aria-label={`Paso ${current + 1} de ${PROGRESS_STEPS.length}`} className="mb-6">
+    <nav aria-label={`Paso ${current + 1} de ${PROGRESS_STEPS.length}`} className="mb-5 sm:mb-6">
       <ol className="flex items-start gap-2">
         {PROGRESS_STEPS.map((label, i) => (
           <li key={label} className="flex-1">
-            <span
-              className={`block h-1.5 rounded-full transition ${
-                i <= current ? 'bg-brand' : 'bg-primary/10'
-              }`}
-            />
+            <span className="block h-1.5 overflow-hidden rounded-full bg-primary/10">
+              {i <= current && (
+                <span className="block h-full w-full origin-left rounded-full bg-brand animate-fill-x" />
+              )}
+            </span>
             <span
               className={`mt-1.5 hidden text-xs font-medium sm:block ${
                 i === current ? 'text-primary-dark' : 'text-muted'
@@ -46,6 +46,10 @@ function StepProgress({ step }: { step: FlowStep }) {
           </li>
         ))}
       </ol>
+      <p className="mt-2 text-xs font-medium text-muted sm:hidden">
+        Paso {current + 1} de {PROGRESS_STEPS.length} ·{' '}
+        <span className="text-primary-dark">{PROGRESS_STEPS[current]}</span>
+      </p>
     </nav>
   );
 }
@@ -72,11 +76,13 @@ function FlowContainer() {
   const { step, crisisInfo } = useTherapyFlow();
   const isChat = step === 'chat' || step === 'crisis';
   const width = isChat ? 'max-w-3xl' : 'max-w-2xl';
+  // Crisis mantiene montado el chat: comparten llave para no reiniciar la conversación.
+  const viewKey = step === 'crisis' ? 'chat' : step;
 
   return (
     <div className="flex min-h-dvh flex-col bg-bg bg-aurora bg-no-repeat">
       <header>
-        <div className={`mx-auto flex w-full items-center justify-between px-5 py-6 ${width}`}>
+        <div className={`mx-auto flex w-full items-center justify-between px-4 py-4 sm:px-5 sm:py-6 ${width}`}>
           <BrandLogo />
           <span className="chip-outline hidden sm:inline-flex">
             <IconLock className="h-3.5 w-3.5" />
@@ -85,9 +91,9 @@ function FlowContainer() {
         </div>
       </header>
 
-      <main className={`mx-auto flex w-full flex-1 flex-col px-5 pb-10 ${width}`}>
+      <main className={`mx-auto flex w-full flex-1 flex-col px-4 pb-6 sm:px-5 sm:pb-10 ${width}`}>
         <StepProgress step={step} />
-        <div className={isChat ? 'flex flex-1 flex-col' : ''}>
+        <div key={viewKey} className={`animate-rise-in ${isChat ? 'flex flex-1 flex-col' : ''}`}>
           <FlowStepView />
         </div>
       </main>

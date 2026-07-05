@@ -51,11 +51,16 @@ cuerpo 1rem con interlineado 1.7.
 - Fondo de página: `bg-bg bg-aurora bg-no-repeat` (degradado radial lavanda superior).
 - Modo voz: `bg-orb` (esfera radial blanco→lavanda→violeta→navy) y `bg-voice-glow`
   (resplandor violeta del velo, detrás del orbe).
-- Animaciones: `animate-ping-soft` (halo pulsante rosa; ícono de crisis),
-  `animate-typing` (puntos del indicador de escritura; ver `.typing-dot`),
-  `animate-breathe` (respiración lenta del orbe de voz, 3.4 s),
-  `animate-float` (flotación vertical suave del orbe, 7 s) y
-  `animate-orb-spin` (destello cónico del orbe girando, 18 s).
+- Animaciones ambientales: `animate-ping-soft` (halo rosa; ícono de crisis),
+  `animate-ping-green` (pulso de presencia del avatar, 3 s), `animate-typing`
+  (puntos de escritura), `animate-caret` (cursor del streaming), `animate-breathe`,
+  `animate-float` y `animate-orb-spin` (orbe de voz).
+- Animaciones de entrada (una sola vez al montar, 250–400 ms `ease-out`):
+  `animate-fade-in` (velos), `animate-rise-in` (cambio de paso del flujo),
+  `animate-scale-in` (contenido del modo voz), `animate-message-in-left/right`
+  (burbujas del chat según remitente), `animate-fill-x` (segmentos de la barra
+  de progreso) y `animate-send-fly` (despegue del icono de enviar, disparada por envío).
+- Regla: solo `transform`/`opacity`; nada de animar layout.
 - Se respeta `prefers-reduced-motion` (desactiva animaciones/transiciones; el
   orbe de voz además congela sus escalas por CSS y solo la opacidad del halo
   sigue a la voz).
@@ -125,4 +130,7 @@ Para "colgar" se usa `IconPhone` con `rotate-[135deg]` (teléfono hacia abajo).
   conversa vía ElevenLabs; sin él, modo demostración con micrófono local.
 - **Crisis**: overlay bloqueante (`bg-navy/70` + blur, `fixed z-50` — siempre por encima del
   modo voz), acento rosa, no descartable.
-- **Responsive**: móvil primero; grids colapsan a 1 columna con `sm:`/`md:`.
+- **Responsive**: móvil primero; grids colapsan a 1 columna con `sm:`/`md:`. En teléfonos:
+  CTAs principales a ancho completo (`self-stretch sm:self-start`), inputs de escritura a
+  16px (`text-base sm:text-[15px]`, evita el zoom automático de iOS), tarjetas con `p-5`,
+  barra de progreso con etiqueta "Paso X de N" (`sm:hidden`) y chat con altura mínima reducida.
