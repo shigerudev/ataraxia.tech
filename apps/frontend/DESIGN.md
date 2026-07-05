@@ -37,10 +37,13 @@ Se cargan en `index.html` vía Google Fonts. Todos los `h1–h5` usan `font-disp
 - Radios: `rounded-lg2` (24px, tarjetas), `rounded-md2` (16px, campos/sub-bloques), `rounded-full` (pills).
 - Sombras: `shadow-soft` (sutil), `shadow-card` (elevación de tarjeta).
 - Fondo de página: `bg-bg bg-aurora bg-no-repeat` (degradado radial lavanda superior).
-- Orbe de voz: `bg-orb` (esfera radial lavanda→azul→navy) y `shadow-orb`.
+- Modo voz: `bg-orb` (esfera radial blanco→lavanda→azul→navy) y `bg-voice-glow`
+  (resplandor azulado del velo, detrás del orbe).
 - Animaciones: `animate-ping-soft` (halo pulsante rosa; ícono de crisis),
-  `animate-typing` (puntos del indicador de escritura; ver `.typing-dot`) y
-  `animate-breathe` (respiración lenta del orbe de voz, 3.4 s).
+  `animate-typing` (puntos del indicador de escritura; ver `.typing-dot`),
+  `animate-breathe` (respiración lenta del orbe de voz, 3.4 s),
+  `animate-float` (flotación vertical suave del orbe, 7 s) y
+  `animate-orb-spin` (destello cónico del orbe girando, 18 s).
 - Se respeta `prefers-reduced-motion` (desactiva animaciones/transiciones; el
   orbe de voz además congela sus escalas por CSS y solo la opacidad del halo
   sigue a la voz).
@@ -57,9 +60,10 @@ Se cargan en `index.html` vía Google Fonts. Todos los `h1–h5` usan `font-disp
 | `.icon-tile` | Cuadro de 44px con icono centrado; combínalo con `bg-*`/`text-*` de la paleta. |
 | `.form-error` | Mensaje de error inline (rosa, `role="alert"`). |
 | `.typing-dot` | Punto del indicador "escribiendo…" del chat (usa `animate-typing`). |
-| `.voice-overlay` | Overlay del modo voz sobre la card del chat (`absolute`, velo navy + blur). |
-| `.voice-orb` + `__core/__halo/__ring/__breath` | Orbe de voz por capas; la intensidad llega por la variable `--voice-level` (0..1) escrita vía rAF. Variantes `--connecting/--listening/--speaking/--demo/--error`. |
-| `.btn-voice` / `.btn-voice--danger` / `.is-muted` | Controles circulares del modo voz sobre el velo oscuro (silenciar / colgar). |
+| `.voice-overlay` | Overlay del modo voz sobre la card del chat (`absolute`, velo navy + `bg-voice-glow` + blur). |
+| `.chip-veil` | Chip translúcido (blanco/10 + blur) para leyendas sobre el velo oscuro. |
+| `.voice-orb` + `__core/__sheen/__halo/__ring/__breath` | Orbe de voz por capas (núcleo con sombras internas, destello giratorio, halo y anillos); la intensidad llega por la variable `--voice-level` (0..1) escrita vía rAF. Variantes `--connecting/--listening/--speaking/--demo/--error`. |
+| `.btn-voice` / `.btn-voice--danger` / `.is-muted` | Controles circulares estilo cristal del modo voz (silenciar / colgar, con etiqueta debajo). |
 | `.app-loading` | Pantalla de carga centrada. |
 
 ## Primitivas React (`@/shared/ui`)
@@ -81,8 +85,9 @@ Set propio de iconos de línea (24px, trazo 2, `currentColor`), exportado desde 
 **No usar emojis en la interfaz.**
 
 `IconChat` · `IconMic` · `IconMicOff` · `IconShield` · `IconLock` · `IconHeart` ·
-`IconPhone` · `IconPhoneOff` · `IconCheck` · `IconArrowRight` · `IconSend` ·
-`IconUser` · `IconUsers`
+`IconPhone` · `IconCheck` · `IconArrowRight` · `IconSend` · `IconUser` · `IconUsers`
+
+Para "colgar" se usa `IconPhone` con `rotate-[135deg]` (teléfono hacia abajo).
 
 ```tsx
 <IconChat className="h-5 w-5" />

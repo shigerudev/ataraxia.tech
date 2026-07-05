@@ -58,7 +58,9 @@ export function VoiceOrb({ state, getLevel }: VoiceOrbProps) {
       <span className="voice-orb__ring" />
       <span className="voice-orb__halo" />
       <span className="voice-orb__breath">
-        <span className="voice-orb__core" />
+        <span className="voice-orb__core">
+          <span className="voice-orb__sheen" />
+        </span>
       </span>
     </div>
   );

@@ -139,7 +139,13 @@
   /* ---- Modo voz: overlay sobre la tarjeta del chat ---- */
   .voice-overlay {
     @apply absolute inset-0 z-40 flex flex-col items-center justify-center gap-7
-           bg-navy/70 px-6 text-center backdrop-blur-md;
+           bg-navy/75 bg-voice-glow px-6 text-center backdrop-blur-md;
+  }
+
+  /* Chip translúcido para leyendas sobre el velo oscuro */
+  .chip-veil {
+    @apply inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10
+           px-4 py-1.5 text-[13px] font-medium text-white/90 backdrop-blur-sm;
   }
 
   /* ---- Orbe de voz ----
@@ -147,7 +153,7 @@
      --voice-level (0..1), escrita vía requestAnimationFrame sin re-render. */
   .voice-orb {
     --voice-level: 0;
-    @apply relative grid h-44 w-44 place-items-center sm:h-52 sm:w-52;
+    @apply relative grid h-44 w-44 animate-float place-items-center sm:h-52 sm:w-52;
   }
   .voice-orb > * {
     @apply col-start-1 row-start-1;
@@ -158,8 +164,25 @@
     @apply grid place-items-center;
   }
   .voice-orb__core {
-    @apply block h-32 w-32 rounded-full bg-orb shadow-orb sm:h-36 sm:w-36;
+    @apply relative block h-32 w-32 overflow-hidden rounded-full bg-orb sm:h-36 sm:w-36;
     transform: scale(calc(1 + var(--voice-level) * 0.16));
+    box-shadow:
+      inset -18px -26px 48px rgba(16, 18, 59, 0.55),
+      inset 12px 16px 36px rgba(255, 255, 255, 0.22),
+      0 24px 60px rgba(16, 18, 59, 0.45);
+  }
+  /* Destello suave que gira lento: da vida al orbe sin distraer */
+  .voice-orb__sheen {
+    @apply absolute inset-0 animate-orb-spin rounded-full;
+    background: conic-gradient(
+      from 0deg,
+      transparent 0deg,
+      rgba(231, 229, 250, 0.22) 70deg,
+      transparent 140deg,
+      rgba(169, 200, 255, 0.16) 240deg,
+      transparent 320deg
+    );
+    mix-blend-mode: screen;
   }
   .voice-orb__halo {
     @apply h-32 w-32 rounded-full bg-lavender/40 blur-2xl sm:h-36 sm:w-36;
@@ -167,14 +190,16 @@
     opacity: calc(0.35 + var(--voice-level) * 0.45);
   }
   .voice-orb__ring {
-    @apply h-32 w-32 rounded-full border border-blue/60 sm:h-36 sm:w-36;
-    transform: scale(calc(1.08 + var(--voice-level) * 0.5));
-    opacity: calc(var(--voice-level) * 0.7);
+    @apply h-32 w-32 rounded-full border-2 border-blue/50 sm:h-36 sm:w-36;
+    filter: blur(1px);
+    transform: scale(calc(1.12 + var(--voice-level) * 0.45));
+    opacity: calc(var(--voice-level) * 0.8);
   }
   .voice-orb__ring--far {
-    @apply border-lavender/50;
-    transform: scale(calc(1.16 + var(--voice-level) * 0.9));
-    opacity: calc(var(--voice-level) * 0.4);
+    @apply border border-lavender/40;
+    filter: blur(2px);
+    transform: scale(calc(1.24 + var(--voice-level) * 0.8));
+    opacity: calc(var(--voice-level) * 0.45);
   }
 
   /* Variantes por estado */
@@ -207,14 +232,16 @@
 
   /* ---- Controles circulares del modo voz (sobre el velo oscuro) ---- */
   .btn-voice {
-    @apply grid h-12 w-12 place-items-center rounded-full border border-white/25 bg-white/15 text-white transition
-           hover:bg-white/25 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-white/40;
+    @apply grid h-14 w-14 place-items-center rounded-full border border-white/25 bg-white/10 text-white backdrop-blur-sm transition
+           hover:-translate-y-0.5 hover:bg-white/20 active:translate-y-0
+           focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-white/40;
   }
   .btn-voice.is-muted {
     @apply border-transparent bg-white text-navy hover:bg-lavender;
   }
   .btn-voice--danger {
     @apply border-transparent bg-pink hover:bg-pink/90 focus-visible:ring-pink/50;
+    box-shadow: 0 12px 28px rgba(255, 92, 122, 0.35);
   }
 }
 

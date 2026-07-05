@@ -1,5 +1,5 @@
 import { useEffect, useRef, type KeyboardEvent } from 'react';
-import { Chip, IconMic, IconMicOff, IconPhoneOff } from '@/shared/ui';
+import { IconMic, IconMicOff, IconPhone } from '@/shared/ui';
 import type { VoiceSession } from '../model/types';
 import { VoiceOrb, type VoiceOrbState } from './VoiceOrb';
 
@@ -92,9 +92,11 @@ export function VoicePanel({ session, onClose }: VoicePanelProps) {
       <VoiceOrb state={state} getLevel={session.getLevel} />
 
       <div aria-live="polite" className="flex flex-col items-center gap-2.5">
-        <p className="font-display text-lg font-semibold text-white">{statusText(session)}</p>
+        <p className="font-display text-xl font-semibold tracking-tight text-white">
+          {statusText(session)}
+        </p>
         {session.mode === 'demo' && session.status !== 'error' && (
-          <Chip variant="outline">Modo demostración — la voz aún no está conectada</Chip>
+          <span className="chip-veil">Modo demostración — la voz aún no está conectada</span>
         )}
         {session.status === 'error' && (
           <p className="max-w-xs text-sm leading-relaxed text-lavender/90">
@@ -117,24 +119,34 @@ export function VoicePanel({ session, onClose }: VoicePanelProps) {
           </button>
         </div>
       ) : (
-        <div className="flex items-center gap-4">
-          <button
-            type="button"
-            onClick={session.toggleMute}
-            aria-pressed={session.isMuted}
-            aria-label={session.isMuted ? 'Reactivar micrófono' : 'Silenciar micrófono'}
-            className={`btn-voice ${session.isMuted ? 'is-muted' : ''}`}
-          >
-            {session.isMuted ? <IconMicOff className="h-5 w-5" /> : <IconMic className="h-5 w-5" />}
-          </button>
-          <button
-            type="button"
-            onClick={endCall}
-            aria-label="Terminar conversación por voz"
-            className="btn-voice btn-voice--danger"
-          >
-            <IconPhoneOff className="h-5 w-5" />
-          </button>
+        <div className="flex items-start gap-6">
+          <div className="flex flex-col items-center gap-1.5">
+            <button
+              type="button"
+              onClick={session.toggleMute}
+              aria-pressed={session.isMuted}
+              aria-label={session.isMuted ? 'Reactivar micrófono' : 'Silenciar micrófono'}
+              className={`btn-voice ${session.isMuted ? 'is-muted' : ''}`}
+            >
+              {session.isMuted ? <IconMicOff className="h-5 w-5" /> : <IconMic className="h-5 w-5" />}
+            </button>
+            <span className="text-[11px] font-medium text-lavender/80" aria-hidden="true">
+              {session.isMuted ? 'Reactivar' : 'Silenciar'}
+            </span>
+          </div>
+          <div className="flex flex-col items-center gap-1.5">
+            <button
+              type="button"
+              onClick={endCall}
+              aria-label="Terminar conversación por voz"
+              className="btn-voice btn-voice--danger"
+            >
+              <IconPhone className="h-5 w-5 rotate-[135deg]" />
+            </button>
+            <span className="text-[11px] font-medium text-lavender/80" aria-hidden="true">
+              Colgar
+            </span>
+          </div>
         </div>
       )}
 
