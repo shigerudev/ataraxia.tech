@@ -28,7 +28,7 @@ changed.
 | 003 | [Crisis Protocol](./003-crisis-protocol.md) | active | Deterministic risk checks and crisis UX. |
 | 004 | [Voice Mode and ElevenLabs](./004-voice-mode-elevenlabs.md) | draft | Voice input/output for phase 2. |
 | 005 | [Group Therapy Scheduling](./005-group-therapy-scheduling.md) | active | Group modality: join now or schedule (stub). |
-| 006 | [Live Session Rooms](./006-live-session-rooms.md) | active | Individual voice room + group WebRTC mesh room. |
+| 006 | [Live Session Rooms](./006-live-session-rooms.md) | active | Individual voice room + group WebRTC mesh room with AI facilitator. |
 
 ## Template
 
