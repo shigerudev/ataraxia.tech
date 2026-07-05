@@ -18,7 +18,7 @@ either join a live room immediately or schedule a session for later.
   Scheduling for later is a stub: it persists the choice and shows a
   confirmation; there are no real notifications yet.
 - `joinMode` and `scheduledAt` are persisted on `public.profiles` via
-  `supabase/migrations/0002_session_scheduling.sql`.
+  `supabase/migrations/0005_session_scheduling.sql`.
 - The live group room is implemented as a raw **WebRTC mesh** signaled by
   **Supabase Realtime** (Broadcast for SDP/ICE, Presence for the alias roster).
   See spec 006 for room details. Quorum, calendar, and notification providers
@@ -103,4 +103,3 @@ Potential integrations:
 3. Add queue/join logic after registration.
 4. Add notification stub for hackathon demo.
 5. Replace stub with provider integration later.
-
