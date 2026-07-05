@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { ROUTES } from '@/shared/config';
 import {
@@ -13,6 +13,59 @@ import {
   IconShield,
   IconUsers,
 } from '@/shared/ui';
+
+/* ============================================================
+   Reveal — aparición sutil (fade + slide-up) al entrar en el
+   viewport, al estilo de sinapsisai.com. Autocontenido: no
+   depende de tokens/CSS globales y respeta reduced-motion.
+   ============================================================ */
+function Reveal({
+  children,
+  delay = 0,
+  className = '',
+}: {
+  children: ReactNode;
+  delay?: number;
+  className?: string;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [shown, setShown] = useState(false);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      setShown(true);
+      return;
+    }
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting) {
+          setShown(true);
+          io.disconnect();
+        }
+      },
+      { threshold: 0.15, rootMargin: '0px 0px -8% 0px' },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
+  return (
+    <div
+      ref={ref}
+      className={className}
+      style={{
+        opacity: shown ? 1 : 0,
+        transform: shown ? 'none' : 'translateY(18px)',
+        transition: `opacity 600ms ease ${delay}ms, transform 700ms cubic-bezier(0.22,0.61,0.36,1) ${delay}ms`,
+        willChange: 'opacity, transform',
+      }}
+    >
+      {children}
+    </div>
+  );
+}
 
 /* ---- Iconos locales (solo usados aquí) ---- */
 function IconCross({ className = 'h-3.5 w-3.5' }: { className?: string }) {
@@ -91,6 +144,7 @@ const FAQ = [
 ];
 
 const H2 = 'text-[clamp(1.7rem,3.6vw,2.4rem)] font-extrabold tracking-tight text-balance';
+const CARD_HOVER = 'transition-transform duration-300 hover:-translate-y-1';
 
 /* ---- Página ---- */
 export function LandingPage() {
@@ -119,7 +173,7 @@ export function LandingPage() {
         <section className="relative overflow-hidden px-5 pb-16 pt-10 sm:pt-14">
           <div className="pointer-events-none absolute inset-x-0 top-0 h-[560px] bg-aurora bg-no-repeat" aria-hidden />
           <div className="relative mx-auto grid max-w-6xl items-center gap-10 md:grid-cols-[1.05fr_0.95fr]">
-            <div className="flex flex-col gap-5">
+            <Reveal className="flex flex-col gap-5">
               <span className="chip-brand self-start">Anónimo · Gratuito · Chat y voz</span>
               <h1 className="text-[clamp(2.1rem,5.4vw,3.3rem)] font-extrabold leading-[1.1] tracking-tight text-balance">
                 Habla de lo que sientes.{' '}
@@ -144,10 +198,10 @@ export function LandingPage() {
                   </span>
                 ))}
               </div>
-            </div>
+            </Reveal>
 
             {/* Orbe de marca */}
-            <div className="order-first grid place-items-center md:order-last">
+            <Reveal delay={140} className="order-first grid place-items-center md:order-last">
               <div className="relative grid aspect-square w-[min(340px,80vw)] animate-float place-items-center [&>*]:col-start-1 [&>*]:row-start-1">
                 <div className="h-[78%] w-[78%] rounded-full bg-primary-light/40 blur-3xl" />
                 <div className="h-full w-full rounded-full border border-primary/20" />
@@ -157,28 +211,30 @@ export function LandingPage() {
                   <BrandMark className="h-full w-full text-white drop-shadow-[0_8px_18px_rgba(29,35,64,.35)]" />
                 </span>
               </div>
-            </div>
+            </Reveal>
           </div>
         </section>
 
         {/* CÓMO FUNCIONA */}
         <section id="como" className="scroll-mt-24 px-5 py-20">
           <div className="mx-auto max-w-6xl">
-            <div className="mx-auto mb-11 flex max-w-2xl flex-col items-center gap-3 text-center">
+            <Reveal className="mx-auto mb-11 flex max-w-2xl flex-col items-center gap-3 text-center">
               <span className="chip-brand">Cómo funciona</span>
               <h2 className={H2}>Cuatro pasos, a tu ritmo</h2>
               <p className="text-muted">
                 Un recorrido pensado para bajar la barrera de pedir ayuda: empiezas en segundos
                 y decides tú hasta dónde llegar.
               </p>
-            </div>
+            </Reveal>
             <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
               {STEPS.map((s, i) => (
-                <div key={s.t} className="card flex flex-col gap-1.5">
-                  <span className="text-xs font-extrabold tracking-widest text-primary">PASO 0{i + 1}</span>
-                  <h3 className="text-lg font-bold">{s.t}</h3>
-                  <p className="text-sm text-muted">{s.d}</p>
-                </div>
+                <Reveal key={s.t} delay={i * 70} className="h-full">
+                  <div className={`card flex h-full flex-col gap-1.5 ${CARD_HOVER}`}>
+                    <span className="text-xs font-extrabold tracking-widest text-primary">PASO 0{i + 1}</span>
+                    <h3 className="text-lg font-bold">{s.t}</h3>
+                    <p className="text-sm text-muted">{s.d}</p>
+                  </div>
+                </Reveal>
               ))}
             </div>
           </div>
@@ -187,61 +243,67 @@ export function LandingPage() {
         {/* COMPARATIVO / VS */}
         <section id="comparacion" className="scroll-mt-24 bg-white px-5 py-20">
           <div className="mx-auto max-w-6xl">
-            <div className="mx-auto mb-12 flex max-w-2xl flex-col items-center gap-3 text-center">
+            <Reveal className="mx-auto mb-12 flex max-w-2xl flex-col items-center gap-3 text-center">
               <span className="chip-brand">La diferencia</span>
               <h2 className={H2}>No es “un chat con IA” más</h2>
               <p className="text-muted">
                 Un asistente genérico responde. Ataraxia acompaña: con método clínico, seguridad
                 y un puente hacia ayuda humana.
               </p>
-            </div>
+            </Reveal>
 
             <div className="grid items-stretch gap-4 md:grid-cols-[1fr_auto_1fr]">
               {/* Genérico (frío) */}
-              <div className="rounded-lg2 border border-[#E4E5EC] bg-[#F1F2F6] p-6 sm:p-7">
-                <h3 className="mb-5 flex items-center gap-3 text-lg font-bold text-ink">
-                  <span className="grid h-10 w-10 place-items-center rounded-xl bg-[#E4E6EE] text-[#828799]">
-                    <IconRobot />
-                  </span>
-                  Un asistente de IA genérico
-                </h3>
-                <ul className="flex flex-col gap-3.5 font-mono text-sm text-[#7C8194]">
-                  {GENERIC.map((t) => (
-                    <li key={t} className="flex items-start gap-3">
-                      <span className="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-full bg-pink-bg text-pink-text">
-                        <IconCross className="h-3 w-3" />
-                      </span>
-                      {t}
-                    </li>
-                  ))}
-                </ul>
-              </div>
+              <Reveal className="h-full">
+                <div className="h-full rounded-lg2 border border-[#E4E5EC] bg-[#F1F2F6] p-6 sm:p-7">
+                  <h3 className="mb-5 flex items-center gap-3 text-lg font-bold text-ink">
+                    <span className="grid h-10 w-10 place-items-center rounded-xl bg-[#E4E6EE] text-[#828799]">
+                      <IconRobot />
+                    </span>
+                    Un asistente de IA genérico
+                  </h3>
+                  <ul className="flex flex-col gap-3.5 font-mono text-sm text-[#7C8194]">
+                    {GENERIC.map((t) => (
+                      <li key={t} className="flex items-start gap-3">
+                        <span className="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-full bg-pink-bg text-pink-text">
+                          <IconCross className="h-3 w-3" />
+                        </span>
+                        {t}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </Reveal>
 
               {/* Insignia VS */}
-              <div className="z-10 mx-auto -my-1 grid h-14 w-14 place-items-center self-center rounded-full bg-brand text-base font-extrabold text-white shadow-card md:-mx-2">
-                VS
-              </div>
+              <Reveal delay={90} className="grid place-items-center">
+                <div className="z-10 -my-1 grid h-14 w-14 place-items-center rounded-full bg-brand text-base font-extrabold text-white shadow-card md:-mx-2">
+                  VS
+                </div>
+              </Reveal>
 
               {/* Ataraxia (cálido) */}
-              <div className="relative rounded-lg2 border border-primary/30 bg-white p-6 shadow-card sm:p-7">
-                <span className="absolute -top-3 right-6 rounded-full bg-brand px-3 py-1 text-xs font-extrabold text-white">
-                  Ataraxia
-                </span>
-                <h3 className="mb-5 flex items-center gap-3 text-lg font-bold">
-                  <BrandMark gradient className="h-8 w-8" />
-                  Acompañamiento con método
-                </h3>
-                <ul className="flex flex-col gap-3.5 text-sm text-ink">
-                  {ATARAXIA.map((t) => (
-                    <li key={t} className="flex items-start gap-3">
-                      <span className="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-full bg-green-bg text-green-text">
-                        <IconCheck className="h-3 w-3" />
-                      </span>
-                      {t}
-                    </li>
-                  ))}
-                </ul>
-              </div>
+              <Reveal delay={160} className="h-full">
+                <div className="relative h-full rounded-lg2 border border-primary/30 bg-white p-6 shadow-card sm:p-7">
+                  <span className="absolute -top-3 right-6 rounded-full bg-brand px-3 py-1 text-xs font-extrabold text-white">
+                    Ataraxia
+                  </span>
+                  <h3 className="mb-5 flex items-center gap-3 text-lg font-bold">
+                    <BrandMark gradient className="h-8 w-8" />
+                    Acompañamiento con método
+                  </h3>
+                  <ul className="flex flex-col gap-3.5 text-sm text-ink">
+                    {ATARAXIA.map((t) => (
+                      <li key={t} className="flex items-start gap-3">
+                        <span className="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-full bg-green-bg text-green-text">
+                          <IconCheck className="h-3 w-3" />
+                        </span>
+                        {t}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </Reveal>
             </div>
           </div>
         </section>
@@ -249,19 +311,21 @@ export function LandingPage() {
         {/* PILARES */}
         <section className="px-5 py-20">
           <div className="mx-auto max-w-6xl">
-            <div className="mx-auto mb-11 flex max-w-xl flex-col items-center gap-3 text-center">
+            <Reveal className="mx-auto mb-11 flex max-w-xl flex-col items-center gap-3 text-center">
               <span className="chip-brand">Por qué confiar</span>
               <h2 className={H2}>Diseñado con cuidado clínico</h2>
-            </div>
+            </Reveal>
             <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-              {PILLARS.map(({ Icon, t, d }) => (
-                <div key={t} className="card flex flex-col gap-2">
-                  <span className="grid h-12 w-12 place-items-center rounded-xl bg-brand text-white">
-                    <Icon className="h-6 w-6" />
-                  </span>
-                  <h3 className="mt-2 text-lg font-bold">{t}</h3>
-                  <p className="text-sm text-muted">{d}</p>
-                </div>
+              {PILLARS.map(({ Icon, t, d }, i) => (
+                <Reveal key={t} delay={(i % 3) * 70} className="h-full">
+                  <div className={`card flex h-full flex-col gap-2 ${CARD_HOVER}`}>
+                    <span className="grid h-12 w-12 place-items-center rounded-xl bg-brand text-white">
+                      <Icon className="h-6 w-6" />
+                    </span>
+                    <h3 className="mt-2 text-lg font-bold">{t}</h3>
+                    <p className="text-sm text-muted">{d}</p>
+                  </div>
+                </Reveal>
               ))}
             </div>
           </div>
@@ -270,46 +334,49 @@ export function LandingPage() {
         {/* SEGURIDAD / AVISO */}
         <section id="seguridad" className="scroll-mt-24 px-5 pb-20">
           <div className="mx-auto max-w-6xl">
-            <div className="flex items-start gap-4 rounded-lg2 border border-green/60 bg-green-bg p-6 sm:p-7">
-              <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl border border-green-text/40 text-green-text">
-                <IconWarn />
-              </span>
-              <div className="flex flex-col gap-1.5">
-                <h3 className="text-lg font-bold">Ataraxia acompaña, no reemplaza</h3>
-                <p className="leading-relaxed text-ink/80">
-                  No es un servicio de emergencia ni sustituye la atención de un profesional de salud
-                  mental. Si tú o alguien más corre peligro inmediato, comunícate ahora con tu{' '}
-                  <strong className="text-ink">línea local de crisis</strong> o con{' '}
-                  <strong className="text-ink">emergencias</strong>. Nuestro protocolo mostrará estos
-                  recursos apenas detecte una señal de riesgo.
-                </p>
+            <Reveal>
+              <div className="flex items-start gap-4 rounded-lg2 border border-green/60 bg-green-bg p-6 sm:p-7">
+                <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl border border-green-text/40 text-green-text">
+                  <IconWarn />
+                </span>
+                <div className="flex flex-col gap-1.5">
+                  <h3 className="text-lg font-bold">Ataraxia acompaña, no reemplaza</h3>
+                  <p className="leading-relaxed text-ink/80">
+                    No es un servicio de emergencia ni sustituye la atención de un profesional de salud
+                    mental. Si tú o alguien más corre peligro inmediato, comunícate ahora con tu{' '}
+                    <strong className="text-ink">línea local de crisis</strong> o con{' '}
+                    <strong className="text-ink">emergencias</strong>. Nuestro protocolo mostrará estos
+                    recursos apenas detecte una señal de riesgo.
+                  </p>
+                </div>
               </div>
-            </div>
+            </Reveal>
           </div>
         </section>
 
         {/* PREGUNTAS */}
         <section id="preguntas" className="scroll-mt-24 bg-white px-5 py-20">
           <div className="mx-auto max-w-3xl">
-            <div className="mx-auto mb-9 flex max-w-xl flex-col items-center gap-3 text-center">
+            <Reveal className="mx-auto mb-9 flex max-w-xl flex-col items-center gap-3 text-center">
               <span className="chip-brand">Preguntas frecuentes</span>
               <h2 className={H2}>Lo que quizá te preguntas</h2>
-            </div>
+            </Reveal>
             <div className="flex flex-col gap-3">
               {FAQ.map((f, i) => (
-                <details
-                  key={f.q}
-                  className="group rounded-md2 border border-hairline bg-white"
-                  {...(i === 0 ? { open: true } : {})}
-                >
-                  <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-5 py-4 font-bold [&::-webkit-details-marker]:hidden">
-                    {f.q}
-                    <svg className="h-5 w-5 shrink-0 text-primary transition group-open:rotate-90" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
-                      <path d="m9 6 6 6-6 6" />
-                    </svg>
-                  </summary>
-                  <div className="px-5 pb-5 leading-relaxed text-muted">{f.a}</div>
-                </details>
+                <Reveal key={f.q} delay={i * 55}>
+                  <details
+                    className="group rounded-md2 border border-hairline bg-white"
+                    {...(i === 0 ? { open: true } : {})}
+                  >
+                    <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-5 py-4 font-bold [&::-webkit-details-marker]:hidden">
+                      {f.q}
+                      <svg className="h-5 w-5 shrink-0 text-primary transition group-open:rotate-90" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+                        <path d="m9 6 6 6-6 6" />
+                      </svg>
+                    </summary>
+                    <div className="px-5 pb-5 leading-relaxed text-muted">{f.a}</div>
+                  </details>
+                </Reveal>
               ))}
             </div>
           </div>
@@ -318,21 +385,23 @@ export function LandingPage() {
         {/* CTA FINAL */}
         <section className="px-5 py-20">
           <div className="mx-auto max-w-6xl">
-            <div className="relative overflow-hidden rounded-lg2 bg-brand px-6 py-16 text-center text-white shadow-card">
-              <h2 className="text-[clamp(1.7rem,3.6vw,2.3rem)] font-extrabold tracking-tight text-white text-balance">
-                Da el primer paso hoy
-              </h2>
-              <p className="mx-auto mt-3 max-w-lg text-white/85">
-                Un espacio seguro para hablar de lo que sientes, sin juicios y sin esperas.
-                Estás a un clic de comenzar.
-              </p>
-              <Link
-                to={ROUTES.start}
-                className="mt-7 inline-flex items-center gap-2 rounded-2xl bg-white px-7 py-3.5 font-bold text-primary shadow-card transition hover:-translate-y-0.5"
-              >
-                Empezar ahora — es anónimo <IconArrowRight className="h-4 w-4" />
-              </Link>
-            </div>
+            <Reveal>
+              <div className="relative overflow-hidden rounded-lg2 bg-brand px-6 py-16 text-center text-white shadow-card">
+                <h2 className="text-[clamp(1.7rem,3.6vw,2.3rem)] font-extrabold tracking-tight text-white text-balance">
+                  Da el primer paso hoy
+                </h2>
+                <p className="mx-auto mt-3 max-w-lg text-white/85">
+                  Un espacio seguro para hablar de lo que sientes, sin juicios y sin esperas.
+                  Estás a un clic de comenzar.
+                </p>
+                <Link
+                  to={ROUTES.start}
+                  className="mt-7 inline-flex items-center gap-2 rounded-2xl bg-white px-7 py-3.5 font-bold text-primary shadow-card transition hover:-translate-y-0.5"
+                >
+                  Empezar ahora — es anónimo <IconArrowRight className="h-4 w-4" />
+                </Link>
+              </div>
+            </Reveal>
           </div>
         </section>
       </main>

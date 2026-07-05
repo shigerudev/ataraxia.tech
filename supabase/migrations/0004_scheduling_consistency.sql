@@ -15,3 +15,8 @@ alter table public.profiles
     or (join_mode = 'now' and scheduled_at is null)
     or (join_mode is null and scheduled_at is null)
   ) not valid;
+
+
+
+alter table if exists public.profiles
+  add column if not exists clinical_summary jsonb;
