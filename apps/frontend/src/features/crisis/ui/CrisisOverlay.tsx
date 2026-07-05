@@ -11,7 +11,7 @@ export function CrisisOverlay({ crisis }: { crisis: CrisisInfo }) {
     >
       <div className="flex w-full max-w-md flex-col items-center gap-4 rounded-lg2 bg-white p-8 text-center shadow-card">
         <div
-          className="grid h-16 w-16 animate-ping-soft place-items-center rounded-full bg-pink-bg text-pink"
+          className="grid h-16 w-16 animate-ping-soft place-items-center rounded-full bg-pink-bg text-pink-text"
           aria-hidden="true"
         >
           <IconHeart className="h-7 w-7" />

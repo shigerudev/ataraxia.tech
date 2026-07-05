@@ -13,7 +13,7 @@ function AssistantAvatar({ size = 'md' }: { size?: 'sm' | 'md' }) {
   const dims = size === 'md' ? 'h-10 w-10' : 'h-7 w-7';
   const mark = size === 'md' ? 'h-5 w-5' : 'h-3.5 w-3.5';
   return (
-    <span className={`relative grid shrink-0 place-items-center rounded-full bg-navy text-white ${dims}`} aria-hidden="true">
+    <span className={`relative grid shrink-0 place-items-center rounded-full bg-brand text-white ${dims}`} aria-hidden="true">
       <BrandMark className={mark} />
       {size === 'md' && (
         <span className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full border-2 border-white bg-green" />
@@ -91,7 +91,7 @@ export function ChatWindow() {
                 <div
                   className={`max-w-[82%] rounded-2xl px-4 py-3 text-[15px] leading-relaxed ${
                     isUser
-                      ? 'rounded-br-md bg-navy text-white'
+                      ? 'rounded-br-md bg-brand text-white'
                       : 'rounded-bl-md border border-hairline bg-white text-ink shadow-soft'
                   }`}
                 >
@@ -129,7 +129,7 @@ export function ChatWindow() {
             onChange={(e) => setDraft(e.target.value)}
             placeholder="Escribe cómo te sientes…"
             rows={2}
-            className="max-h-36 flex-1 resize-none rounded-md2 border border-hairline px-4 py-2.5 text-[15px] text-ink transition placeholder:text-muted/60 focus:border-navy focus:outline-none focus:ring-4 focus:ring-navy/10"
+            className="max-h-36 flex-1 resize-none rounded-md2 border border-hairline px-4 py-2.5 text-[15px] text-ink transition placeholder:text-muted/60 focus:border-primary focus:outline-none focus:ring-4 focus:ring-primary/15"
             onKeyDown={(e) => {
               if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();
@@ -144,7 +144,7 @@ export function ChatWindow() {
             disabled={sending}
             aria-label="Iniciar conversación por voz"
             title="Hablar con Ataraxia"
-            className="grid h-11 w-11 shrink-0 place-items-center rounded-full border border-hairline bg-white text-navy transition hover:bg-lavender focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-navy/20 disabled:cursor-not-allowed disabled:opacity-40"
+            className="grid h-11 w-11 shrink-0 place-items-center rounded-full border border-hairline bg-white text-primary-dark transition hover:bg-lavender focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/25 disabled:cursor-not-allowed disabled:opacity-40"
           >
             <IconMic className="h-5 w-5" />
           </button>
@@ -152,7 +152,7 @@ export function ChatWindow() {
             type="submit"
             disabled={!canSend}
             aria-label="Enviar mensaje"
-            className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-navy text-white transition hover:bg-navy-2 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-navy/25 disabled:cursor-not-allowed disabled:opacity-40"
+            className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-brand text-white transition hover:-translate-y-0.5 hover:shadow-soft active:translate-y-0 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/30 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:translate-y-0"
           >
             <IconSend className="h-[18px] w-[18px] -translate-x-px" />
           </button>

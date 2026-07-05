@@ -4,7 +4,7 @@ import { useTherapyFlow } from '@/features/session';
 const HIGHLIGHTS = [
   {
     icon: IconLock,
-    tile: 'bg-lavender text-navy',
+    tile: 'bg-lavender text-primary-dark',
     title: 'Anónimo y confidencial',
     text: 'No pedimos tus datos personales para conversar; tú decides cuándo compartirlos.',
   },

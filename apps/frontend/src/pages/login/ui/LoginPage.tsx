@@ -6,7 +6,7 @@ export function LoginPage() {
     <div className="grid min-h-screen md:grid-cols-2">
       <aside className="relative hidden flex-col justify-between overflow-hidden bg-navy p-12 text-white md:flex">
         <div
-          className="absolute -right-24 -top-24 h-80 w-80 rounded-full bg-gradient-to-br from-indigo-500/40 to-transparent blur-2xl"
+          className="absolute -right-24 -top-24 h-80 w-80 rounded-full bg-gradient-to-br from-primary/50 to-transparent blur-2xl"
           aria-hidden="true"
         />
         <div

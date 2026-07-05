@@ -112,23 +112,29 @@ interface BrandLogoProps {
   className?: string;
 }
 
-export function BrandMark({ className = 'h-4 w-4' }: IconProps) {
+interface BrandMarkProps extends IconProps {
+  /** true = alas con el gradiente de marca; false = currentColor (fondos oscuros). */
+  gradient?: boolean;
+}
+
+/** Isotipo: mariposa (alas superiores amplias, inferiores menores). */
+export function BrandMark({ className = 'h-4 w-4', gradient = false }: BrandMarkProps) {
   return (
-    <svg viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden="true">
-      <path d="M12 2.5c1.5 1.6 2.3 3.3 2.3 5S13.3 10.5 12 10.5 9.7 9.2 9.7 7.5s.8-3.4 2.3-5Z" />
-      <path
-        transform="rotate(90 12 12)"
-        d="M12 2.5c1.5 1.6 2.3 3.3 2.3 5S13.3 10.5 12 10.5 9.7 9.2 9.7 7.5s.8-3.4 2.3-5Z"
-      />
-      <path
-        transform="rotate(180 12 12)"
-        d="M12 2.5c1.5 1.6 2.3 3.3 2.3 5S13.3 10.5 12 10.5 9.7 9.2 9.7 7.5s.8-3.4 2.3-5Z"
-      />
-      <path
-        transform="rotate(270 12 12)"
-        d="M12 2.5c1.5 1.6 2.3 3.3 2.3 5S13.3 10.5 12 10.5 9.7 9.2 9.7 7.5s.8-3.4 2.3-5Z"
-      />
-      <circle cx="12" cy="12" r="1.6" />
+    <svg viewBox="0 0 24 24" className={className} aria-hidden="true">
+      {gradient && (
+        <defs>
+          <linearGradient id="ataraxia-brand-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#8D7FFF" />
+            <stop offset="100%" stopColor="#5B4CF0" />
+          </linearGradient>
+        </defs>
+      )}
+      <g fill={gradient ? 'url(#ataraxia-brand-gradient)' : 'currentColor'}>
+        <ellipse cx="7.1" cy="8.3" rx="4.7" ry="5.5" transform="rotate(-18 7.1 8.3)" />
+        <ellipse cx="16.9" cy="8.3" rx="4.7" ry="5.5" transform="rotate(18 16.9 8.3)" />
+        <ellipse cx="8" cy="17.2" rx="3.4" ry="4" transform="rotate(14 8 17.2)" />
+        <ellipse cx="16" cy="17.2" rx="3.4" ry="4" transform="rotate(-14 16 17.2)" />
+      </g>
     </svg>
   );
 }
@@ -137,17 +143,11 @@ export function BrandLogo({ tone = 'navy', className = '' }: BrandLogoProps) {
   const isWhite = tone === 'white';
   return (
     <span
-      className={`inline-flex items-center gap-2.5 font-display font-bold text-xl tracking-tight ${
+      className={`inline-flex items-center gap-2.5 font-display font-extrabold text-xl tracking-tight ${
         isWhite ? 'text-white' : 'text-navy'
       } ${className}`.trim()}
     >
-      <span
-        className={`grid h-8 w-8 place-items-center rounded-xl ${
-          isWhite ? 'bg-white/15 text-white' : 'bg-navy text-white'
-        }`}
-      >
-        <BrandMark className="h-[18px] w-[18px]" />
-      </span>
+      <BrandMark className="h-8 w-8" gradient={!isWhite} />
       Ataraxia
     </span>
   );

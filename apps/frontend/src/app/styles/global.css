@@ -15,6 +15,7 @@
   body {
     @apply bg-bg text-ink font-body antialiased;
     min-height: 100vh;
+    line-height: 1.7;
   }
 
   #root {
@@ -23,6 +24,18 @@
 
   h1, h2, h3, h4, h5 {
     @apply font-display;
+  }
+
+  /* Escala tipográfica base (propuesta del equipo); los componentes pueden
+     ajustar con utilidades (p. ej. clamp en héroes). */
+  h1 {
+    @apply text-5xl font-extrabold leading-[1.1];
+  }
+  h2 {
+    @apply text-4xl font-bold;
+  }
+  h3 {
+    @apply text-2xl font-bold;
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -49,7 +62,7 @@
 
   /* ---- Chips / badges ---- */
   .chip-brand {
-    @apply inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-[13px] font-medium bg-lavender text-navy;
+    @apply inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-[13px] font-medium bg-lavender text-primary-dark;
   }
   .chip-outline {
     @apply inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-[13px] font-medium border border-hairline bg-white/70 text-navy;
@@ -64,23 +77,23 @@
     @apply inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-[13px] font-medium bg-pink-bg text-navy;
   }
 
-  /* ---- Botones (pill, con hover-lift y anillo de foco) ---- */
+  /* ---- Botones (radio 16px, gradiente de marca y hover-lift) ---- */
   .btn--primary {
-    @apply inline-flex items-center justify-center gap-2 font-semibold text-[15px] rounded-full px-6 py-3 transition bg-navy text-white
-           hover:bg-navy-2 hover:-translate-y-0.5 hover:shadow-card active:translate-y-0
-           focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-navy/25
-           disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-none;
+    @apply inline-flex items-center justify-center gap-2 font-bold text-[15px] rounded-2xl px-6 py-3.5 transition bg-brand text-white shadow-soft
+           hover:-translate-y-0.5 hover:shadow-card active:translate-y-0
+           focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/30
+           disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-soft;
   }
   .btn--ghost {
-    @apply inline-flex items-center justify-center gap-2 font-semibold text-[15px] rounded-full px-6 py-3 transition bg-blue-bg text-navy
-           hover:bg-blue hover:-translate-y-0.5 active:translate-y-0
-           focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-navy/20
+    @apply inline-flex items-center justify-center gap-2 font-bold text-[15px] rounded-2xl px-6 py-3.5 transition bg-primary/10 text-primary-dark
+           hover:bg-primary/20 hover:-translate-y-0.5 active:translate-y-0
+           focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/25
            disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:translate-y-0;
   }
   .btn--light {
-    @apply inline-flex items-center justify-center gap-2 font-semibold text-[15px] rounded-full px-6 py-3 transition bg-white text-navy border border-hairline
+    @apply inline-flex items-center justify-center gap-2 font-bold text-[15px] rounded-2xl px-6 py-3.5 transition bg-white text-navy border border-hairline
            hover:bg-lavender hover:-translate-y-0.5 active:translate-y-0
-           focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-navy/20
+           focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/25
            disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:translate-y-0;
   }
 
@@ -101,24 +114,24 @@
   }
   .field input:focus,
   .field textarea:focus {
-    @apply outline-none border-navy ring-4 ring-navy/10;
+    @apply outline-none border-primary ring-4 ring-primary/15;
   }
   .field--error input {
     @apply border-pink;
   }
   .field__error {
-    @apply text-sm font-medium text-pink;
+    @apply text-sm font-medium text-pink-text;
   }
 
-  /* ---- Tarjeta seleccionable (modo, modalidad, opciones) ---- */
+  /* ---- Tarjeta seleccionable (modalidad, opciones) ---- */
   .select-card {
     @apply relative flex flex-col items-start gap-1 text-left p-5 bg-white border border-hairline rounded-md2 transition cursor-pointer
-           hover:border-navy hover:-translate-y-0.5 hover:shadow-soft
-           focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-navy/20
+           hover:border-primary hover:-translate-y-0.5 hover:shadow-soft
+           focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/25
            disabled:opacity-55 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:border-hairline disabled:hover:shadow-none;
   }
   .select-card.is-active {
-    @apply border-navy bg-lavender/50;
+    @apply border-primary bg-lavender/50;
   }
 
   /* Cuadro de icono suave (usado en tarjetas y listas) */
@@ -128,7 +141,7 @@
 
   /* Aviso de error inline */
   .form-error {
-    @apply text-pink font-medium text-sm;
+    @apply text-pink-text font-medium text-sm;
   }
 
   /* Indicador de escritura del asistente (tres puntos) */
@@ -136,16 +149,10 @@
     @apply inline-block h-1.5 w-1.5 rounded-full bg-muted/70 animate-typing;
   }
 
-  /* ---- Modo voz: overlay sobre la tarjeta del chat ---- */
+  /* ---- Modo voz: overlay claro sobre la tarjeta del chat ---- */
   .voice-overlay {
     @apply absolute inset-0 z-40 flex flex-col items-center justify-center gap-7
-           bg-navy/75 bg-voice-glow px-6 text-center backdrop-blur-md;
-  }
-
-  /* Chip translúcido para leyendas sobre el velo oscuro */
-  .chip-veil {
-    @apply inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10
-           px-4 py-1.5 text-[13px] font-medium text-white/90 backdrop-blur-sm;
+           bg-bg/90 bg-voice-glow px-6 text-center backdrop-blur-md;
   }
 
   /* ---- Orbe de voz ----
@@ -169,7 +176,7 @@
     box-shadow:
       inset -18px -26px 48px rgba(16, 18, 59, 0.55),
       inset 12px 16px 36px rgba(255, 255, 255, 0.22),
-      0 24px 60px rgba(16, 18, 59, 0.45);
+      0 24px 60px rgba(91, 76, 240, 0.35);
   }
   /* Destello suave que gira lento: da vida al orbe sin distraer */
   .voice-orb__sheen {
@@ -190,13 +197,13 @@
     opacity: calc(0.35 + var(--voice-level) * 0.45);
   }
   .voice-orb__ring {
-    @apply h-32 w-32 rounded-full border-2 border-blue/50 sm:h-36 sm:w-36;
+    @apply h-32 w-32 rounded-full border-2 border-primary/40 sm:h-36 sm:w-36;
     filter: blur(1px);
     transform: scale(calc(1.12 + var(--voice-level) * 0.45));
     opacity: calc(var(--voice-level) * 0.8);
   }
   .voice-orb__ring--far {
-    @apply border border-lavender/40;
+    @apply border border-primary-light/40;
     filter: blur(2px);
     transform: scale(calc(1.24 + var(--voice-level) * 0.8));
     opacity: calc(var(--voice-level) * 0.45);
@@ -230,18 +237,18 @@
     @apply ring-4 ring-pink/40;
   }
 
-  /* ---- Controles circulares del modo voz (sobre el velo oscuro) ---- */
+  /* ---- Controles circulares del modo voz (sobre el velo claro) ---- */
   .btn-voice {
-    @apply grid h-14 w-14 place-items-center rounded-full border border-white/25 bg-white/10 text-white backdrop-blur-sm transition
-           hover:-translate-y-0.5 hover:bg-white/20 active:translate-y-0
-           focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-white/40;
+    @apply grid h-14 w-14 place-items-center rounded-full border border-hairline bg-white text-navy shadow-soft transition
+           hover:-translate-y-0.5 hover:bg-lavender active:translate-y-0
+           focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/25;
   }
   .btn-voice.is-muted {
-    @apply border-transparent bg-white text-navy hover:bg-lavender;
+    @apply border-transparent bg-navy text-white hover:bg-navy-2;
   }
   .btn-voice--danger {
-    @apply border-transparent bg-pink hover:bg-pink/90 focus-visible:ring-pink/50;
-    box-shadow: 0 12px 28px rgba(255, 92, 122, 0.35);
+    @apply border-transparent bg-pink text-navy hover:bg-pink/90 focus-visible:ring-pink/50;
+    box-shadow: 0 12px 28px rgba(242, 139, 130, 0.4);
   }
 }
 

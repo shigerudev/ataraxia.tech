@@ -33,12 +33,12 @@ function StepProgress({ step }: { step: FlowStep }) {
           <li key={label} className="flex-1">
             <span
               className={`block h-1.5 rounded-full transition ${
-                i <= current ? 'bg-navy' : 'bg-navy/10'
+                i <= current ? 'bg-brand' : 'bg-primary/10'
               }`}
             />
             <span
               className={`mt-1.5 hidden text-xs font-medium sm:block ${
-                i === current ? 'text-navy' : 'text-muted'
+                i === current ? 'text-primary-dark' : 'text-muted'
               }`}
             >
               {label}

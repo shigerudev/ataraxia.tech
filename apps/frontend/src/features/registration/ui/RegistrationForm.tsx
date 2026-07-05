@@ -78,13 +78,13 @@ export function RegistrationForm() {
                 >
                   <span
                     className={`absolute right-4 top-4 grid h-5 w-5 place-items-center rounded-full border transition ${
-                      active ? 'border-navy bg-navy text-white' : 'border-hairline bg-white text-transparent'
+                      active ? 'border-primary bg-primary text-white' : 'border-hairline bg-white text-transparent'
                     }`}
                     aria-hidden="true"
                   >
                     <IconCheck className="h-3 w-3" />
                   </span>
-                  <span className={`icon-tile mb-1 h-10 w-10 ${active ? 'bg-navy text-white' : 'bg-lavender text-navy'}`}>
+                  <span className={`icon-tile mb-1 h-10 w-10 ${active ? 'bg-brand text-white' : 'bg-lavender text-primary-dark'}`}>
                     <Icon className="h-5 w-5" />
                   </span>
                   <strong className="font-display font-semibold">{title}</strong>

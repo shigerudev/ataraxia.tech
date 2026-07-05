@@ -92,14 +92,14 @@ export function VoicePanel({ session, onClose }: VoicePanelProps) {
       <VoiceOrb state={state} getLevel={session.getLevel} />
 
       <div aria-live="polite" className="flex flex-col items-center gap-2.5">
-        <p className="font-display text-xl font-semibold tracking-tight text-white">
+        <p className="font-display text-xl font-semibold tracking-tight text-navy">
           {statusText(session)}
         </p>
         {session.mode === 'demo' && session.status !== 'error' && (
-          <span className="chip-veil">Modo demostración — la voz aún no está conectada</span>
+          <span className="chip-brand">Modo demostración — la voz aún no está conectada</span>
         )}
         {session.status === 'error' && (
-          <p className="max-w-xs text-sm leading-relaxed text-lavender/90">
+          <p className="max-w-xs text-sm leading-relaxed text-muted">
             {session.error ?? 'Revisa los permisos del micrófono en tu navegador e intenta de nuevo.'}
           </p>
         )}
@@ -130,7 +130,7 @@ export function VoicePanel({ session, onClose }: VoicePanelProps) {
             >
               {session.isMuted ? <IconMicOff className="h-5 w-5" /> : <IconMic className="h-5 w-5" />}
             </button>
-            <span className="text-[11px] font-medium text-lavender/80" aria-hidden="true">
+            <span className="text-[11px] font-medium text-muted" aria-hidden="true">
               {session.isMuted ? 'Reactivar' : 'Silenciar'}
             </span>
           </div>
@@ -143,14 +143,14 @@ export function VoicePanel({ session, onClose }: VoicePanelProps) {
             >
               <IconPhone className="h-5 w-5 rotate-[135deg]" />
             </button>
-            <span className="text-[11px] font-medium text-lavender/80" aria-hidden="true">
+            <span className="text-[11px] font-medium text-muted" aria-hidden="true">
               Colgar
             </span>
           </div>
         </div>
       )}
 
-      <p className="text-xs text-lavender/80">Al terminar, regresarás a la conversación por texto.</p>
+      <p className="text-xs text-muted">Al terminar, regresarás a la conversación por texto.</p>
     </div>
   );
 }
