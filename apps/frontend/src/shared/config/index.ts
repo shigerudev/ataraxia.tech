@@ -26,6 +26,10 @@ export const TURN_CREDENTIAL = import.meta.env.VITE_TURN_CREDENTIAL ?? '';
 
 export const AUTH_TOKEN_KEY = 'ataraxia_auth_token';
 
+export const HACKATHON_END_MESSAGE =
+  'Finalización de la prueba.\n\n' +
+  'Gracias al equipo organizador de la Hackathon de Cursor en El Salvador por abrir este espacio de participación e inspiración. Ataraxia nace como una reflexión y una propuesta ante una realidad urgente: el uso de la IA como acompañante terapéutico ya está ocurriendo, y necesitamos construir soluciones responsables, humanas y seguras para responder a ese desafío.';
+
 export const ROUTES = {
   home: '/',
   start: '/comenzar',

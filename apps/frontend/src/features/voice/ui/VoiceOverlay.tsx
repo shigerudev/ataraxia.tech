@@ -5,6 +5,11 @@ import { useDemoVoice } from '../model/useDemoVoice';
 import type { VoiceTranscriptHandler } from '../model/types';
 import { VoicePanel } from './VoicePanel';
 
+const VOICE_DEMO_TURN_TAKING_PROMPT =
+  'Modo demo de hackathon: escucha a la persona hasta que termine su idea antes de responder. ' +
+  'No interrumpas ni te adelantes si la persona hace pausas cortas, duda o respira entre frases. ' +
+  'Espera una pausa clara antes de contestar. Cuando propongas continuidad, hazlo una sola vez y espera aceptación explícita del usuario.';
+
 interface VoiceOverlayProps {
   /** Recibe las transcripciones de la conversación de voz para el hilo del chat. */
   onTranscript: VoiceTranscriptHandler;
@@ -38,6 +43,13 @@ export function VoiceOverlay({ onTranscript, onClose }: VoiceOverlayProps) {
   return (
     <ConversationProvider
       agentId={ELEVENLABS_AGENT_ID}
+      overrides={{
+        agent: {
+          prompt: {
+            prompt: VOICE_DEMO_TURN_TAKING_PROMPT,
+          },
+        },
+      }}
       onMessage={({ role, message }) =>
         onTranscript(role === 'user' ? 'user' : 'assistant', message)
       }

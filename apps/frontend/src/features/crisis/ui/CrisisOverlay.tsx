@@ -1,10 +1,7 @@
 import { useState } from 'react';
 import type { CrisisInfo } from '@/entities/session';
+import { HACKATHON_END_MESSAGE } from '@/shared/config';
 import { IconHeart, IconPhone, IconX } from '@/shared/ui';
-
-const HACKATHON_END_MESSAGE =
-  'Finalización de la prueba.\n\n' +
-  'Gracias al equipo organizador de la Hackathon de Cursor en El Salvador por abrir este espacio de participación e inspiración. Ataraxia nace como una reflexión y una propuesta ante una realidad urgente: el uso de la IA como acompañante terapéutico ya está ocurriendo, y necesitamos construir soluciones responsables, humanas y seguras para responder a ese desafío.';
 
 export function CrisisOverlay({ crisis }: { crisis: CrisisInfo }) {
   const [dismissed, setDismissed] = useState(false);

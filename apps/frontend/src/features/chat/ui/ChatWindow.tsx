@@ -1,4 +1,5 @@
 import { FormEvent, lazy, Suspense, useEffect, useRef, useState } from 'react';
+import { HACKATHON_END_MESSAGE } from '@/shared/config';
 import { BrandMark, IconLock, IconPhone, IconSend } from '@/shared/ui';
 import { useTherapyFlow } from '@/features/session';
 import { useChat } from '../model/useChat';
@@ -22,6 +23,46 @@ function AssistantAvatar({ size = 'md' }: { size?: 'sm' | 'md' }) {
   );
 }
 
+function normalizeForIntent(value: string): string {
+  return value
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '');
+}
+
+function isVoiceClosureOffer(content: string): boolean {
+  const text = normalizeForIntent(content);
+  return (
+    text.includes('pasamos a registro') ||
+    text.includes('luego a agenda') ||
+    text.includes('registro y luego a agenda') ||
+    text.includes('para reservarlo') ||
+    text.includes('reservar este horario') ||
+    text.includes('agendar una sesion') ||
+    text.includes('agenda para reservar') ||
+    text.includes('darle continuidad')
+  );
+}
+
+function isVoiceClosureAcceptance(content: string): boolean {
+  const text = normalizeForIntent(content).trim();
+  return [
+    'si',
+    'si por favor',
+    'me parece bien',
+    'esta bien',
+    'ok',
+    'okay',
+    'dale',
+    'hagamoslo',
+    'agendemos',
+    'quiero continuar',
+    'quiero agendar',
+  ].some((phrase) => text === phrase || text.startsWith(`${phrase} `));
+}
+
+const VOICE_DEMO_CLOSE_DELAY_MS = 1500;
+
 export function ChatWindow() {
   const { goToRegistration, step } = useTherapyFlow();
   const { messages, sending, error, send, appendLocal } = useChat();
@@ -32,6 +73,8 @@ export function ChatWindow() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const callButtonRef = useRef<HTMLButtonElement>(null);
   const voiceWasOpen = useRef(false);
+  const voiceClosureOffered = useRef(false);
+  const voiceDemoFinalized = useRef(false);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
@@ -50,6 +93,34 @@ export function ChatWindow() {
   }, [voiceOpen]);
 
   const canSend = draft.trim().length > 0 && !sending;
+
+  useEffect(() => {
+    if (!voiceOpen) return;
+    voiceClosureOffered.current = false;
+    voiceDemoFinalized.current = false;
+  }, [voiceOpen]);
+
+  function finalizeVoiceDemo() {
+    if (voiceDemoFinalized.current) return;
+    voiceDemoFinalized.current = true;
+    window.setTimeout(() => {
+      setVoiceOpen(false);
+      window.setTimeout(() => window.alert(HACKATHON_END_MESSAGE), 150);
+    }, VOICE_DEMO_CLOSE_DELAY_MS);
+  }
+
+  function handleVoiceTranscript(role: 'user' | 'assistant', content: string) {
+    appendLocal({ role, content });
+
+    if (role === 'assistant' && isVoiceClosureOffer(content)) {
+      voiceClosureOffered.current = true;
+      return;
+    }
+
+    if (role === 'user' && voiceClosureOffered.current && isVoiceClosureAcceptance(content)) {
+      finalizeVoiceDemo();
+    }
+  }
 
   async function handleSubmit(event: FormEvent) {
     event.preventDefault();
@@ -190,7 +261,7 @@ export function ChatWindow() {
       {voiceOpen && (
         <Suspense fallback={<div className="voice-overlay" aria-hidden="true" />}>
           <VoiceOverlay
-            onTranscript={(role, content) => appendLocal({ role, content })}
+            onTranscript={handleVoiceTranscript}
             onClose={() => setVoiceOpen(false)}
           />
         </Suspense>
