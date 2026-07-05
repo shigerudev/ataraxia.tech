@@ -4,7 +4,6 @@ import { ApiError } from '@/shared/api';
 import { ROUTES } from '@/shared/config';
 import { Button, Input } from '@/shared/ui';
 import { useAuth } from '../model/useAuth';
-import './LoginForm.css';
 
 export function LoginForm() {
   const navigate = useNavigate();
@@ -34,13 +33,17 @@ export function LoginForm() {
   }
 
   return (
-    <div className="login-form">
-      <header className="login-form__header">
-        <h1>Acceso a la plataforma</h1>
-        <p>Ingrese sus credenciales institucionales para continuar.</p>
+    <div className="w-full max-w-md flex flex-col gap-6">
+      <header className="flex flex-col gap-1.5">
+        <h1 className="font-display font-bold text-2xl tracking-tight">
+          Acceso a la plataforma
+        </h1>
+        <p className="text-muted text-[15px]">
+          Ingrese sus credenciales institucionales para continuar.
+        </p>
       </header>
 
-      <form onSubmit={handleSubmit} className="login-form__body" noValidate>
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4" noValidate>
         <Input
           label="Correo electrónico"
           name="email"
@@ -64,17 +67,17 @@ export function LoginForm() {
         />
 
         {error && (
-          <p className="login-form__error" role="alert">
+          <p className="text-pink font-medium text-sm" role="alert">
             {error}
           </p>
         )}
 
-        <Button type="submit" loading={isLoading} className="login-form__submit">
+        <Button type="submit" loading={isLoading} className="w-full">
           Iniciar sesión
         </Button>
       </form>
 
-      <footer className="login-form__footer">
+      <footer className="text-sm text-muted border-t border-hairline pt-4">
         <p>
           El acceso está reservado a personal autorizado. Si necesita
           credenciales, contacte con el administrador.

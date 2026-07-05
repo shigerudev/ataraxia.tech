@@ -5,9 +5,8 @@ import {
   SCREENING_OPTIONS,
   type ScreeningQuestion,
 } from '@/entities/screening';
-import { Button } from '@/shared/ui';
+import { Button, Chip } from '@/shared/ui';
 import { useTherapyFlow } from '@/features/session';
-import './ScreeningForm.css';
 
 type Answers = Record<string, number>;
 
@@ -21,21 +20,32 @@ function QuestionBlock({
   onChange: (value: number) => void;
 }) {
   return (
-    <fieldset className="screening-question">
-      <legend>{question.text}</legend>
-      <div className="screening-options">
-        {SCREENING_OPTIONS.map((opt) => (
-          <label key={opt.value} className={`screening-option ${value === opt.value ? 'is-selected' : ''}`}>
-            <input
-              type="radio"
-              name={question.id}
-              value={opt.value}
-              checked={value === opt.value}
-              onChange={() => onChange(opt.value)}
-            />
-            <span>{opt.label}</span>
-          </label>
-        ))}
+    <fieldset className="m-0 p-0 border-0">
+      <legend className="text-[15px] font-medium text-ink mb-2.5">{question.text}</legend>
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+        {SCREENING_OPTIONS.map((opt) => {
+          const selected = value === opt.value;
+          return (
+            <label
+              key={opt.value}
+              className={`cursor-pointer text-center text-[13px] font-medium px-3 py-2.5 rounded-full border transition ${
+                selected
+                  ? 'bg-navy text-white border-navy'
+                  : 'bg-white text-muted border-hairline hover:border-navy'
+              }`}
+            >
+              <input
+                type="radio"
+                name={question.id}
+                value={opt.value}
+                checked={selected}
+                onChange={() => onChange(opt.value)}
+                className="sr-only"
+              />
+              <span>{opt.label}</span>
+            </label>
+          );
+        })}
       </div>
     </fieldset>
   );
@@ -64,41 +74,58 @@ export function ScreeningForm() {
   }
 
   return (
-    <div className="screening">
-      <header className="screening__header">
-        <h1>Antes de comenzar</h1>
-        <p>
+    <div className="card flex flex-col gap-7">
+      <header className="flex flex-col gap-2">
+        <Chip className="self-start">Cuestionario inicial</Chip>
+        <h1 className="font-display font-bold text-[clamp(24px,3.5vw,32px)] tracking-tight">
+          Antes de comenzar
+        </h1>
+        <p className="text-muted leading-relaxed">
           Estas preguntas nos ayudan a conocer cómo te has sentido durante las
           últimas dos semanas. Responde con sinceridad; es un espacio seguro y anónimo.
         </p>
       </header>
 
-      <section className="screening__group">
-        <h2>Estado de ánimo (PHQ-9)</h2>
+      <section className="flex flex-col gap-5">
+        <h2 className="font-display font-semibold text-lg flex items-center gap-2.5">
+          <Chip variant="blue">PHQ-9</Chip> Estado de ánimo
+        </h2>
         {PHQ9_QUESTIONS.map((q) => (
-          <QuestionBlock key={q.id} question={q} value={answers[q.id]} onChange={(v) => setAnswer(q.id, v)} />
+          <QuestionBlock
+            key={q.id}
+            question={q}
+            value={answers[q.id]}
+            onChange={(v) => setAnswer(q.id, v)}
+          />
         ))}
       </section>
 
-      <section className="screening__group">
-        <h2>Ansiedad (GAD-7)</h2>
+      <section className="flex flex-col gap-5">
+        <h2 className="font-display font-semibold text-lg flex items-center gap-2.5">
+          <Chip variant="blue">GAD-7</Chip> Ansiedad
+        </h2>
         {GAD7_QUESTIONS.map((q) => (
-          <QuestionBlock key={q.id} question={q} value={answers[q.id]} onChange={(v) => setAnswer(q.id, v)} />
+          <QuestionBlock
+            key={q.id}
+            question={q}
+            value={answers[q.id]}
+            onChange={(v) => setAnswer(q.id, v)}
+          />
         ))}
       </section>
 
       {showValidation && !complete && (
-        <p className="screening__error" role="alert">
+        <p className="text-pink font-medium text-sm" role="alert">
           Por favor responde todas las preguntas para continuar.
         </p>
       )}
       {error && (
-        <p className="screening__error" role="alert">
+        <p className="text-pink font-medium text-sm" role="alert">
           {error}
         </p>
       )}
 
-      <Button type="button" onClick={handleSubmit} loading={loading} className="screening__submit">
+      <Button type="button" onClick={handleSubmit} loading={loading} className="self-start">
         Continuar
       </Button>
     </div>

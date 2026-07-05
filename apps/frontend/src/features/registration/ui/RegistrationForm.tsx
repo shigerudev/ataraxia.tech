@@ -1,8 +1,7 @@
 import { FormEvent, useState } from 'react';
-import { Button, Input } from '@/shared/ui';
+import { Button, Chip, Input } from '@/shared/ui';
 import type { TherapyModality } from '@/entities/session';
 import { useTherapyFlow } from '@/features/session';
-import './RegistrationForm.css';
 
 export function RegistrationForm() {
   const { register, loading, error } = useTherapyFlow();
@@ -28,33 +27,36 @@ export function RegistrationForm() {
   }
 
   return (
-    <div className="registration">
-      <header className="registration__header">
-        <h1>Da el siguiente paso</h1>
-        <p>
+    <div className="card flex flex-col gap-6">
+      <header className="flex flex-col gap-2">
+        <Chip className="self-start">Último paso</Chip>
+        <h1 className="font-display font-bold text-[clamp(24px,3.5vw,32px)] tracking-tight">
+          Da el siguiente paso
+        </h1>
+        <p className="text-muted leading-relaxed">
           Elige cómo quieres continuar tu proceso. Usaremos un alias para proteger
           tu identidad; tus datos de contacto solo sirven para enviarte las
           convocatorias de tus sesiones.
         </p>
       </header>
 
-      <form className="registration__form" onSubmit={handleSubmit} noValidate>
-        <div className="registration__modalidad">
+      <form className="flex flex-col gap-4" onSubmit={handleSubmit} noValidate>
+        <div className="grid sm:grid-cols-2 gap-3">
           <button
             type="button"
-            className={`registration__option ${modalidad === 'individual' ? 'is-active' : ''}`}
+            className={`select-card ${modalidad === 'individual' ? 'is-active' : ''}`}
             onClick={() => setModalidad('individual')}
           >
-            <strong>Terapia individual</strong>
-            <span>Sesiones uno a uno enfocadas en ti.</span>
+            <strong className="font-display font-semibold">Terapia individual</strong>
+            <span className="text-muted text-sm">Sesiones uno a uno enfocadas en ti.</span>
           </button>
           <button
             type="button"
-            className={`registration__option ${modalidad === 'grupal' ? 'is-active' : ''}`}
+            className={`select-card ${modalidad === 'grupal' ? 'is-active' : ''}`}
             onClick={() => setModalidad('grupal')}
           >
-            <strong>Terapia grupal</strong>
-            <span>Comparte con personas que viven algo similar.</span>
+            <strong className="font-display font-semibold">Terapia grupal</strong>
+            <span className="text-muted text-sm">Comparte con personas que viven algo similar.</span>
           </button>
         </div>
 
@@ -83,12 +85,12 @@ export function RegistrationForm() {
         />
 
         {(validation || error) && (
-          <p className="registration__error" role="alert">
+          <p className="text-pink font-medium text-sm" role="alert">
             {validation ?? error}
           </p>
         )}
 
-        <Button type="submit" loading={loading} className="registration__submit">
+        <Button type="submit" loading={loading} className="self-start">
           Confirmar
         </Button>
       </form>

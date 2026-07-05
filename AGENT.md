@@ -92,6 +92,8 @@ infrastructure/  →  application/  →  domain/
 
 **Ubicación:** `apps/frontend/src/` — capas: `shared → entities → features → pages → app`.
 
+**Sistema de diseño:** "Sinapsis" (Tailwind). Tokens en `apps/frontend/tailwind.config.js`, clases base en `src/app/styles/global.css`, primitivas en `shared/ui` (`Button`/`Input`/`Card`/`Chip`). Guía: `apps/frontend/DESIGN.md`. Toda UI nueva debe reutilizar estos tokens/clases (no introducir colores, tipografías ni radios fuera del sistema).
+
 | Capa | Ejemplos |
 |------|----------|
 | `shared/` | `Button`, `apiClient`, `streamAssistantMessage`, `supabase/client` |

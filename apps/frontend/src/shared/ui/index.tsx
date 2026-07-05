@@ -1,7 +1,7 @@
 import type { ButtonHTMLAttributes, InputHTMLAttributes, ReactNode } from 'react';
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'ghost';
+  variant?: 'primary' | 'ghost' | 'light';
   loading?: boolean;
 }
 
@@ -15,7 +15,7 @@ export function Button({
 }: ButtonProps) {
   return (
     <button
-      className={`btn btn--${variant} ${className}`.trim()}
+      className={`btn--${variant} ${className}`.trim()}
       disabled={disabled || loading}
       type="button"
       {...props}
@@ -49,4 +49,16 @@ interface CardProps {
 
 export function Card({ children, className = '' }: CardProps) {
   return <div className={`card ${className}`.trim()}>{children}</div>;
+}
+
+type ChipVariant = 'brand' | 'outline' | 'green' | 'blue' | 'pink';
+
+interface ChipProps {
+  children: ReactNode;
+  variant?: ChipVariant;
+  className?: string;
+}
+
+export function Chip({ children, variant = 'brand', className = '' }: ChipProps) {
+  return <span className={`chip-${variant} ${className}`.trim()}>{children}</span>;
 }
