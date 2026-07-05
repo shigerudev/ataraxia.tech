@@ -16,13 +16,16 @@ export function createApp(container: AppContainer): Express {
   );
   app.use(express.json());
 
-  app.get('/health', (_req, res) => {
+  const health = (_req: express.Request, res: express.Response) => {
     res.json({
       status: 'ok',
       service: 'ataraxia-backend',
       flow: container.flow ? 'enabled' : 'disabled',
     });
-  });
+  };
+
+  app.get('/health', health);
+  app.get('/api/health', health);
 
   app.use('/api/auth', createAuthRoutes(container));
 
