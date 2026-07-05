@@ -126,7 +126,7 @@ infrastructure/  →  application/  →  domain/
 | `app/` | `App.tsx`, router, estilos base |
 
 - El flujo es una **máquina de estados** en `features/session/model/useTherapyFlow`: `welcome → chat ⇄ crisis → registration → scheduling → {room | thankyou}`.
-- Tras el registro se elige modalidad; en `scheduling` el usuario se une **ahora** (paso `room`) o **agenda** (stub → `thankyou`). La sala individual es voz 1:1 con ElevenLabs (`VITE_ELEVENLABS_AGENT_ID_INDIVIDUAL`); la grupal es una malla **WebRTC** con roster vía **Supabase Realtime** (spec 006).
+- Tras el registro se elige modalidad; en `scheduling` el usuario se une **ahora** (paso `room`) o **agenda** (stub → `thankyou`). La sala individual es voz 1:1 con ElevenLabs (`VITE_ELEVENLABS_AGENT_ID_INDIVIDUAL`); la grupal es una malla **WebRTC** con roster vía **Supabase Realtime**, facilitada en vivo por un agente de ElevenLabs (`VITE_ELEVENLABS_AGENT_ID_GROUP`) puenteado por el anfitrión de la malla (spec 006).
 - **CrisisOverlay** es bloqueante y no descartable.
 - Reglas FSD: una capa solo importa de capas inferiores; prohibido importar entre slices del mismo nivel.
 
