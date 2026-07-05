@@ -29,8 +29,9 @@ changed.
 | 004 | [Voice Mode and ElevenLabs](./004-voice-mode-elevenlabs.md) | draft | Voice input/output for phase 2. |
 | 005 | [Group Therapy Scheduling](./005-group-therapy-scheduling.md) | active | Group modality: join now or schedule (stub). |
 | 006 | [Live Session Rooms](./006-live-session-rooms.md) | active | Individual voice room + group WebRTC mesh room with AI facilitator. |
+| 007 | [Conversation Persistence and Analytics](./007-conversation-persistence-analytics.md) | active | Persist turns, metadata, latest-session retrieval, and analysis summaries. |
+| 008 | [Contextual Guided Exercises](./008-contextual-guided-exercises.md) | active | Convert coping advice into short guided actions adapted to user context. |
 
 ## Template
 
 Use [template.md](./template.md) for new specs.
-

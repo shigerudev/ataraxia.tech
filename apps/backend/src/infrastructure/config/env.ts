@@ -42,6 +42,10 @@ export const env = {
   elevenLabsVoiceId: process.env.ELEVENLABS_VOICE_ID ?? '',
   elevenLabsModelId: process.env.ELEVENLABS_MODEL_ID ?? 'eleven_multilingual_v2',
   elevenLabsOutputFormat: process.env.ELEVENLABS_OUTPUT_FORMAT ?? 'mp3_44100_128',
+
+  // Automatización (n8n Public API)
+  n8nBaseUrl: process.env.N8N_BASE_URL ?? '',
+  n8nApiKey: process.env.N8N_API_KEY ?? '',
 } as const;
 
 export function assertSupabaseConfigured(): void {

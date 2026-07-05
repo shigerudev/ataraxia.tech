@@ -61,7 +61,7 @@ export function ChatWindow() {
   }
 
   return (
-    <div className="card relative flex min-h-[440px] flex-1 flex-col overflow-hidden p-0 sm:min-h-[520px] sm:p-0">
+    <div className="card relative flex min-h-0 flex-1 flex-col overflow-hidden p-0 sm:p-0">
       {/* El contenido queda inerte (sin foco ni interacción) mientras el modo voz está activo. */}
       <div className="flex min-h-0 flex-1 flex-col" inert={voiceOpen}>
         <header className="flex items-center justify-between gap-3 border-b border-hairline bg-white px-4 py-3.5 sm:px-6">
@@ -80,7 +80,7 @@ export function ChatWindow() {
             className="btn--light whitespace-nowrap px-3 py-2 text-sm sm:px-4"
             onClick={goToRegistration}
           >
-            Finalizar sesión
+            Continuar a registro
           </button>
         </header>
 
@@ -102,7 +102,7 @@ export function ChatWindow() {
               >
                 {!isUser && <AssistantAvatar size="sm" />}
                 <div
-                  className={`max-w-[82%] rounded-2xl px-4 py-3 text-[15px] leading-relaxed ${
+                  className={`max-w-[82%] overflow-hidden break-words rounded-2xl px-4 py-3 text-[15px] leading-relaxed ${
                     isUser
                       ? 'rounded-br-md bg-brand text-white'
                       : 'rounded-bl-md border border-hairline bg-white text-ink shadow-soft'

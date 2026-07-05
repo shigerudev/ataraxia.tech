@@ -89,11 +89,11 @@ export function VoicePanel({ session, onClose }: VoicePanelProps) {
       aria-label="Conversación por voz con Ataraxia"
       onKeyDown={handleKeyDown}
     >
-      <div className="flex animate-scale-in flex-col items-center gap-5 sm:gap-7">
+      <div className="flex h-full max-h-full w-full max-w-sm animate-scale-in flex-col items-center justify-center gap-4 overflow-hidden px-2 sm:gap-6">
         <VoiceOrb state={state} getLevel={session.getLevel} />
 
-        <div aria-live="polite" className="flex flex-col items-center gap-2.5">
-          <p className="font-display text-xl font-semibold tracking-tight text-navy">
+        <div aria-live="polite" className="flex w-full min-w-0 flex-col items-center gap-2 text-center">
+          <p className="max-w-full break-words font-display text-lg font-semibold leading-tight tracking-tight text-navy sm:text-xl">
             {statusText(session)}
           </p>
           {session.mode === 'demo' && session.status !== 'error' && (
@@ -120,7 +120,7 @@ export function VoicePanel({ session, onClose }: VoicePanelProps) {
             </button>
           </div>
         ) : (
-          <div className="flex items-start gap-6">
+          <div className="flex shrink-0 items-start gap-6">
             <div className="flex flex-col items-center gap-1.5">
               <button
                 type="button"
@@ -151,7 +151,9 @@ export function VoicePanel({ session, onClose }: VoicePanelProps) {
           </div>
         )}
 
-        <p className="text-xs text-muted">Al terminar, regresarás a la conversación por texto.</p>
+        <p className="max-w-xs text-center text-xs leading-snug text-muted">
+          Al terminar, regresarás a la conversación por texto.
+        </p>
       </div>
     </div>
   );

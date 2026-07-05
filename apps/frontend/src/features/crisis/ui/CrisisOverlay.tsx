@@ -1,7 +1,21 @@
+import { useState } from 'react';
 import type { CrisisInfo } from '@/entities/session';
-import { IconHeart, IconPhone } from '@/shared/ui';
+import { IconHeart, IconPhone, IconX } from '@/shared/ui';
+
+const HACKATHON_END_MESSAGE =
+  'Finalización de la prueba.\n\n' +
+  'Gracias al equipo organizador de la Hackathon de Cursor en El Salvador por abrir este espacio de participación e inspiración. Ataraxia nace como una reflexión y una propuesta ante una realidad urgente: el uso de la IA como acompañante terapéutico ya está ocurriendo, y necesitamos construir soluciones responsables, humanas y seguras para responder a ese desafío.';
 
 export function CrisisOverlay({ crisis }: { crisis: CrisisInfo }) {
+  const [dismissed, setDismissed] = useState(false);
+
+  if (dismissed) return null;
+
+  const handleClose = () => {
+    window.alert(HACKATHON_END_MESSAGE);
+    setDismissed(true);
+  };
+
   return (
     <div
       className="fixed inset-0 z-50 grid place-items-center bg-navy/70 p-5 backdrop-blur-sm"
@@ -9,7 +23,16 @@ export function CrisisOverlay({ crisis }: { crisis: CrisisInfo }) {
       aria-modal="true"
       aria-label="Apoyo prioritario"
     >
-      <div className="flex w-full max-w-md flex-col items-center gap-4 rounded-lg2 bg-white p-8 text-center shadow-card">
+      <div className="relative flex w-full max-w-md flex-col items-center gap-4 rounded-lg2 bg-white p-8 text-center shadow-card">
+        <button
+          type="button"
+          onClick={handleClose}
+          className="absolute right-4 top-4 grid h-10 w-10 place-items-center rounded-full text-muted transition hover:bg-blue-bg hover:text-navy focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-navy/20"
+          aria-label="Cerrar prueba"
+        >
+          <IconX className="h-5 w-5" />
+        </button>
+
         <div
           className="grid h-16 w-16 animate-ping-soft place-items-center rounded-full bg-pink-bg text-pink-text"
           aria-hidden="true"

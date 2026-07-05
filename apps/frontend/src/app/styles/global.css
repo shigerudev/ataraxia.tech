@@ -152,7 +152,7 @@
   /* ---- Modo voz: overlay claro sobre la tarjeta del chat ---- */
   .voice-overlay {
     @apply absolute inset-0 z-40 flex animate-fade-in flex-col items-center justify-center
-           bg-bg/90 bg-voice-glow px-5 text-center backdrop-blur-md sm:px-6;
+           overflow-hidden bg-bg/90 bg-voice-glow px-5 text-center backdrop-blur-md sm:px-6;
   }
 
   /* ---- Orbe de voz ----
@@ -160,7 +160,7 @@
      --voice-level (0..1), escrita vía requestAnimationFrame sin re-render. */
   .voice-orb {
     --voice-level: 0;
-    @apply relative grid h-44 w-44 animate-float place-items-center sm:h-52 sm:w-52;
+    @apply relative grid h-36 w-36 shrink-0 animate-float place-items-center sm:h-44 sm:w-44;
   }
   .voice-orb > * {
     @apply col-start-1 row-start-1;
@@ -171,7 +171,7 @@
     @apply grid place-items-center;
   }
   .voice-orb__core {
-    @apply relative block h-32 w-32 overflow-hidden rounded-full bg-orb sm:h-36 sm:w-36;
+    @apply relative block h-28 w-28 overflow-hidden rounded-full bg-orb sm:h-32 sm:w-32;
     transform: scale(calc(1 + var(--voice-level) * 0.16));
     box-shadow:
       inset -18px -26px 48px rgba(16, 18, 59, 0.55),
@@ -192,12 +192,12 @@
     mix-blend-mode: screen;
   }
   .voice-orb__halo {
-    @apply h-32 w-32 rounded-full bg-lavender/40 blur-2xl sm:h-36 sm:w-36;
+    @apply h-28 w-28 rounded-full bg-lavender/40 blur-2xl sm:h-32 sm:w-32;
     transform: scale(calc(1.15 + var(--voice-level) * 0.45));
     opacity: calc(0.35 + var(--voice-level) * 0.45);
   }
   .voice-orb__ring {
-    @apply h-32 w-32 rounded-full border-2 border-primary/40 sm:h-36 sm:w-36;
+    @apply h-28 w-28 rounded-full border-2 border-primary/40 sm:h-32 sm:w-32;
     filter: blur(1px);
     transform: scale(calc(1.12 + var(--voice-level) * 0.45));
     opacity: calc(var(--voice-level) * 0.8);

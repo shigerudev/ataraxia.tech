@@ -111,6 +111,12 @@ export class SendMessageUseCase {
       yield { type: 'token', value: token };
     }
 
+    const safetyFollowUp = this.buildSafetyFollowUp(assessment.level, full);
+    if (safetyFollowUp) {
+      full += safetyFollowUp;
+      yield { type: 'token', value: safetyFollowUp };
+    }
+
     await this.deps.sessionRepository.addTurn({
       sessionId: input.sessionId,
       role: 'assistant',
@@ -118,5 +124,23 @@ export class SendMessageUseCase {
     });
 
     yield { type: 'done' };
+  }
+
+  private buildSafetyFollowUp(level: 'low' | 'medium' | 'high', assistantText: string): string {
+    if (level !== 'medium') return '';
+
+    const normalized = assistantText.toLowerCase();
+    const alreadyAskedSafety =
+      normalized.includes('hacerte daño') ||
+      normalized.includes('hacerte dano') ||
+      normalized.includes('estás en peligro') ||
+      normalized.includes('estas en peligro');
+
+    if (alreadyAskedSafety) return '';
+
+    return (
+      '\n\nAntes de seguir, necesito preguntarte algo para cuidarte: ' +
+      '¿estás en peligro de hacerte daño ahora mismo?'
+    );
   }
 }

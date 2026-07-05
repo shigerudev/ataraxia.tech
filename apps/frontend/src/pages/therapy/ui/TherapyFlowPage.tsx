@@ -110,9 +110,9 @@ function FlowContainer() {
         </div>
       </header>
 
-      <main className={`mx-auto flex w-full flex-1 flex-col px-4 pb-6 sm:px-5 sm:pb-10 ${width}`}>
+      <main className={`mx-auto flex min-h-0 w-full flex-1 flex-col px-4 pb-6 sm:px-5 sm:pb-10 ${width}`}>
         <StepProgress step={step} />
-        <div key={viewKey} className={`animate-rise-in ${isChat ? 'flex flex-1 flex-col' : ''}`}>
+        <div key={viewKey} className={`animate-rise-in ${isChat ? 'flex min-h-0 flex-1 flex-col' : ''}`}>
           <FlowStepView />
         </div>
       </main>
