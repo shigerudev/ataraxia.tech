@@ -3,7 +3,6 @@
 -- backstop por si el frontend consulta directamente con la anon key + JWT anónimo.
 
 alter table public.sessions enable row level security;
-alter table public.screening_results enable row level security;
 alter table public.conversation_turns enable row level security;
 alter table public.risk_events enable row level security;
 alter table public.profiles enable row level security;
@@ -15,11 +14,6 @@ create policy "own sessions" on public.sessions
   with check (user_id = auth.uid());
 
 -- Datos derivados: acceso condicionado a ser dueño de la sesión enlazada.
-create policy "own screening" on public.screening_results
-  for all to authenticated
-  using (exists (select 1 from public.sessions s where s.id = session_id and s.user_id = auth.uid()))
-  with check (exists (select 1 from public.sessions s where s.id = session_id and s.user_id = auth.uid()));
-
 create policy "own turns" on public.conversation_turns
   for all to authenticated
   using (exists (select 1 from public.sessions s where s.id = session_id and s.user_id = auth.uid()))

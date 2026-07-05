@@ -1,5 +1,4 @@
 import type { RiskLevel, Session, SessionChannel } from '../entities/Session.js';
-import type { ScreeningResult } from '../entities/Screening.js';
 import type { ConversationTurn } from '../entities/Conversation.js';
 import type { JoinMode, Profile, TherapyModality } from '../entities/Profile.js';
 
@@ -16,19 +15,10 @@ export interface AddTurnInput {
   riskSignal?: RiskLevel | null;
 }
 
-export interface AddScreeningInput {
-  sessionId: string;
-  instrument: ScreeningResult['instrument'];
-  answers: number[];
-  score: number;
-  riskLevel: RiskLevel;
-  flags: Record<string, boolean>;
-}
-
 export interface AddRiskEventInput {
   sessionId: string;
   level: 'medium' | 'high';
-  source: 'screening' | 'message';
+  source: 'message' | 'voice_transcript';
   detail?: string;
 }
 
@@ -37,7 +27,7 @@ export interface UpsertProfileInput {
   aliasAnonimo: string;
   email?: string | null;
   phone?: string | null;
-  diagnostico?: Record<string, unknown> | null;
+  clinicalSummary?: Record<string, unknown> | null;
   modalidad?: TherapyModality | null;
   joinMode?: JoinMode | null;
   scheduledAt?: string | null;
@@ -50,7 +40,6 @@ export interface ISessionRepository {
     sessionId: string,
     patch: Partial<Pick<Session, 'status' | 'riskLevel' | 'closedAt'>>,
   ): Promise<void>;
-  addScreening(input: AddScreeningInput): Promise<ScreeningResult>;
   addTurn(input: AddTurnInput): Promise<ConversationTurn>;
   getTurns(sessionId: string): Promise<ConversationTurn[]>;
   addRiskEvent(input: AddRiskEventInput): Promise<void>;

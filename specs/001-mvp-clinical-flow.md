@@ -1,4 +1,4 @@
-# Spec: MVP Clinical Flow
+# Spec: MVP Conversational Clinical Flow
 
 ## Status
 
@@ -7,11 +7,12 @@
 ## Objective
 
 Deliver the core Ataraxia MVP flow: an anonymous user enters, gives consent,
-chooses chat or voice mode, completes screening, receives CBT-oriented support,
-and registers only after receiving initial value.
+chooses text chat or voice, starts a conversational clinical intake guided by
+DSM-5/RAG material, receives orientation without diagnosis, and registers only
+after receiving initial value.
 
-The MVP must reduce onboarding friction while preserving clinical safety. It is
-an orientation and support flow, not a diagnosis or prescription product.
+Ataraxia is an orientation and support flow, not a diagnosis or prescription
+product.
 
 ## Scope
 
@@ -19,64 +20,57 @@ Included:
 
 - Anonymous Supabase sign-in.
 - Welcome and consent entry.
-- Mode selection.
-- PHQ-9/GAD-7 screening.
-- Chat-based CBT conversation.
-- Crisis routing if risk is detected.
+- Text chat and voice mode.
+- Conversational intake through messages or voice transcripts.
+- DSM-5/material autorizado as RAG guidance for inquiry only.
+- Continuous crisis routing if risk is detected.
 - Final registration with alias and contact.
 
 Excluded:
 
+- Psychological test forms as the initial flow.
+- Automatic diagnosis or medication recommendations.
 - Real-time therapist matching.
 - Payments.
 - Production clinical certification.
-- Voice mode beyond the contracts in spec 004.
 
 ## User Flow
 
 1. User opens the app.
 2. User reads the initial welcome and consent framing.
-3. User chooses chat or voice. For MVP, chat is the primary supported mode.
+3. User chooses chat or voice.
 4. App creates or reuses an anonymous Supabase session.
-5. User completes PHQ-9/GAD-7 screening.
-6. Backend scores screening and classifies risk.
-7. If risk is high, crisis protocol blocks the regular flow.
-8. If risk is acceptable, user enters CBT-oriented chat.
-9. Every user message is checked for risk before assistant guidance continues.
-10. User receives initial orientation and then final registration appears.
-11. User registers alias, contact, and preferred modality.
+5. User shares what is happening in free conversation.
+6. Backend checks risk before assistant guidance continues.
+7. Backend uses RAG context to choose a short next inquiry question when useful.
+8. If risk is high, crisis protocol blocks the regular flow.
+9. User receives initial orientation and then final registration appears.
+10. User registers alias, contact, and preferred modality.
 
 ## Functional Requirements
 
 - The frontend must create an anonymous Supabase session before calling protected
   clinical endpoints.
 - All protected clinical endpoints require `Authorization: Bearer <token>`.
-- The backend must persist sessions, screening results, conversation turns, risk
-  events, and final profiles.
-- Registration appears after the user has completed screening and chat value has
-  been delivered.
+- The backend must persist sessions, conversation turns, risk events, and final
+  profiles.
+- Voice transcripts must pass through the same risk/RAG/message pipeline as text.
+- Registration appears after conversational value has been delivered.
 - UI copy must be Spanish.
-
-## Non-Functional Requirements
-
-- Do not expose service role or provider secret keys in frontend code.
-- The flow must remain usable when staff auth is not configured.
-- The backend may start with `flow: disabled` if Supabase/OpenAI is missing, but
-  production-like demos should show `flow: enabled`.
-- Clinical copy must avoid definitive diagnosis and prescriptions.
 
 ## Technical Contracts
 
 Endpoints:
 
 - `POST /api/sessions`
-- `POST /api/sessions/:id/screening`
 - `POST /api/sessions/:id/messages`
+- `POST /api/sessions/:id/voice/transcribe`
+- `POST /api/sessions/:id/voice/reply`
 - `POST /api/sessions/:id/close`
 
 Frontend state:
 
-- `welcome -> mode -> screening -> chat <-> crisis -> registration -> thankyou`
+- `welcome -> mode -> chat/voice intake <-> crisis -> registration -> thankyou`
 
 Environment:
 
@@ -86,31 +80,23 @@ Environment:
 - `VITE_SUPABASE_URL`
 - `VITE_SUPABASE_ANON_KEY`
 - `OPENAI_API_KEY`
+- `ELEVENLABS_API_KEY`
 
 ## Acceptance Criteria
 
 - [ ] A user can reach the app at `/`.
 - [ ] Anonymous Supabase auth returns an access token.
 - [ ] Session creation works with the anonymous token.
-- [ ] Screening submit persists and returns deterministic risk data.
-- [ ] Chat sends messages and receives assistant output.
-- [ ] Crisis risk blocks the regular flow.
+- [ ] Text chat sends messages and receives assistant output.
+- [ ] Voice mode captures or accepts a transcript and returns text plus optional audio.
+- [ ] Crisis risk blocks the regular flow for text and voice transcripts.
 - [ ] Registration closes the session and upserts a profile.
+- [ ] No PHQ-9/GAD-7 form or public screening endpoint remains active.
 - [ ] `npm run typecheck` passes for affected apps.
 
 ## Risks
 
 - Supabase migrations may not be applied in the target project.
 - Anonymous sign-ins may be disabled in Supabase Auth settings.
-- OpenAI key may be missing or rate-limited.
+- OpenAI or ElevenLabs keys may be missing or rate-limited.
 - Clinical language may overclaim if prompts drift.
-
-## Implementation Plan
-
-1. Verify environment variables.
-2. Verify Supabase migrations and anonymous auth.
-3. Verify existing frontend state machine against the flow.
-4. Test happy path manually.
-5. Test crisis path manually.
-6. Update docs and specs for any contract drift.
-

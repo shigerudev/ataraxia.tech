@@ -1,6 +1,5 @@
 import { LoginUseCase } from '../domain/use-cases/LoginUseCase.js';
 import { CreateAnonymousSessionUseCase } from '../domain/use-cases/CreateAnonymousSessionUseCase.js';
-import { SubmitScreeningUseCase } from '../domain/use-cases/SubmitScreeningUseCase.js';
 import { SendMessageUseCase } from '../domain/use-cases/SendMessageUseCase.js';
 import { CloseSessionUseCase } from '../domain/use-cases/CloseSessionUseCase.js';
 import type { IAuthRepository } from '../domain/repositories/IAuthRepository.js';
@@ -18,14 +17,15 @@ import { OpenAiEmbeddingService } from './ai/OpenAiEmbeddingService.js';
 import { RiskClassifier } from './safety/RiskClassifier.js';
 import { CrisisProtocol } from './safety/CrisisProtocol.js';
 import { CBT_SYSTEM_PROMPT } from './ai/prompts/cbtSystemPrompt.js';
+import { ElevenLabsVoiceService } from './voice/ElevenLabsVoiceService.js';
 import { env } from './config/env.js';
 
 export interface FlowServices {
   authGateway: IAuthGateway;
   createSessionUseCase: CreateAnonymousSessionUseCase;
-  submitScreeningUseCase: SubmitScreeningUseCase;
   sendMessageUseCase: SendMessageUseCase;
   closeSessionUseCase: CloseSessionUseCase;
+  voiceService: ElevenLabsVoiceService;
 }
 
 export interface AppContainer {
@@ -56,11 +56,11 @@ export async function buildContainer(): Promise<AppContainer> {
     const embeddingService = new OpenAiEmbeddingService();
     const riskClassifier = new RiskClassifier(llmService);
     const crisisProtocol = new CrisisProtocol(env.crisisHotlines);
+    const voiceService = new ElevenLabsVoiceService();
 
     flow = {
       authGateway,
       createSessionUseCase: new CreateAnonymousSessionUseCase(sessionRepository),
-      submitScreeningUseCase: new SubmitScreeningUseCase(sessionRepository, crisisProtocol),
       sendMessageUseCase: new SendMessageUseCase({
         sessionRepository,
         knowledgeRepository,
@@ -73,6 +73,7 @@ export async function buildContainer(): Promise<AppContainer> {
         ragMatchThreshold: env.ragMatchThreshold,
       }),
       closeSessionUseCase: new CloseSessionUseCase(sessionRepository),
+      voiceService,
     };
   } else {
     console.warn(

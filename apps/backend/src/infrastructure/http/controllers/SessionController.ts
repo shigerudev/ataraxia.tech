@@ -23,21 +23,6 @@ export class SessionController {
     }
   };
 
-  submitScreening = async (req: SupabaseAuthedRequest, res: Response): Promise<void> => {
-    try {
-      const { phq9, gad7 } = req.body ?? {};
-      const result = await this.flow.submitScreeningUseCase.execute({
-        sessionId: String(req.params.id),
-        userId: req.userId!,
-        phq9,
-        gad7,
-      });
-      res.json(result);
-    } catch (error) {
-      this.handleError(res, error);
-    }
-  };
-
   sendMessage = async (req: SupabaseAuthedRequest, res: Response): Promise<void> => {
     res.setHeader('Content-Type', 'text/event-stream');
     res.setHeader('Cache-Control', 'no-cache');
@@ -55,6 +40,7 @@ export class SessionController {
         sessionId: String(req.params.id),
         userId: req.userId!,
         content,
+        source: 'message',
       });
 
       for await (const evt of generator) {
@@ -70,9 +56,55 @@ export class SessionController {
     }
   };
 
+  transcribeVoice = async (req: SupabaseAuthedRequest, res: Response): Promise<void> => {
+    try {
+      const transcript = String(req.body?.transcript ?? '').trim();
+      if (!transcript) throw new ValidationError('transcript is required');
+      res.json({ transcript });
+    } catch (error) {
+      this.handleError(res, error);
+    }
+  };
+
+  replyToVoice = async (req: SupabaseAuthedRequest, res: Response): Promise<void> => {
+    try {
+      const transcript = String(req.body?.transcript ?? '').trim();
+      if (!transcript) throw new ValidationError('transcript is required');
+
+      let text = '';
+      let crisis = null;
+      const generator = this.flow.sendMessageUseCase.execute({
+        sessionId: String(req.params.id),
+        userId: req.userId!,
+        content: transcript,
+        source: 'voice_transcript',
+      });
+
+      for await (const evt of generator) {
+        if (evt.type === 'token') text += evt.value;
+        else if (evt.type === 'crisis') {
+          crisis = evt.crisis;
+          text = evt.crisis.message;
+        }
+      }
+
+      const audio = crisis ? null : await this.flow.voiceService.synthesize(text);
+      res.json({
+        transcript,
+        text,
+        crisis,
+        audio,
+        audioAvailable: Boolean(audio),
+        voiceConfigured: this.flow.voiceService.isConfigured(),
+      });
+    } catch (error) {
+      this.handleError(res, error);
+    }
+  };
+
   closeSession = async (req: SupabaseAuthedRequest, res: Response): Promise<void> => {
     try {
-      const { aliasAnonimo, email, phone, modalidad, joinMode, scheduledAt, diagnostico } =
+      const { aliasAnonimo, email, phone, modalidad, joinMode, scheduledAt, clinicalSummary } =
         req.body ?? {};
       const profile = await this.flow.closeSessionUseCase.execute({
         sessionId: String(req.params.id),
@@ -83,7 +115,7 @@ export class SessionController {
         modalidad,
         joinMode,
         scheduledAt,
-        diagnostico,
+        clinicalSummary,
       });
       res.json({ profile });
     } catch (error) {

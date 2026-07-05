@@ -1,6 +1,7 @@
 import { useCallback, useRef, useState } from 'react';
 import { streamAssistantMessage } from '@/shared/api';
 import { useTherapyFlow } from '@/features/session';
+import { replyToVoice, transcribeVoice } from '@/features/session/api/sessionApi';
 
 export interface ChatMessage {
   role: 'user' | 'assistant';
@@ -19,6 +20,7 @@ export function useChat() {
   const [messages, setMessages] = useState<ChatMessage[]>([GREETING]);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [audioSrc, setAudioSrc] = useState<string | null>(null);
   const assistantIndex = useRef<number>(-1);
 
   const appendAssistantToken = useCallback((value: string) => {
@@ -66,5 +68,42 @@ export function useChat() {
     setMessages((prev) => [...prev, message]);
   }, []);
 
-  return { messages, sending, error, send, appendLocal };
+  const sendVoiceTranscript = useCallback(
+    async (transcript: string) => {
+      const trimmed = transcript.trim();
+      if (!trimmed || sending || !sessionId || !accessToken) return;
+
+      setError(null);
+      setSending(true);
+      setAudioSrc(null);
+      setMessages((prev) => [...prev, { role: 'user' as const, content: trimmed }]);
+
+      try {
+        const { transcript: normalizedTranscript } = await transcribeVoice(
+          accessToken,
+          sessionId,
+          trimmed,
+        );
+        const reply = await replyToVoice(accessToken, sessionId, normalizedTranscript);
+        setMessages((prev) => [...prev, { role: 'assistant' as const, content: reply.text }]);
+        if (reply.crisis) reportCrisis(reply.crisis);
+        if (reply.audio) {
+          setAudioSrc(`data:${reply.audio.mimeType};base64,${reply.audio.audioBase64}`);
+        } else if (!reply.crisis) {
+          setError(
+            reply.voiceConfigured
+              ? 'La respuesta está disponible en texto, pero no se pudo generar el audio.'
+              : 'La respuesta está disponible en texto; ElevenLabs no está configurado en el servidor.',
+          );
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'No se pudo procesar la voz.');
+      } finally {
+        setSending(false);
+      }
+    },
+    [accessToken, reportCrisis, sending, sessionId],
+  );
+
+  return { messages, sending, error, audioSrc, send, appendLocal, sendVoiceTranscript };
 }

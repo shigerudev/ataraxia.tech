@@ -1,7 +1,8 @@
 # Ataraxia :-)
 
-Plataforma de acompañamiento psicológico: flujo anónimo con cribado clínico,
-conversación CBT (LLM + RAG) con protocolo de crisis, y registro final.
+Plataforma de acompañamiento psicológico: flujo anónimo con indagación
+conversacional por chat o voz, RAG clínico DSM-5/material autorizado,
+protocolo de crisis continuo y registro final.
 
 ## Monorepo
 
@@ -10,19 +11,21 @@ conversación CBT (LLM + RAG) con protocolo de crisis, y registro final.
 | `apps/backend` | Node.js, TypeScript, Express, Clean Architecture | 3001 |
 | `apps/frontend` | React, TypeScript, Vite, Feature-Sliced Design | 5173 |
 | Supabase | Postgres + Auth anónima + pgvector + RLS (gestionado) | — |
-| OpenAI | LLM (CBT) + embeddings (RAG) | — |
+| OpenAI | LLM conversacional + embeddings (RAG) | — |
+| ElevenLabs | Síntesis de voz server-side | — |
 
 ## Requisitos previos
 
 1. **Supabase**: crea un proyecto, aplica las migraciones de [`supabase/`](./supabase/README.md)
    y habilita *Anonymous sign-ins*.
 2. **OpenAI**: una `OPENAI_API_KEY`.
-3. Configura las variables de entorno (abajo).
+3. **ElevenLabs**: una `ELEVENLABS_API_KEY` si quieres respuestas de voz.
+4. Configura las variables de entorno (abajo).
 
 ## Variables de entorno
 
 ```bash
-cp apps/backend/.env.example apps/backend/.env      # SUPABASE_*, OPENAI_API_KEY, CRISIS_HOTLINES
+cp apps/backend/.env.example apps/backend/.env      # SUPABASE_*, OPENAI_API_KEY, ELEVENLABS_*, CRISIS_HOTLINES
 cp apps/frontend/.env.example apps/frontend/.env     # VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY
 ```
 
@@ -63,7 +66,8 @@ chmod +x scripts/*.sh       # solo la primera vez
 
 ## Ingesta del corpus (RAG)
 
-Coloca estudios `.txt`/`.md` en `apps/backend/knowledge/` y ejecuta:
+Coloca corpus DSM-5/material clínico autorizado `.txt`/`.md` en
+`apps/backend/knowledge/` y ejecuta:
 
 ```bash
 npm run ingest -w @ataraxia/backend -- ./apps/backend/knowledge
@@ -87,14 +91,14 @@ Consola de staff en `/staff/login` (se migrará a Supabase Auth en Fase 2).
 
 ```
 apps/backend/src/
-  domain/           # Entidades, casos de uso, interfaces (repos y servicios), scoring
+  domain/           # Entidades, casos de uso, interfaces (repos y servicios)
   application/      # DTOs
   infrastructure/   # HTTP, Supabase, OpenAI, seguridad (riesgo/crisis), container (DI)
 
 apps/frontend/src/
   shared/           # UI base, API client (SSE), cliente Supabase, config
-  entities/         # session, screening
-  features/         # session (flujo), screening, chat, crisis, registration, auth/login
+  entities/         # session
+  features/         # session (flujo), chat/voice, crisis, registration, auth/login
   pages/            # welcome, mode-select, therapy, thank-you, login/dashboard (staff)
   app/              # Router, providers, estilos globales
 ```

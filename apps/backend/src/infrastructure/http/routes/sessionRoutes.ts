@@ -10,8 +10,9 @@ export function createSessionRoutes(flow: FlowServices): Router {
 
   router.use(auth);
   router.post('/', controller.createSession);
-  router.post('/:id/screening', controller.submitScreening);
   router.post('/:id/messages', controller.sendMessage);
+  router.post('/:id/voice/transcribe', controller.transcribeVoice);
+  router.post('/:id/voice/reply', controller.replyToVoice);
   router.post('/:id/close', controller.closeSession);
 
   return router;

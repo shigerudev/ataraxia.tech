@@ -11,7 +11,7 @@ export interface CloseSessionInput {
   modalidad?: TherapyModality | null;
   joinMode?: JoinMode | null;
   scheduledAt?: string | null;
-  diagnostico?: Record<string, unknown> | null;
+  clinicalSummary?: Record<string, unknown> | null;
 }
 
 export class CloseSessionUseCase {
@@ -33,7 +33,7 @@ export class CloseSessionUseCase {
       modalidad: input.modalidad ?? null,
       joinMode: input.joinMode ?? null,
       scheduledAt: input.scheduledAt ?? null,
-      diagnostico: input.diagnostico ?? null,
+      clinicalSummary: input.clinicalSummary ?? null,
     });
 
     await this.sessionRepository.updateSession(input.sessionId, {

@@ -1,6 +1,5 @@
-import type { RiskAssessment } from '../../domain/entities/Screening.js';
 import type { RiskLevel } from '../../domain/entities/Session.js';
-import type { IRiskClassifier } from '../../domain/services/IRiskClassifier.js';
+import type { IRiskClassifier, RiskAssessment } from '../../domain/services/IRiskClassifier.js';
 import type { ILlmService } from '../../domain/services/ILlmService.js';
 
 // Señales léxicas de alto riesgo (español). Compuerta determinística: cualquier
