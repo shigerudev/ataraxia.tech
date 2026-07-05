@@ -29,6 +29,13 @@ interface DayOption {
   day: string;
 }
 
+/** Clave AAAA-MM-DD en hora LOCAL (toISOString corre el día en husos UTC+). */
+function localDayKey(date: Date): string {
+  const mm = String(date.getMonth() + 1).padStart(2, '0');
+  const dd = String(date.getDate()).padStart(2, '0');
+  return `${date.getFullYear()}-${mm}-${dd}`;
+}
+
 function buildDays(): DayOption[] {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -36,12 +43,20 @@ function buildDays(): DayOption[] {
     const date = new Date(today);
     date.setDate(today.getDate() + i);
     return {
-      key: date.toISOString().slice(0, 10),
+      key: localDayKey(date),
       date,
       weekday: i === 0 ? 'Hoy' : i === 1 ? 'Mañana' : dayLabel.format(date),
       day: dateLabel.format(date),
     };
   });
+}
+
+/** Un horario ya pasado hoy no debe poder reservarse. */
+function slotDisabled(dayKey: string | null, slot: string, todayKey: string): boolean {
+  if (dayKey !== todayKey) return false;
+  const [hh, mm] = slot.split(':').map(Number);
+  const now = new Date();
+  return now.getHours() * 60 + now.getMinutes() >= hh * 60 + mm;
 }
 
 function toIso(dayKey: string, slot: string): string {
@@ -59,7 +74,10 @@ export function SchedulePage() {
   const [pending, setPending] = useState<'now' | 'later' | null>(null);
 
   const isGroup = modalidad === 'grupal';
-  const canSchedule = Boolean(selectedDay && selectedSlot) && !loading;
+  const slotInPast = Boolean(
+    selectedDay && selectedSlot && slotDisabled(selectedDay, selectedSlot, days[0].key),
+  );
+  const canSchedule = Boolean(selectedDay && selectedSlot) && !slotInPast && !loading;
 
   const selectedSummary = useMemo(() => {
     if (!selectedDay || !selectedSlot) return null;
@@ -74,7 +92,7 @@ export function SchedulePage() {
   }
 
   async function handleSchedule() {
-    if (!selectedDay || !selectedSlot) return;
+    if (!selectedDay || !selectedSlot || slotInPast) return;
     setPending('later');
     await scheduleForLater(toIso(selectedDay, selectedSlot));
   }
@@ -175,14 +193,16 @@ export function SchedulePage() {
         <div className="flex flex-wrap gap-2">
           {TIME_SLOTS.map((slot) => {
             const active = selectedSlot === slot;
+            const disabled = slotDisabled(selectedDay, slot, days[0].key);
             return (
               <button
                 key={slot}
                 type="button"
                 aria-pressed={active}
+                disabled={disabled}
                 onClick={() => setSelectedSlot(slot)}
-                className={`rounded-full border px-4 py-2 text-sm font-medium transition ${
-                  active
+                className={`rounded-full border px-4 py-2 text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-40 ${
+                  active && !disabled
                     ? 'border-primary bg-brand text-white'
                     : 'border-hairline bg-white text-navy hover:border-primary hover:bg-lavender/30'
                 }`}

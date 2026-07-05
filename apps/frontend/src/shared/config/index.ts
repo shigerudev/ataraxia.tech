@@ -12,10 +12,17 @@ export const ELEVENLABS_AGENT_ID = import.meta.env.VITE_ELEVENLABS_AGENT_ID ?? '
 export const ELEVENLABS_AGENT_ID_INDIVIDUAL =
   import.meta.env.VITE_ELEVENLABS_AGENT_ID_INDIVIDUAL ?? '';
 
-// Reservado (Fase 2): facilitador IA de la sala grupal. Aún no se usa; la sala
-// grupal actual es audio humano-a-humano vía WebRTC.
+// Agente PÚBLICO de ElevenLabs que facilita la SALA GRUPAL en vivo. El
+// anfitrión de la malla (menor peerId) lo conecta y puentea su audio a todos.
+// Vacío = la sala grupal opera solo humano-a-humano.
 export const ELEVENLABS_AGENT_ID_GROUP =
   import.meta.env.VITE_ELEVENLABS_AGENT_ID_GROUP ?? '';
+
+// Servidor TURN opcional para redes restrictivas (NAT simétrico). Sin TURN,
+// algunos pares simplemente no logran conectarse entre sí.
+export const TURN_URL = import.meta.env.VITE_TURN_URL ?? '';
+export const TURN_USERNAME = import.meta.env.VITE_TURN_USERNAME ?? '';
+export const TURN_CREDENTIAL = import.meta.env.VITE_TURN_CREDENTIAL ?? '';
 
 export const AUTH_TOKEN_KEY = 'ataraxia_auth_token';
 

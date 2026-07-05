@@ -142,7 +142,10 @@ export function TherapyFlowProvider({ children }: { children: ReactNode }) {
     patch({ loading: true, error: null });
     try {
       const payload = await finalize({ joinMode: 'now', scheduledAt: undefined });
-      if (!payload) return;
+      if (!payload) {
+        patch({ loading: false, error: 'Tu sesión expiró. Vuelve a comenzar, por favor.' });
+        return;
+      }
       const modalidad = payload.modalidad ?? 'individual';
       // Sala grupal estable para que quien entre "ahora" coincida; la individual
       // es 1:1 con el agente de voz, sin malla WebRTC.
@@ -159,7 +162,10 @@ export function TherapyFlowProvider({ children }: { children: ReactNode }) {
       patch({ loading: true, error: null });
       try {
         const payload = await finalize({ joinMode: 'scheduled', scheduledAt });
-        if (!payload) return;
+        if (!payload) {
+          patch({ loading: false, error: 'Tu sesión expiró. Vuelve a comenzar, por favor.' });
+          return;
+        }
         patch({ step: 'thankyou', joinMode: 'scheduled', scheduledAt, loading: false });
       } catch (err) {
         patch({ loading: false, error: errorMessage(err) });

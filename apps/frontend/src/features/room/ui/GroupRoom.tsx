@@ -5,11 +5,20 @@ import { useGroupRoom, type RemoteAudio } from '../model/useGroupRoom';
 import { ParticipantTile } from './ParticipantTile';
 import { RoomShell } from './RoomShell';
 
-/** Reproduce el audio de un par remoto (no se puede asignar srcObject en JSX). */
-function RemoteAudioSink({ audio }: { audio: RemoteAudio }) {
+/**
+ * Reproduce el audio de un par remoto (no se puede asignar srcObject en JSX).
+ * Además de la reproducción, estos elementos son imprescindibles para el
+ * puente de la facilitadora: en Chrome un MediaStream remoto es silencioso
+ * dentro de WebAudio si no está adjunto a un elemento de audio
+ * (crbug.com/933677). No desmontarlos mientras la sala viva.
+ */
+function RemoteAudioSink({ audio }: { readonly audio: RemoteAudio }) {
   const ref = useRef<HTMLAudioElement>(null);
   useEffect(() => {
-    if (ref.current) ref.current.srcObject = audio.stream;
+    const el = ref.current;
+    if (!el) return;
+    el.srcObject = audio.stream;
+    void el.play().catch(() => undefined);
   }, [audio.stream]);
   return <audio ref={ref} autoPlay playsInline />;
 }
@@ -23,11 +32,18 @@ export function GroupRoom() {
     leaveRoom();
   }
 
+  const { facilitator } = session;
   const count = session.participants.length;
-  const subtitle =
-    session.status === 'connected'
-      ? 'Sala grupal en vivo · comparte con respeto y confidencialidad'
-      : 'Conectando con la sala…';
+  let subtitle: string;
+  if (session.status !== 'connected') {
+    subtitle = 'Conectando con la sala…';
+  } else if (facilitator.active) {
+    subtitle = 'Sesión guiada por Ataraxia · comparte con respeto y confidencialidad';
+  } else {
+    subtitle = 'Sala grupal en vivo · comparte con respeto y confidencialidad';
+  }
+
+  const humanCount = session.participants.filter((p) => p.kind === 'human').length;
 
   return (
     <RoomShell
@@ -55,9 +71,11 @@ export function GroupRoom() {
         </div>
       ) : (
         <div className="flex w-full flex-col items-center gap-6">
-          {count <= 1 && session.status === 'connected' && (
+          {humanCount <= 1 && session.status === 'connected' && (
             <p className="text-sm text-muted">
-              Aún estás solo/a en la sala. Cuando alguien más entre, aparecerá aquí.
+              {facilitator.active
+                ? 'Ataraxia te acompaña mientras se une el resto del grupo.'
+                : 'Aún estás solo/a en la sala. Cuando alguien más entre, aparecerá aquí.'}
             </p>
           )}
           <div className="room-grid">
