@@ -3,7 +3,7 @@ import {
   BrandMark,
   IconMic,
   IconMicOff,
-  IconPhoneOff,
+  IconPhone,
 } from '@/shared/ui';
 
 interface RoomShellProps {
@@ -89,7 +89,7 @@ export function RoomShell({
             aria-label={leaveLabel}
             className="btn-voice btn-voice--danger"
           >
-            <IconPhoneOff className="h-5 w-5" />
+            <IconPhone className="h-5 w-5 rotate-[135deg]" />
           </button>
           <span className="text-[11px] font-medium text-muted" aria-hidden="true">
             {leaveLabel}
