@@ -16,15 +16,38 @@ La seguridad (protocolo de crisis) es un requisito de primera clase.
 > **Aviso clínico.** El system prompt y el protocolo de crisis requieren revisión
 > profesional y red-teaming antes de cualquier uso real. Ataraxia no diagnostica ni receta.
 
+## Software Driven Development
+
+Ataraxia trabaja con una metodología Software Driven Development: cada cambio debe
+nacer de un objetivo de producto claro, bajar a una decisión técnica pequeña y
+terminar en una verificación ejecutable.
+
+Las specs viven en `specs/` y son la fuente de verdad para features nuevas. No
+implementar features nuevas sin una spec aceptada o actualizada. Si una decisión
+de implementación cambia el contrato, actualizar la spec en el mismo cambio.
+
+Flujo recomendado:
+
+1. Definir el resultado de usuario.
+2. Crear o actualizar la spec correspondiente en `specs/`.
+3. Implementar el menor vertical slice funcional.
+4. Ejecutar typecheck/build de las apps afectadas.
+5. Documentar variables de entorno, migraciones, endpoints y riesgos de seguridad.
+
+No saltar directo a refactors amplios. Avanzar de especificación a código y de
+código a verificación.
+
 ## Estructura del monorepo
 
 ```
 ataraxia.tech/
 ├── AGENT.md                 ← Este archivo (fuente de verdad arquitectónica)
+├── cursor.md                ← Checklist operativo para Cursor
 ├── docker-compose.yml       ← backend + frontend (Supabase es gestionado/cloud)
 ├── scripts/                 ← up.ps1 / down.ps1 (PowerShell)
 ├── supabase/                ← migraciones SQL (schema, RAG, RLS) + config
 ├── docs/                    ← ataraxia_prototipo_tecnico.md (diagrama, vistas, prompt)
+├── specs/                   ← specs SDD: alcance, contratos y criterios de aceptación
 ├── apps/
 │   ├── backend/             ← API REST — Clean Architecture + Supabase + OpenAI
 │   └── frontend/            ← SPA React — Feature-Sliced Design (FSD)
@@ -118,6 +141,9 @@ infrastructure/  →  application/  →  domain/
 
 ## Cómo extender el proyecto
 
+Antes de extender el proyecto, revisar `specs/000-index.md` y confirmar la spec
+activa. Si no existe, crearla desde `specs/template.md`.
+
 **Nuevo caso de uso del flujo (backend):** entidad en `domain/entities` → interfaz de repo/servicio → `domain/use-cases` → implementación en `infrastructure` → registrar en `container.ts` → controller + ruta.
 
 **Nueva vista del flujo (frontend):** tipos en `entities` → lógica en `features/{slice}` → componer en `pages` → integrar en la máquina de estados / router.
@@ -159,8 +185,10 @@ npm run ingest -w @ataraxia/backend -- ./apps/backend/knowledge  # ingesta RAG
 
 ## Checklist para agentes antes de un PR
 
+- [ ] ¿Existe una spec en `specs/` para la feature o cambio de comportamiento?
 - [ ] ¿La lógica de negocio está en `domain/` (backend) o `features/`/`entities/` (frontend)?
 - [ ] ¿Se respetaron las dependencias de capa?
 - [ ] ¿La clasificación de riesgo sigue siendo determinística + LLM (nunca solo LLM)?
 - [ ] ¿Tipos TypeScript explícitos y textos de UI en español?
 - [ ] ¿Se actualizó este `AGENT.md` si cambió la arquitectura?
+
