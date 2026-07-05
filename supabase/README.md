@@ -10,12 +10,14 @@ Persistencia del flujo clínico: Auth anónima, Postgres, pgvector (RAG) y RLS.
 | `migrations/0002_knowledge_rag.sql` | `documents`, `document_sections`, índice HNSW y RPC `match_documents` |
 | `migrations/0003_rls.sql` | Políticas RLS (backstop; el backend usa la service_role key) |
 | `migrations/0004_conversational_intake.sql` | Migración desde cribado por formulario a indagación conversacional |
+| `migrations/0005_session_scheduling.sql` | Campos de agenda de sesión en `profiles` |
+| `migrations/0006_scheduling_consistency.sql` | Constraint de consistencia para agenda |
 
 ## Puesta en marcha
 
 ### Opción A — Proyecto en la nube
 1. Crea un proyecto en https://supabase.com.
-2. En SQL Editor, ejecuta los 3 archivos de `migrations/` en orden.
+2. En SQL Editor, ejecuta los archivos de `migrations/` en orden.
 3. En Authentication → Providers, habilita **Anonymous sign-ins**.
 4. Copia `Project URL`, `anon key` y `service_role key` a `apps/backend/.env` y `apps/frontend/.env`.
 

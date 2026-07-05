@@ -19,7 +19,3 @@ port = 54323
 enabled = true
 site_url = "http://localhost:5173"
 additional_redirect_urls = ["http://localhost:5173"]
-
-# Habilita el inicio de sesión anónimo (sesión sin email hasta el registro final).
-[auth.anonymous]
-enabled = true
