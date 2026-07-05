@@ -2,12 +2,27 @@
 
 ## Status
 
-`draft`
+`active` (join-now + schedule stub implemented; quorum/notifications deferred)
 
 ## Objective
 
-Support a group modality where users can choose anonymous group support and be
-scheduled into a live session when quorum is available.
+Support a group modality where users can choose anonymous group support and
+either join a live room immediately or schedule a session for later.
+
+## Implementation Notes (2026-07)
+
+- After registration (`RegistrationForm`), the flow now routes to a `scheduling`
+  step (`SchedulePage`) instead of closing the session directly.
+- The user can either "Unirme ahora mismo" (`joinMode = 'now'`) to enter a live
+  room, or pick a day/time to schedule (`joinMode = 'scheduled'`, `scheduledAt`).
+  Scheduling for later is a stub: it persists the choice and shows a
+  confirmation; there are no real notifications yet.
+- `joinMode` and `scheduledAt` are persisted on `public.profiles` via
+  `supabase/migrations/0002_session_scheduling.sql`.
+- The live group room is implemented as a raw **WebRTC mesh** signaled by
+  **Supabase Realtime** (Broadcast for SDP/ICE, Presence for the alias roster).
+  See spec 006 for room details. Quorum, calendar, and notification providers
+  remain deferred.
 
 ## Scope
 

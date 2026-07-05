@@ -7,7 +7,13 @@ import {
   type ReactNode,
 } from 'react';
 import { ensureAnonymousSession } from '@/shared/supabase/client';
-import type { CrisisInfo, RiskLevel, SessionChannel } from '@/entities/session';
+import type {
+  CrisisInfo,
+  JoinMode,
+  RiskLevel,
+  SessionChannel,
+  TherapyModality,
+} from '@/entities/session';
 import { closeSession, createSession, type RegistrationPayload } from '../api/sessionApi';
 
 export type FlowStep =
@@ -15,6 +21,8 @@ export type FlowStep =
   | 'chat'
   | 'crisis'
   | 'registration'
+  | 'scheduling'
+  | 'room'
   | 'thankyou';
 
 interface FlowState {
@@ -24,6 +32,13 @@ interface FlowState {
   accessToken: string | null;
   riskLevel: RiskLevel | null;
   crisisInfo: CrisisInfo | null;
+  // Datos capturados en el registro, resueltos al confirmar la agenda.
+  pendingRegistration: RegistrationPayload | null;
+  alias: string | null;
+  modalidad: TherapyModality | null;
+  joinMode: JoinMode | null;
+  scheduledAt: string | null;
+  roomId: string | null;
   loading: boolean;
   error: string | null;
 }
@@ -32,7 +47,10 @@ interface FlowContextValue extends FlowState {
   acceptConsent: () => Promise<void>;
   reportCrisis: (crisis: CrisisInfo) => void;
   goToRegistration: () => void;
-  register: (payload: RegistrationPayload) => Promise<void>;
+  goToScheduling: (payload: RegistrationPayload) => void;
+  joinNow: () => Promise<void>;
+  scheduleForLater: (scheduledAt: string) => Promise<void>;
+  leaveRoom: () => void;
   reset: () => void;
 }
 
@@ -43,6 +61,12 @@ const initialState: FlowState = {
   accessToken: null,
   riskLevel: null,
   crisisInfo: null,
+  pendingRegistration: null,
+  alias: null,
+  modalidad: null,
+  joinMode: null,
+  scheduledAt: null,
+  roomId: null,
   loading: false,
   error: null,
 };
@@ -90,19 +114,63 @@ export function TherapyFlowProvider({ children }: { children: ReactNode }) {
     patch({ step: 'registration', error: null });
   }, [patch]);
 
-  const register = useCallback(
-    async (payload: RegistrationPayload) => {
-      if (!state.accessToken || !state.sessionId) return;
+  // El registro ya no cierra la sesión: guarda los datos y pasa a la agenda.
+  const goToScheduling = useCallback(
+    (payload: RegistrationPayload) => {
+      patch({
+        step: 'scheduling',
+        pendingRegistration: payload,
+        alias: payload.aliasAnonimo,
+        modalidad: payload.modalidad ?? 'individual',
+        error: null,
+      });
+    },
+    [patch],
+  );
+
+  const finalize = useCallback(
+    async (extra: Pick<RegistrationPayload, 'joinMode' | 'scheduledAt'>) => {
+      if (!state.accessToken || !state.sessionId || !state.pendingRegistration) return null;
+      const payload: RegistrationPayload = { ...state.pendingRegistration, ...extra };
+      await closeSession(state.accessToken, state.sessionId, payload);
+      return payload;
+    },
+    [state.accessToken, state.sessionId, state.pendingRegistration],
+  );
+
+  const joinNow = useCallback(async () => {
+    patch({ loading: true, error: null });
+    try {
+      const payload = await finalize({ joinMode: 'now', scheduledAt: undefined });
+      if (!payload) return;
+      const modalidad = payload.modalidad ?? 'individual';
+      // Sala grupal estable para que quien entre "ahora" coincida; la individual
+      // es 1:1 con el agente de voz, sin malla WebRTC.
+      const roomId =
+        modalidad === 'grupal' ? 'group:general' : `indiv:${state.sessionId ?? 'me'}`;
+      patch({ step: 'room', joinMode: 'now', roomId, loading: false });
+    } catch (err) {
+      patch({ loading: false, error: errorMessage(err) });
+    }
+  }, [finalize, patch, state.sessionId]);
+
+  const scheduleForLater = useCallback(
+    async (scheduledAt: string) => {
       patch({ loading: true, error: null });
       try {
-        await closeSession(state.accessToken, state.sessionId, payload);
-        patch({ step: 'thankyou', loading: false });
+        const payload = await finalize({ joinMode: 'scheduled', scheduledAt });
+        if (!payload) return;
+        patch({ step: 'thankyou', joinMode: 'scheduled', scheduledAt, loading: false });
       } catch (err) {
         patch({ loading: false, error: errorMessage(err) });
       }
     },
-    [patch, state.accessToken, state.sessionId],
+    [finalize, patch],
   );
+
+  const leaveRoom = useCallback(() => {
+    patch({ step: 'thankyou', roomId: null });
+  }, [patch]);
 
   const reset = useCallback(() => setState(initialState), []);
 
@@ -112,10 +180,23 @@ export function TherapyFlowProvider({ children }: { children: ReactNode }) {
       acceptConsent,
       reportCrisis,
       goToRegistration,
-      register,
+      goToScheduling,
+      joinNow,
+      scheduleForLater,
+      leaveRoom,
       reset,
     }),
-    [state, acceptConsent, reportCrisis, goToRegistration, register, reset],
+    [
+      state,
+      acceptConsent,
+      reportCrisis,
+      goToRegistration,
+      goToScheduling,
+      joinNow,
+      scheduleForLater,
+      leaveRoom,
+      reset,
+    ],
   );
 
   return <FlowContext.Provider value={value}>{children}</FlowContext.Provider>;

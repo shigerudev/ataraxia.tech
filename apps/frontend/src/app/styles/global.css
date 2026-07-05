@@ -250,6 +250,30 @@
     @apply border-transparent bg-pink text-navy hover:bg-pink/90 focus-visible:ring-pink/50;
     box-shadow: 0 12px 28px rgba(242, 139, 130, 0.4);
   }
+
+  /* ---- Salas de acompañamiento (individual y grupal) ---- */
+  .room-shell {
+    @apply fixed inset-0 z-50 flex animate-fade-in flex-col bg-bg bg-aurora bg-no-repeat;
+  }
+  .room-header {
+    @apply flex items-center justify-between gap-3 border-b border-hairline/70 bg-white/70 px-4 py-3.5 backdrop-blur-sm sm:px-6;
+  }
+  .room-body {
+    @apply flex flex-1 flex-col items-center justify-center overflow-y-auto px-5 py-8 sm:px-8;
+  }
+  .room-controls {
+    @apply flex items-start justify-center gap-6 border-t border-hairline/70 bg-white/70 px-5 py-5 backdrop-blur-sm;
+  }
+  .room-grid {
+    @apply grid w-full max-w-3xl gap-4;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  }
+  .room-tile {
+    @apply flex flex-col items-center gap-3 rounded-lg2 border border-hairline bg-white/80 p-5 shadow-soft transition;
+  }
+  .room-tile.is-speaking {
+    @apply border-green/60 shadow-card;
+  }
 }
 
 /* Modo voz bajo prefers-reduced-motion: la regla global ya apaga la animación

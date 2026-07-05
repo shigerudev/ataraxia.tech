@@ -1,4 +1,4 @@
-import type { Profile, TherapyModality } from '../entities/Profile.js';
+import type { JoinMode, Profile, TherapyModality } from '../entities/Profile.js';
 import type { ISessionRepository } from '../repositories/ISessionRepository.js';
 import { SessionNotFoundError, UnauthorizedSessionError, ValidationError } from '../errors/FlowErrors.js';
 
@@ -9,6 +9,8 @@ export interface CloseSessionInput {
   email?: string | null;
   phone?: string | null;
   modalidad?: TherapyModality | null;
+  joinMode?: JoinMode | null;
+  scheduledAt?: string | null;
   diagnostico?: Record<string, unknown> | null;
 }
 
@@ -29,6 +31,8 @@ export class CloseSessionUseCase {
       email: input.email ?? null,
       phone: input.phone ?? null,
       modalidad: input.modalidad ?? null,
+      joinMode: input.joinMode ?? null,
+      scheduledAt: input.scheduledAt ?? null,
       diagnostico: input.diagnostico ?? null,
     });
 

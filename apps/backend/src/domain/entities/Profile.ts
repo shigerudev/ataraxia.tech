@@ -1,4 +1,5 @@
 export type TherapyModality = 'individual' | 'grupal';
+export type JoinMode = 'now' | 'scheduled';
 
 export interface Profile {
   id: string;
@@ -7,5 +8,7 @@ export interface Profile {
   phone: string | null;
   diagnostico: Record<string, unknown> | null;
   modalidad: TherapyModality | null;
+  joinMode: JoinMode | null;
+  scheduledAt: string | null;
   createdAt: string;
 }

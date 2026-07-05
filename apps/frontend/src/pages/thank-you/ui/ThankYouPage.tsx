@@ -1,4 +1,4 @@
-import { Button, Chip, IconCheck } from '@/shared/ui';
+import { Button, Chip, IconCalendar, IconCheck } from '@/shared/ui';
 import { useTherapyFlow } from '@/features/session';
 
 const TIPS = [
@@ -7,8 +7,18 @@ const TIPS = [
   'Si lo necesitas, vuelve a conversar cuando quieras.',
 ];
 
+const scheduleFormatter = new Intl.DateTimeFormat('es', {
+  weekday: 'long',
+  day: 'numeric',
+  month: 'long',
+  hour: '2-digit',
+  minute: '2-digit',
+});
+
 export function ThankYouPage() {
-  const { reset } = useTherapyFlow();
+  const { reset, joinMode, scheduledAt } = useTherapyFlow();
+  const scheduledLabel =
+    joinMode === 'scheduled' && scheduledAt ? scheduleFormatter.format(new Date(scheduledAt)) : null;
 
   return (
     <div className="card flex flex-col items-center gap-5 text-center">
@@ -19,13 +29,21 @@ export function ThankYouPage() {
       <div className="flex flex-col items-center gap-2.5">
         <Chip variant="green">Gracias por confiar</Chip>
         <h1 className="font-display font-bold text-[clamp(24px,3.5vw,36px)] tracking-tight">
-          Has dado un paso importante
+          {scheduledLabel ? 'Tu sesión quedó agendada' : 'Has dado un paso importante'}
         </h1>
         <p className="leading-relaxed text-muted">
-          Registramos tu preferencia. Pronto recibirás la convocatoria de tu sesión.
-          Recuerda que cuidar tu salud emocional es un proceso, y no estás solo/a.
+          {scheduledLabel
+            ? 'Registramos tu preferencia y te enviaremos la convocatoria. Recuerda que cuidar tu salud emocional es un proceso, y no estás solo/a.'
+            : 'Registramos tu preferencia. Pronto recibirás la convocatoria de tu sesión. Recuerda que cuidar tu salud emocional es un proceso, y no estás solo/a.'}
         </p>
       </div>
+
+      {scheduledLabel && (
+        <p className="flex items-center gap-2 rounded-full bg-lavender px-4 py-2 text-sm font-medium capitalize text-primary-dark">
+          <IconCalendar className="h-4 w-4" />
+          {scheduledLabel}
+        </p>
+      )}
 
       <div className="w-full rounded-md2 bg-bg p-5 text-left">
         <h2 className="mb-3 font-display text-base font-semibold">Mientras tanto</h2>

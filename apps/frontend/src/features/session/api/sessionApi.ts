@@ -1,5 +1,5 @@
 import { apiClient, apiUrl } from '@/shared/api';
-import type { Session, SessionChannel, TherapyModality } from '@/entities/session';
+import type { JoinMode, Session, SessionChannel, TherapyModality } from '@/entities/session';
 
 export async function createSession(
   token: string,
@@ -13,6 +13,10 @@ export interface RegistrationPayload {
   email?: string;
   phone?: string;
   modalidad?: TherapyModality;
+  /** Modo de entrada elegido en el paso de agenda. */
+  joinMode?: JoinMode;
+  /** ISO 8601. Solo cuando joinMode === 'scheduled'. */
+  scheduledAt?: string;
 }
 
 export async function closeSession(

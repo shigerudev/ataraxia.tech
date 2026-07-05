@@ -1,12 +1,17 @@
+import { lazy, Suspense } from 'react';
 import { TherapyFlowProvider, useTherapyFlow, type FlowStep } from '@/features/session';
 import { ChatWindow } from '@/features/chat';
 import { CrisisOverlay } from '@/features/crisis';
 import { RegistrationForm } from '@/features/registration';
 import { WelcomePage } from '@/pages/welcome';
+import { SchedulePage } from '@/pages/schedule';
 import { ThankYouPage } from '@/pages/thank-you';
 import { BrandLogo, IconLock } from '@/shared/ui';
 
-const PROGRESS_STEPS = ['Bienvenida', 'Conversación', 'Registro'];
+// La sala arrastra el SDK de voz (ElevenLabs) y WebRTC: solo se descarga al entrar.
+const RoomPage = lazy(() => import('@/features/room').then((m) => ({ default: m.RoomPage })));
+
+const PROGRESS_STEPS = ['Bienvenida', 'Conversación', 'Registro', 'Agenda'];
 
 function progressIndex(step: FlowStep): number {
   switch (step) {
@@ -17,6 +22,8 @@ function progressIndex(step: FlowStep): number {
       return 1;
     case 'registration':
       return 2;
+    case 'scheduling':
+      return 3;
     default:
       return PROGRESS_STEPS.length;
   }
@@ -65,6 +72,8 @@ function FlowStepView() {
       return <ChatWindow />;
     case 'registration':
       return <RegistrationForm />;
+    case 'scheduling':
+      return <SchedulePage />;
     case 'thankyou':
       return <ThankYouPage />;
     default:
@@ -74,6 +83,16 @@ function FlowStepView() {
 
 function FlowContainer() {
   const { step, crisisInfo } = useTherapyFlow();
+
+  // La sala ocupa toda la pantalla (sin cabecera/pie/progreso del flujo).
+  if (step === 'room') {
+    return (
+      <Suspense fallback={<div className="app-loading">Preparando tu sala…</div>}>
+        <RoomPage />
+      </Suspense>
+    );
+  }
+
   const isChat = step === 'chat' || step === 'crisis';
   const width = isChat ? 'max-w-3xl' : 'max-w-2xl';
   // Crisis mantiene montado el chat: comparten llave para no reiniciar la conversación.

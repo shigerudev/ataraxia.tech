@@ -1,1 +1,1 @@
-export type { Session, RiskLevel, SessionChannel, TherapyModality, CrisisInfo } from './model/types';
+export type { Session, RiskLevel, SessionChannel, TherapyModality, JoinMode, CrisisInfo } from './model/types';

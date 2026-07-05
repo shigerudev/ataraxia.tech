@@ -141,6 +141,8 @@ export class SupabaseSessionRepository implements ISessionRepository {
         phone: input.phone ?? null,
         diagnostico: input.diagnostico ?? null,
         modalidad: input.modalidad ?? null,
+        join_mode: input.joinMode ?? null,
+        scheduled_at: input.scheduledAt ?? null,
       })
       .select()
       .single();
@@ -152,6 +154,8 @@ export class SupabaseSessionRepository implements ISessionRepository {
       phone: data.phone,
       diagnostico: data.diagnostico,
       modalidad: data.modalidad,
+      joinMode: data.join_mode ?? null,
+      scheduledAt: data.scheduled_at ?? null,
       createdAt: data.created_at,
     };
   }

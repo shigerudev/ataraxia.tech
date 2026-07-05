@@ -72,7 +72,8 @@ export class SessionController {
 
   closeSession = async (req: SupabaseAuthedRequest, res: Response): Promise<void> => {
     try {
-      const { aliasAnonimo, email, phone, modalidad, diagnostico } = req.body ?? {};
+      const { aliasAnonimo, email, phone, modalidad, joinMode, scheduledAt, diagnostico } =
+        req.body ?? {};
       const profile = await this.flow.closeSessionUseCase.execute({
         sessionId: String(req.params.id),
         userId: req.userId!,
@@ -80,6 +81,8 @@ export class SessionController {
         email,
         phone,
         modalidad,
+        joinMode,
+        scheduledAt,
         diagnostico,
       });
       res.json({ profile });

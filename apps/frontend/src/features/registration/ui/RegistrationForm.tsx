@@ -24,21 +24,21 @@ const MODALITIES: {
 ];
 
 export function RegistrationForm() {
-  const { register, loading, error } = useTherapyFlow();
+  const { goToScheduling, loading, error } = useTherapyFlow();
   const [alias, setAlias] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [modalidad, setModalidad] = useState<TherapyModality>('individual');
   const [validation, setValidation] = useState<string | null>(null);
 
-  async function handleSubmit(event: FormEvent) {
+  function handleSubmit(event: FormEvent) {
     event.preventDefault();
     if (!alias.trim()) {
       setValidation('Elige un alias para participar de forma anónima.');
       return;
     }
     setValidation(null);
-    await register({
+    goToScheduling({
       aliasAnonimo: alias.trim(),
       email: email.trim() || undefined,
       phone: phone.trim() || undefined,
@@ -135,7 +135,7 @@ export function RegistrationForm() {
         )}
 
         <Button type="submit" loading={loading} className="self-stretch sm:self-start">
-          Confirmar
+          Continuar
           <IconArrowRight className="h-4 w-4" />
         </Button>
       </form>

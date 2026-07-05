@@ -103,6 +103,44 @@ export const IconUsers = createIcon(
   </>,
 );
 
+export const IconCalendar = createIcon(
+  <>
+    <rect width="18" height="18" x="3" y="4" rx="2" />
+    <path d="M3 10h18" />
+    <path d="M8 2v4" />
+    <path d="M16 2v4" />
+  </>,
+);
+
+export const IconClock = createIcon(
+  <>
+    <circle cx="12" cy="12" r="9" />
+    <path d="M12 7v5l3 2" />
+  </>,
+);
+
+export const IconVideo = createIcon(
+  <>
+    <path d="m22 8-6 4 6 4V8Z" />
+    <rect width="14" height="12" x="2" y="6" rx="2" ry="2" />
+  </>,
+);
+
+export const IconPhoneOff = createIcon(
+  <>
+    <path d="M10.68 13.31a16 16 0 0 0 3.41 2.6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.42 19.42 0 0 1-3.33-2.67" />
+    <path d="M5 5a2 2 0 0 0-1.11 2.4 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L2.82 13.63" />
+    <line x1="2" x2="22" y1="2" y2="22" />
+  </>,
+);
+
+export const IconArrowLeft = createIcon(
+  <>
+    <path d="M19 12H5" />
+    <path d="m12 19-7-7 7-7" />
+  </>,
+);
+
 /* ============================================================
    Marca
    ============================================================ */
