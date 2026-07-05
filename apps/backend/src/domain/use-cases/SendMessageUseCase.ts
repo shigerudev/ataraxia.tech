@@ -11,6 +11,7 @@ export interface SendMessageInput {
   sessionId: string;
   userId: string;
   content: string;
+  source?: 'message' | 'voice_transcript';
 }
 
 export type SendMessageEvent =
@@ -36,6 +37,7 @@ export class SendMessageUseCase {
   async *execute(input: SendMessageInput): AsyncGenerator<SendMessageEvent> {
     const content = input.content?.trim();
     if (!content) throw new ValidationError('content is required');
+    const source = input.source ?? 'message';
 
     const session = await this.deps.sessionRepository.getSession(input.sessionId);
     if (!session) throw new SessionNotFoundError();
@@ -56,7 +58,7 @@ export class SendMessageUseCase {
       await this.deps.sessionRepository.addRiskEvent({
         sessionId: input.sessionId,
         level: 'high',
-        source: 'message',
+        source,
         detail: assessment.reason ?? 'High-risk signal detected in message',
       });
       await this.deps.sessionRepository.updateSession(input.sessionId, {
@@ -94,7 +96,9 @@ export class SendMessageUseCase {
     if (context) {
       messages.push({
         role: 'system',
-        content: `Contexto clínico recuperado (usa solo si es pertinente, no lo cites textualmente):\n${context}`,
+        content:
+          'Contexto clínico recuperado del corpus DSM-5/material autorizado ' +
+          `(úsalo solo para guiar la indagación, no para diagnosticar ni citar textualmente):\n${context}`,
       });
     }
     for (const turn of history) {

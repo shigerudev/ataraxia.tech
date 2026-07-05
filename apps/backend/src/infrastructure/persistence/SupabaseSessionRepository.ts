@@ -1,11 +1,9 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Session } from '../../domain/entities/Session.js';
-import type { ScreeningResult } from '../../domain/entities/Screening.js';
 import type { ConversationTurn } from '../../domain/entities/Conversation.js';
 import type { Profile } from '../../domain/entities/Profile.js';
 import type {
   AddRiskEventInput,
-  AddScreeningInput,
   AddTurnInput,
   CreateSessionInput,
   ISessionRepository,
@@ -69,32 +67,6 @@ export class SupabaseSessionRepository implements ISessionRepository {
     if (error) throw new Error(`updateSession failed: ${error.message}`);
   }
 
-  async addScreening(input: AddScreeningInput): Promise<ScreeningResult> {
-    const { data, error } = await this.client
-      .from('screening_results')
-      .insert({
-        session_id: input.sessionId,
-        instrument: input.instrument,
-        answers: input.answers,
-        score: input.score,
-        risk_level: input.riskLevel,
-        flags: input.flags,
-      })
-      .select()
-      .single();
-    if (error) throw new Error(`addScreening failed: ${error.message}`);
-    return {
-      id: data.id,
-      sessionId: data.session_id,
-      instrument: data.instrument,
-      answers: data.answers,
-      score: data.score,
-      riskLevel: data.risk_level,
-      flags: data.flags,
-      createdAt: data.created_at,
-    };
-  }
-
   async addTurn(input: AddTurnInput): Promise<ConversationTurn> {
     const { data, error } = await this.client
       .from('conversation_turns')
@@ -139,7 +111,7 @@ export class SupabaseSessionRepository implements ISessionRepository {
         alias_anonimo: input.aliasAnonimo,
         email: input.email ?? null,
         phone: input.phone ?? null,
-        diagnostico: input.diagnostico ?? null,
+        clinical_summary: input.clinicalSummary ?? null,
         modalidad: input.modalidad ?? null,
         join_mode: input.joinMode ?? null,
         scheduled_at: input.scheduledAt ?? null,
@@ -152,7 +124,7 @@ export class SupabaseSessionRepository implements ISessionRepository {
       aliasAnonimo: data.alias_anonimo,
       email: data.email,
       phone: data.phone,
-      diagnostico: data.diagnostico,
+      clinicalSummary: data.clinical_summary,
       modalidad: data.modalidad,
       joinMode: data.join_mode ?? null,
       scheduledAt: data.scheduled_at ?? null,

@@ -1,4 +1,10 @@
-import 'dotenv/config';
+import { dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { config } from 'dotenv';
+
+config({
+  path: resolve(dirname(fileURLToPath(import.meta.url)), '../../../.env'),
+});
 
 function optional(name: string, fallback: string): string {
   return process.env[name] ?? fallback;
@@ -30,6 +36,12 @@ export const env = {
   // Líneas de ayuda de crisis (por país). Formato: "Nombre:Telefono|Nombre:Telefono"
   crisisHotlines: process.env.CRISIS_HOTLINES ??
     'Línea de crisis (Guatemala):1545|Emergencias:110',
+
+  // Voz (ElevenLabs, server-side)
+  elevenLabsApiKey: process.env.ELEVENLABS_API_KEY ?? '',
+  elevenLabsVoiceId: process.env.ELEVENLABS_VOICE_ID ?? '',
+  elevenLabsModelId: process.env.ELEVENLABS_MODEL_ID ?? 'eleven_multilingual_v2',
+  elevenLabsOutputFormat: process.env.ELEVENLABS_OUTPUT_FORMAT ?? 'mp3_44100_128',
 } as const;
 
 export function assertSupabaseConfigured(): void {

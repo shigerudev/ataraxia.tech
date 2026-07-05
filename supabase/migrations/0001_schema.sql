@@ -1,5 +1,5 @@
 -- Ataraxia — esquema base del flujo clínico
--- Sesiones anónimas, cribado, turnos de conversación, eventos de riesgo y perfiles.
+-- Sesiones anónimas, indagación conversacional, eventos de riesgo y perfiles.
 
 create extension if not exists pgcrypto;
 
@@ -14,19 +14,6 @@ create table if not exists public.sessions (
   closed_at timestamptz
 );
 create index if not exists sessions_user_id_idx on public.sessions (user_id);
-
--- Resultado del cribado (PHQ-9 / GAD-7)
-create table if not exists public.screening_results (
-  id uuid primary key default gen_random_uuid(),
-  session_id uuid not null references public.sessions (id) on delete cascade,
-  instrument text not null check (instrument in ('phq9', 'gad7')),
-  answers jsonb not null,
-  score int not null,
-  risk_level text not null check (risk_level in ('low', 'medium', 'high')),
-  flags jsonb not null default '{}'::jsonb,
-  created_at timestamptz not null default now()
-);
-create index if not exists screening_results_session_idx on public.screening_results (session_id);
 
 -- Turnos de la conversación terapéutica
 create table if not exists public.conversation_turns (
@@ -45,7 +32,7 @@ create table if not exists public.risk_events (
   id uuid primary key default gen_random_uuid(),
   session_id uuid not null references public.sessions (id) on delete cascade,
   level text not null check (level in ('medium', 'high')),
-  source text not null check (source in ('screening', 'message')),
+  source text not null check (source in ('message', 'voice_transcript')),
   detail text,
   created_at timestamptz not null default now()
 );
@@ -57,7 +44,7 @@ create table if not exists public.profiles (
   alias_anonimo text not null,
   email text,
   phone text,
-  diagnostico jsonb,
+  clinical_summary jsonb,
   modalidad text check (modalidad in ('individual', 'grupal')),
   created_at timestamptz not null default now()
 );

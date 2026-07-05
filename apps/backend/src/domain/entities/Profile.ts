@@ -6,7 +6,7 @@ export interface Profile {
   aliasAnonimo: string;
   email: string | null;
   phone: string | null;
-  diagnostico: Record<string, unknown> | null;
+  clinicalSummary: Record<string, unknown> | null;
   modalidad: TherapyModality | null;
   joinMode: JoinMode | null;
   scheduledAt: string | null;
