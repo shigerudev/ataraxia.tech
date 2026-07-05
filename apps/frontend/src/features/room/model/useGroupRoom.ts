@@ -165,7 +165,9 @@ export function useGroupRoom(roomId: string, alias: string): GroupRoomSession {
   const knownAliasesRef = useRef<Map<string, string>>(new Map());
 
   const leftRef = useRef(false);
-  const roomFullRef = useRef(false);
+  // Puerta de aforo: se evalúa UNA vez, cuando nuestra presencia ya figura en
+  // el canal. Quien ya entró no se expulsa aunque lleguen ids menores.
+  const joinGateRef = useRef<'pending' | 'passed' | 'rejected'>('pending');
 
   // ---- Roster (Presence -> estado) -------------------------------------
   const rebuildRoster = useCallback((): GroupParticipant[] => {
@@ -557,11 +559,11 @@ export function useGroupRoom(roomId: string, alias: string): GroupRoomSession {
   const reconcilePeers = useCallback(() => {
     const humans = rebuildRoster();
 
-    // Tope de la malla: los peerId excedentes (orden determinista) se retiran.
-    if (humans.length > MAX_PARTICIPANTS && !roomFullRef.current) {
-      const ids = humans.map((p) => p.peerId).sort((a, b) => a.localeCompare(b));
-      if (ids.indexOf(peerIdRef.current) >= MAX_PARTICIPANTS) {
-        roomFullRef.current = true;
+    // Tope de la malla: al aparecer nuestra presencia, si la sala ya excede el
+    // aforo nos retiramos (una sola evaluación; no se expulsa a establecidos).
+    if (joinGateRef.current === 'pending' && humans.some((p) => p.isLocal)) {
+      if (humans.length > MAX_PARTICIPANTS) {
+        joinGateRef.current = 'rejected';
         setStatus('error');
         setError(
           'La sala grupal está llena por el momento. Intenta de nuevo en unos minutos o agenda un horario.',
@@ -569,9 +571,14 @@ export function useGroupRoom(roomId: string, alias: string): GroupRoomSession {
         teardownRef.current?.();
         return;
       }
+      joinGateRef.current = 'passed';
     }
 
     const remoteIds = new Set(humans.filter((p) => !p.isLocal).map((p) => p.peerId));
+    // Candidatos ICE en espera de pares que ya no están presentes.
+    for (const id of pendingIceRef.current.keys()) {
+      if (!remoteIds.has(id)) pendingIceRef.current.delete(id);
+    }
     for (const remoteId of remoteIds) {
       if (!pcsRef.current.has(remoteId) && peerIdRef.current < remoteId) {
         createPeer(remoteId, true);
@@ -652,7 +659,7 @@ export function useGroupRoom(roomId: string, alias: string): GroupRoomSession {
     }
 
     leftRef.current = false;
-    roomFullRef.current = false;
+    joinGateRef.current = 'pending';
     let cancelled = false;
     const supabase = getSupabase();
     const channel = supabase.channel(roomId, {

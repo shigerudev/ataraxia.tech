@@ -74,8 +74,9 @@ Excluded (deferred):
 
 ## Non-Functional Requirements
 
-- Mesh targets small groups: hard cap `MAX_PARTICIPANTS = 8` (excess joiners,
-  by deterministic peerId order, are turned away with a readable message).
+- Mesh targets small groups: hard cap `MAX_PARTICIPANTS = 8` (a newcomer whose
+  join would exceed capacity is turned away at join time with a readable
+  message; established members are never evicted).
 - Presence/Broadcast require Realtime enabled on the Supabase project.
 - Reuse the "Sinapsis" design system (no new colors/tokens).
 - The host tab is a single point of failure for the facilitator; handoff is
