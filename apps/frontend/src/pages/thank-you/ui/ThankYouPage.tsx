@@ -1,28 +1,41 @@
-import { Button, Chip } from '@/shared/ui';
+import { Button, Chip, IconCheck } from '@/shared/ui';
 import { useTherapyFlow } from '@/features/session';
+
+const TIPS = [
+  'Practica una pausa de respiración de 3 minutos al día.',
+  'Escribe cómo te sientes; nombrar la emoción ayuda a regularla.',
+  'Si lo necesitas, vuelve a conversar cuando quieras.',
+];
 
 export function ThankYouPage() {
   const { reset } = useTherapyFlow();
 
   return (
-    <div className="card flex flex-col items-center text-center gap-5">
-      <Chip variant="green">Gracias por confiar</Chip>
+    <div className="card flex flex-col items-center gap-5 text-center">
+      <span className="grid h-16 w-16 place-items-center rounded-full bg-green-bg text-green-text">
+        <IconCheck className="h-8 w-8" />
+      </span>
 
-      <h1 className="font-display font-bold text-[clamp(24px,3.5vw,36px)] tracking-tight">
-        Has dado un paso importante
-      </h1>
+      <div className="flex flex-col items-center gap-2.5">
+        <Chip variant="green">Gracias por confiar</Chip>
+        <h1 className="font-display font-bold text-[clamp(24px,3.5vw,36px)] tracking-tight">
+          Has dado un paso importante
+        </h1>
+        <p className="leading-relaxed text-muted">
+          Registramos tu preferencia. Pronto recibirás la convocatoria de tu sesión.
+          Recuerda que cuidar tu salud emocional es un proceso, y no estás solo/a.
+        </p>
+      </div>
 
-      <p className="text-muted leading-relaxed">
-        Registramos tu preferencia. Pronto recibirás la convocatoria de tu sesión.
-        Recuerda que cuidar tu salud emocional es un proceso, y no estás solo/a.
-      </p>
-
-      <div className="bg-bg rounded-md2 p-5 text-left w-full">
-        <h2 className="font-display font-semibold text-base mb-2">Mientras tanto</h2>
-        <ul className="list-disc pl-5 text-muted text-[15px] leading-relaxed space-y-1.5">
-          <li>Practica una pausa de respiración de 3 minutos al día.</li>
-          <li>Escribe cómo te sientes; nombrar la emoción ayuda a regularla.</li>
-          <li>Si lo necesitas, vuelve a conversar cuando quieras.</li>
+      <div className="w-full rounded-md2 bg-bg p-5 text-left">
+        <h2 className="mb-3 font-display text-base font-semibold">Mientras tanto</h2>
+        <ul className="flex flex-col gap-2.5">
+          {TIPS.map((tip) => (
+            <li key={tip} className="flex items-start gap-2.5 text-[15px] leading-relaxed text-muted">
+              <IconCheck className="mt-1 h-4 w-4 shrink-0 text-green-text" />
+              {tip}
+            </li>
+          ))}
         </ul>
       </div>
 

@@ -1,7 +1,7 @@
 import { Navigate } from 'react-router-dom';
 import { ROUTES } from '@/shared/config';
 import { USER_ROLE_LABELS, type User } from '@/entities/user';
-import { Chip } from '@/shared/ui';
+import { BrandLogo, Chip, IconUser, IconUsers } from '@/shared/ui';
 import { useAuth } from '@/features/auth/login';
 
 function WelcomeMessage({ user }: { user: User }) {
@@ -39,10 +39,7 @@ export function DashboardPage() {
     <div className="min-h-screen bg-bg">
       <header className="sticky top-0 z-40 bg-white/85 backdrop-blur-md border-b border-hairline">
         <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
-          <span className="flex items-center gap-2 font-display font-bold text-xl text-navy">
-            <span className="w-[22px] h-[22px] rounded-full bg-gradient-to-br from-navy to-indigo-500" />
-            Ataraxia
-          </span>
+          <BrandLogo />
           <button type="button" className="btn--light text-sm px-4 py-2" onClick={logout}>
             Cerrar sesión
           </button>
@@ -54,11 +51,17 @@ export function DashboardPage() {
 
         <section className="grid sm:grid-cols-2 gap-6">
           <article className="card flex flex-col gap-2">
+            <span className="icon-tile mb-1 bg-green-bg text-green-text">
+              <IconUser className="h-5 w-5" />
+            </span>
             <h2 className="font-display font-semibold text-xl">Sesiones individuales</h2>
             <p className="text-muted">Agenda y seguimiento de terapia uno a uno.</p>
             <Chip variant="green" className="self-start mt-2">Próximamente</Chip>
           </article>
           <article className="card flex flex-col gap-2">
+            <span className="icon-tile mb-1 bg-blue-bg text-blue-text">
+              <IconUsers className="h-5 w-5" />
+            </span>
             <h2 className="font-display font-semibold text-xl">Sesiones grupales</h2>
             <p className="text-muted">Grupos de apoyo y talleres terapéuticos.</p>
             <Chip variant="blue" className="self-start mt-2">Próximamente</Chip>

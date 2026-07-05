@@ -28,15 +28,23 @@ export default {
         soft: '0 1px 2px rgba(16,18,59,0.04)',
         card: '0 12px 32px rgba(16,18,59,0.08)',
       },
+      backgroundImage: {
+        aurora: 'radial-gradient(1100px 560px at 50% -10%, #E7E5FA, transparent)',
+      },
       keyframes: {
         'ping-soft': {
           '0%': { boxShadow: '0 0 0 0 rgba(255,92,122,.5)' },
           '70%': { boxShadow: '0 0 0 8px rgba(255,92,122,0)' },
           '100%': { boxShadow: '0 0 0 0 rgba(255,92,122,0)' },
         },
+        typing: {
+          '0%, 60%, 100%': { transform: 'translateY(0)', opacity: '0.4' },
+          '30%': { transform: 'translateY(-3px)', opacity: '1' },
+        },
       },
       animation: {
         'ping-soft': 'ping-soft 1.8s infinite',
+        typing: 'typing 1.2s ease-in-out infinite',
       },
     },
   },

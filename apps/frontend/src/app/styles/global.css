@@ -44,7 +44,7 @@
 
   /* Tarjeta base: superficie blanca con borde hairline */
   .card {
-    @apply bg-white border border-hairline rounded-lg2 p-8 shadow-card;
+    @apply bg-white border border-hairline rounded-lg2 p-6 sm:p-8 shadow-card;
   }
 
   /* ---- Chips / badges ---- */
@@ -52,7 +52,7 @@
     @apply inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-[13px] font-medium bg-lavender text-navy;
   }
   .chip-outline {
-    @apply inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-[13px] font-medium border border-navy text-navy;
+    @apply inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-[13px] font-medium border border-hairline bg-white/70 text-navy;
   }
   .chip-green {
     @apply inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-[13px] font-medium bg-green-bg text-green-text;
@@ -64,20 +64,23 @@
     @apply inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-[13px] font-medium bg-pink-bg text-navy;
   }
 
-  /* ---- Botones (pill, con hover-lift) ---- */
+  /* ---- Botones (pill, con hover-lift y anillo de foco) ---- */
   .btn--primary {
-    @apply inline-flex items-center justify-center gap-2 font-semibold rounded-full px-6 py-3 transition bg-navy text-white
-           hover:bg-navy-2 hover:-translate-y-0.5 hover:shadow-card
+    @apply inline-flex items-center justify-center gap-2 font-semibold text-[15px] rounded-full px-6 py-3 transition bg-navy text-white
+           hover:bg-navy-2 hover:-translate-y-0.5 hover:shadow-card active:translate-y-0
+           focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-navy/25
            disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-none;
   }
   .btn--ghost {
-    @apply inline-flex items-center justify-center gap-2 font-semibold rounded-full px-6 py-3 transition bg-blue-bg text-navy
-           hover:bg-blue hover:-translate-y-0.5
+    @apply inline-flex items-center justify-center gap-2 font-semibold text-[15px] rounded-full px-6 py-3 transition bg-blue-bg text-navy
+           hover:bg-blue hover:-translate-y-0.5 active:translate-y-0
+           focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-navy/20
            disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:translate-y-0;
   }
   .btn--light {
-    @apply inline-flex items-center justify-center gap-2 font-semibold rounded-full px-6 py-3 transition bg-white text-navy border border-hairline
-           hover:bg-lavender hover:-translate-y-0.5
+    @apply inline-flex items-center justify-center gap-2 font-semibold text-[15px] rounded-full px-6 py-3 transition bg-white text-navy border border-hairline
+           hover:bg-lavender hover:-translate-y-0.5 active:translate-y-0
+           focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-navy/20
            disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:translate-y-0;
   }
 
@@ -98,8 +101,7 @@
   }
   .field input:focus,
   .field textarea:focus {
-    @apply outline-none border-navy;
-    box-shadow: 0 0 0 3px rgba(16, 18, 59, 0.12);
+    @apply outline-none border-navy ring-4 ring-navy/10;
   }
   .field--error input {
     @apply border-pink;
@@ -110,11 +112,27 @@
 
   /* ---- Tarjeta seleccionable (modo, modalidad, opciones) ---- */
   .select-card {
-    @apply flex flex-col items-start gap-1 text-left p-5 bg-white border border-hairline rounded-md2 transition cursor-pointer
-           hover:border-navy hover:-translate-y-0.5
-           disabled:opacity-55 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:border-hairline;
+    @apply relative flex flex-col items-start gap-1 text-left p-5 bg-white border border-hairline rounded-md2 transition cursor-pointer
+           hover:border-navy hover:-translate-y-0.5 hover:shadow-soft
+           focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-navy/20
+           disabled:opacity-55 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:border-hairline disabled:hover:shadow-none;
   }
   .select-card.is-active {
     @apply border-navy bg-lavender/50;
+  }
+
+  /* Cuadro de icono suave (usado en tarjetas y listas) */
+  .icon-tile {
+    @apply grid h-11 w-11 shrink-0 place-items-center rounded-xl;
+  }
+
+  /* Aviso de error inline */
+  .form-error {
+    @apply text-pink font-medium text-sm;
+  }
+
+  /* Indicador de escritura del asistente (tres puntos) */
+  .typing-dot {
+    @apply inline-block h-1.5 w-1.5 rounded-full bg-muted/70 animate-typing;
   }
 }

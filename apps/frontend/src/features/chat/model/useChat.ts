@@ -11,7 +11,7 @@ const GREETING: ChatMessage = {
   role: 'assistant',
   content:
     'Hola, soy Ataraxia. Este es un espacio seguro y confidencial para acompañarte. ' +
-    'Cuéntame, ¿cómo te sientes hoy y qué te trae por aquí?',
+    'Cuéntame, ¿cómo te sientes hoy?',
 };
 
 export function useChat() {

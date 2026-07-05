@@ -33,7 +33,7 @@ export function LoginForm() {
   }
 
   return (
-    <div className="w-full max-w-md flex flex-col gap-6">
+    <div className="flex w-full flex-col gap-6">
       <header className="flex flex-col gap-1.5">
         <h1 className="font-display font-bold text-2xl tracking-tight">
           Acceso a la plataforma
@@ -67,7 +67,7 @@ export function LoginForm() {
         />
 
         {error && (
-          <p className="text-pink font-medium text-sm" role="alert">
+          <p className="form-error" role="alert">
             {error}
           </p>
         )}
