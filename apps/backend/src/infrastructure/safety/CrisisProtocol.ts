@@ -1,9 +1,10 @@
 import type { CrisisHotline, CrisisInfo, ICrisisProtocol } from '../../domain/services/ICrisisProtocol.js';
 
 const CRISIS_MESSAGE =
-  'Noto que estás pasando por un dolor muy profundo y lo más importante ahora es que estés a salvo. ' +
-  'Mi capacidad como asistente es limitada en este momento y no puedo acompañarte en esto solo. ' +
-  'Por favor comunícate ahora mismo con ayuda profesional o con una línea de crisis. No estás solo/a.';
+  'Noto que estás pasando por un dolor muy profundo y quiero que estés a salvo. ' +
+  'Antes de seguir, necesito preguntarte algo directo para cuidarte: ¿estás pensando en hacerte daño ahora mismo? ' +
+  'Mi capacidad como asistente es limitada en este momento; por favor comunícate ahora con ayuda profesional o con una línea de crisis. ' +
+  'Si puedes, llama o escribe también a alguien de confianza que pueda estar contigo ahora.';
 
 export class CrisisProtocol implements ICrisisProtocol {
   private readonly hotlines: CrisisHotline[];

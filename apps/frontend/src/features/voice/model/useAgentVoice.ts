@@ -13,10 +13,9 @@ import type { VoiceSession, VoiceStatus } from './types';
  * ConversationProvider que monta VoiceOverlay (el agentId público viaja en
  * las props del provider; ver VITE_ELEVENLABS_AGENT_ID).
  *
- * TODO(voz/crisis): esta conversación NO pasa por el clasificador de crisis
- * del backend (que opera sobre los mensajes SSE del chat de texto). Resolver
- * a futuro: reenviar transcripciones al backend o usar una client tool /
- * webhook del agente.
+ * Las transcripciones de usuario se reenvían al backend desde ChatWindow para
+ * persistencia y clasificación de crisis. Este hook solo controla la sesión de
+ * audio de ElevenLabs.
  * TODO(voz/privado): para agentes privados, sustituir el agentId por una
  * signed URL generada por el backend (GET https://api.elevenlabs.io/v1/convai/conversation/get-signed-url?agent_id=...,
  * encabezado xi-api-key) y pasarla en startSession({ signedUrl }). La API key

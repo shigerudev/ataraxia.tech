@@ -44,10 +44,16 @@ test('high-risk voice transcript persists crisis and skips regular assistant gen
 
   assert.equal(events.length, 1);
   assert.equal(events[0]?.type, 'crisis');
+  if (events[0]?.type === 'crisis') {
+    assert.match(events[0].crisis.message, /hacerte daño ahora mismo/);
+    assert.match(events[0].crisis.message, /ayuda profesional/);
+    assert.match(events[0].crisis.message, /alguien de confianza/);
+  }
   assert.equal(sessionRepository.turns.length, 2);
   assert.equal(sessionRepository.turns[0]?.role, 'user');
   assert.equal(sessionRepository.turns[0]?.riskSignal, 'high');
   assert.equal(sessionRepository.turns[1]?.role, 'assistant');
+  assert.match(sessionRepository.turns[1]?.content ?? '', /hacerte daño ahora mismo/);
   assert.equal(sessionRepository.riskEvents[0]?.source, 'voice_transcript');
   assert.equal(sessionRepository.riskEvents[0]?.level, 'high');
   assert.equal(sessionRepository.session.status, 'crisis');
@@ -153,7 +159,9 @@ class EmptyEmbeddingService implements IEmbeddingService {
 class StaticCrisisProtocol implements ICrisisProtocol {
   getCrisisInfo() {
     return {
-      message: 'Mensaje de crisis',
+      message:
+        'Antes de seguir, necesito preguntarte algo directo: ¿estás pensando en hacerte daño ahora mismo? ' +
+        'Por favor comunícate con ayuda profesional y llama a alguien de confianza.',
       hotlines: [{ name: 'Emergencias', phone: '110' }],
     };
   }
