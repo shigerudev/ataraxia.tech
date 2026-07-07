@@ -27,6 +27,17 @@ import type { VoiceSession, VoiceStatus } from './types';
 
 type Phase = 'idle' | 'requesting-mic' | 'started' | 'ended' | 'error';
 
+function sdkErrorMessage(message: string | undefined): string {
+  return message?.trim() || 'Se perdió la conexión con el agente de voz.';
+}
+
+function disconnectErrorMessage(details: unknown): string | null {
+  if (!details || typeof details !== 'object') return null;
+  const record = details as Record<string, unknown>;
+  if (record.reason !== 'error') return null;
+  return sdkErrorMessage(typeof record.message === 'string' ? record.message : undefined);
+}
+
 export function useAgentVoice(): VoiceSession {
   const { startSession, endSession, getInputVolume, getOutputVolume } = useConversationControls();
   const { status: sdkStatus, message: sdkMessage } = useConversationStatus();
@@ -56,6 +67,7 @@ export function useAgentVoice(): VoiceSession {
   const start = useCallback(async () => {
     const gen = ++genRef.current;
     setLocalError(null);
+    connectedOnceRef.current = false;
     try {
       assertMicSupport();
       setPhase('requesting-mic');
@@ -64,7 +76,27 @@ export function useAgentVoice(): VoiceSession {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       stream.getTracks().forEach((track) => track.stop());
       if (gen !== genRef.current) return;
-      startSessionRef.current();
+      startSessionRef.current({
+        onConnect: () => {
+          if (gen !== genRef.current) return;
+          connectedOnceRef.current = true;
+        },
+        onDisconnect: (details) => {
+          if (gen !== genRef.current) return;
+          const message = disconnectErrorMessage(details);
+          if (message) {
+            setLocalError(message);
+            setPhase('error');
+            return;
+          }
+          setPhase('ended');
+        },
+        onError: (message) => {
+          if (gen !== genRef.current) return;
+          setLocalError(sdkErrorMessage(message));
+          setPhase('error');
+        },
+      });
       setPhase('started');
     } catch (err) {
       if (gen !== genRef.current) return;

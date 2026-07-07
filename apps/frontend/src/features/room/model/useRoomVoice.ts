@@ -30,6 +30,17 @@ export interface RoomVoiceSession {
 
 type Phase = 'idle' | 'requesting-mic' | 'started' | 'ended' | 'error';
 
+function sdkErrorMessage(message: string | undefined): string {
+  return message?.trim() || 'Se perdió la conexión con la sala.';
+}
+
+function disconnectErrorMessage(details: unknown): string | null {
+  if (!details || typeof details !== 'object') return null;
+  const record = details as Record<string, unknown>;
+  if (record.reason !== 'error') return null;
+  return sdkErrorMessage(typeof record.message === 'string' ? record.message : undefined);
+}
+
 function micErrorMessage(err: unknown): string {
   const name = err instanceof Error ? err.name : '';
   if (name === 'NotAllowedError' || name === 'SecurityError') {
@@ -68,6 +79,7 @@ export function useRoomVoice(): RoomVoiceSession {
   const start = useCallback(async () => {
     const gen = ++genRef.current;
     setLocalError(null);
+    connectedOnceRef.current = false;
     try {
       if (!navigator.mediaDevices?.getUserMedia) {
         throw new Error('mic-unsupported');
@@ -78,7 +90,27 @@ export function useRoomVoice(): RoomVoiceSession {
       if (gen !== genRef.current) return;
       // startSession es fire-and-forget: los fallos de conexión llegan por
       // useConversationStatus (status 'error'), ya mapeado abajo.
-      startSessionRef.current();
+      startSessionRef.current({
+        onConnect: () => {
+          if (gen !== genRef.current) return;
+          connectedOnceRef.current = true;
+        },
+        onDisconnect: (details) => {
+          if (gen !== genRef.current) return;
+          const message = disconnectErrorMessage(details);
+          if (message) {
+            setLocalError(message);
+            setPhase('error');
+            return;
+          }
+          setPhase('ended');
+        },
+        onError: (message) => {
+          if (gen !== genRef.current) return;
+          setLocalError(sdkErrorMessage(message));
+          setPhase('error');
+        },
+      });
       setPhase('started');
     } catch (err) {
       if (gen !== genRef.current) return;

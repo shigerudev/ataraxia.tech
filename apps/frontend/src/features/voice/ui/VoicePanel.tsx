@@ -43,18 +43,14 @@ function statusText(session: VoiceSession): string {
 export function VoicePanel({ session, onClose }: VoicePanelProps) {
   const rootRef = useRef<HTMLDivElement>(null);
 
-  // Cierra el overlay cuando la sesión termina (colgó el usuario o el agente).
-  useEffect(() => {
-    if (session.status === 'ended') onClose();
-  }, [session.status, onClose]);
-
   // Foco inicial en el primer control disponible.
   useEffect(() => {
     rootRef.current?.querySelector<HTMLElement>('button:not([disabled])')?.focus();
   }, []);
 
-  function endCall() {
-    void session.stop();
+  async function endCall() {
+    await session.stop();
+    onClose();
   }
 
   function handleKeyDown(event: KeyboardEvent<HTMLDivElement>) {
@@ -106,16 +102,16 @@ export function VoicePanel({ session, onClose }: VoicePanelProps) {
           )}
         </div>
 
-        {session.status === 'error' ? (
+        {session.status === 'error' || session.status === 'ended' ? (
           <div className="flex flex-wrap items-center justify-center gap-3">
             <button
               type="button"
               className="btn--light px-5 py-2.5 text-sm"
               onClick={() => void session.start()}
             >
-              Reintentar
+              {session.status === 'ended' ? 'Llamar de nuevo' : 'Reintentar'}
             </button>
-            <button type="button" className="btn--ghost px-5 py-2.5 text-sm" onClick={endCall}>
+            <button type="button" className="btn--ghost px-5 py-2.5 text-sm" onClick={onClose}>
               Volver al chat
             </button>
           </div>
