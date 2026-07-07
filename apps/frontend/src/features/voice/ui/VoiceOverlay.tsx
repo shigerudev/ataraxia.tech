@@ -1,3 +1,5 @@
+import { useEffect, type ReactNode } from 'react';
+import { createPortal } from 'react-dom';
 import { ConversationProvider } from '@elevenlabs/react';
 import { ELEVENLABS_AGENT_ID } from '@/shared/config';
 import { useAgentVoice } from '../model/useAgentVoice';
@@ -25,6 +27,18 @@ function DemoVoicePanel({ onClose }: { onClose: () => void }) {
   return <VoicePanel session={session} onClose={onClose} />;
 }
 
+function VoicePortal({ children }: { children: ReactNode }) {
+  useEffect(() => {
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, []);
+
+  return createPortal(children, document.body);
+}
+
 /**
  * Punto de entrada del modo voz. Con VITE_ELEVENLABS_AGENT_ID definido monta
  * la conversación real con ElevenLabs; sin él, el modo demostración (micrófono
@@ -32,17 +46,23 @@ function DemoVoicePanel({ onClose }: { onClose: () => void }) {
  */
 export function VoiceOverlay({ onTranscript, onClose }: VoiceOverlayProps) {
   if (!ELEVENLABS_AGENT_ID) {
-    return <DemoVoicePanel onClose={onClose} />;
+    return (
+      <VoicePortal>
+        <DemoVoicePanel onClose={onClose} />
+      </VoicePortal>
+    );
   }
 
   return (
-    <ConversationProvider
-      agentId={ELEVENLABS_AGENT_ID}
-      onMessage={({ role, message }) =>
-        onTranscript(role === 'user' ? 'user' : 'assistant', message)
-      }
-    >
-      <AgentVoicePanel onClose={onClose} />
-    </ConversationProvider>
+    <VoicePortal>
+      <ConversationProvider
+        agentId={ELEVENLABS_AGENT_ID}
+        onMessage={({ role, message }) =>
+          onTranscript(role === 'user' ? 'user' : 'assistant', message)
+        }
+      >
+        <AgentVoicePanel onClose={onClose} />
+      </ConversationProvider>
+    </VoicePortal>
   );
 }
