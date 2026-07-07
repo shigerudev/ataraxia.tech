@@ -12,6 +12,7 @@ import {
   IconPhone,
   IconShield,
   IconUsers,
+  ThemeToggle,
 } from '@/shared/ui';
 
 /* ============================================================
@@ -164,7 +165,10 @@ export function LandingPage() {
             <a href="#seguridad" className="text-sm font-semibold text-muted transition hover:text-ink">Seguridad</a>
             <a href="#preguntas" className="text-sm font-semibold text-muted transition hover:text-ink">Preguntas</a>
           </nav>
-          <Link to={ROUTES.start} className="btn--primary px-5 py-2.5 text-sm">Empezar</Link>
+          <div className="flex items-center gap-2">
+            <ThemeToggle />
+            <Link to={ROUTES.start} className="btn--primary px-5 py-2.5 text-sm">Empezar</Link>
+          </div>
         </div>
       </header>
 
@@ -255,14 +259,14 @@ export function LandingPage() {
             <div className="grid items-stretch gap-4 md:grid-cols-[1fr_auto_1fr]">
               {/* Genérico (frío) */}
               <Reveal className="h-full">
-                <div className="h-full rounded-lg2 border border-[#E4E5EC] bg-[#F1F2F6] p-6 sm:p-7">
+                <div className="h-full rounded-lg2 border border-hairline bg-bg p-6 sm:p-7">
                   <h3 className="mb-5 flex items-center gap-3 text-lg font-bold text-ink">
-                    <span className="grid h-10 w-10 place-items-center rounded-xl bg-[#E4E6EE] text-[#828799]">
+                    <span className="grid h-10 w-10 place-items-center rounded-xl bg-lavender text-muted">
                       <IconRobot />
                     </span>
                     Un asistente de IA genérico
                   </h3>
-                  <ul className="flex flex-col gap-3.5 font-mono text-sm text-[#7C8194]">
+                  <ul className="flex flex-col gap-3.5 font-mono text-sm text-muted">
                     {GENERIC.map((t) => (
                       <li key={t} className="flex items-start gap-3">
                         <span className="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-full bg-pink-bg text-pink-text">

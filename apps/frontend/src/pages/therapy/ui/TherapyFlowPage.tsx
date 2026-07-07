@@ -6,7 +6,7 @@ import { RegistrationForm } from '@/features/registration';
 import { WelcomePage } from '@/pages/welcome';
 import { SchedulePage } from '@/pages/schedule';
 import { ThankYouPage } from '@/pages/thank-you';
-import { BrandLogo, IconLock } from '@/shared/ui';
+import { BrandLogo, IconLock, ThemeToggle } from '@/shared/ui';
 
 // La sala arrastra el SDK de voz (ElevenLabs) y WebRTC: solo se descarga al entrar.
 const RoomPage = lazy(() => import('@/features/room').then((m) => ({ default: m.RoomPage })));
@@ -103,10 +103,13 @@ function FlowContainer() {
       <header>
         <div className={`mx-auto flex w-full items-center justify-between px-4 py-4 sm:px-5 sm:py-6 ${width}`}>
           <BrandLogo />
-          <span className="chip-outline hidden sm:inline-flex">
-            <IconLock className="h-3.5 w-3.5" />
-            Espacio confidencial
-          </span>
+          <div className="flex items-center gap-2">
+            <ThemeToggle />
+            <span className="chip-outline hidden sm:inline-flex">
+              <IconLock className="h-3.5 w-3.5" />
+              Espacio confidencial
+            </span>
+          </div>
         </div>
       </header>
 

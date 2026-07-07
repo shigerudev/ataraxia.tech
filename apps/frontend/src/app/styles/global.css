@@ -8,6 +8,74 @@
    ============================================================ */
 
 @layer base {
+  :root {
+    color-scheme: light;
+    --color-primary: 91 76 240;
+    --color-primary-light: 141 127 255;
+    --color-primary-dark: 64 51 200;
+    --color-navy: 29 35 64;
+    --color-navy-2: 39 46 82;
+    --color-bg: 247 245 252;
+    --color-surface: 255 255 255;
+    --color-lavender: 233 229 253;
+    --color-green: 167 215 181;
+    --color-green-bg: 234 246 238;
+    --color-green-text: 31 122 80;
+    --color-blue: 169 200 255;
+    --color-blue-bg: 234 241 255;
+    --color-blue-text: 46 90 172;
+    --color-pink: 242 139 130;
+    --color-pink-bg: 253 236 234;
+    --color-pink-text: 180 69 60;
+    --color-warning: 247 210 122;
+    --color-warning-bg: 253 244 222;
+    --color-warning-text: 138 97 22;
+    --color-ink: 29 35 64;
+    --color-muted: 107 114 128;
+    --color-hairline: 233 231 246;
+    --shadow-soft: 0 10px 30px rgba(91, 76, 240, 0.1);
+    --shadow-card: 0 15px 40px rgba(91, 76, 240, 0.15);
+    --bg-brand: linear-gradient(135deg, #8D7FFF 0%, #5B4CF0 100%);
+    --bg-aurora: radial-gradient(1100px 560px at 50% -10%, #E9E5FD, transparent);
+    --bg-orb: radial-gradient(circle at 30% 26%, #FFFFFF 0%, #E9E5FD 14%, #8D7FFF 40%, #5B4CF0 68%, #1D2340 96%);
+    --bg-voice-glow: radial-gradient(480px 480px at 50% 36%, rgba(141, 127, 255, 0.18), transparent 70%);
+  }
+
+  :root[data-theme='dark'] {
+    color-scheme: dark;
+    --color-primary: 157 143 255;
+    --color-primary-light: 196 188 255;
+    --color-primary-dark: 126 109 255;
+    --color-navy: 237 240 255;
+    --color-navy-2: 214 220 246;
+    --color-bg: 11 16 32;
+    --color-surface: 18 25 46;
+    --color-lavender: 45 39 82;
+    --color-green: 119 190 146;
+    --color-green-bg: 20 58 45;
+    --color-green-text: 153 235 184;
+    --color-blue: 121 164 245;
+    --color-blue-bg: 24 48 91;
+    --color-blue-text: 174 203 255;
+    --color-pink: 242 139 130;
+    --color-pink-bg: 78 35 43;
+    --color-pink-text: 255 181 174;
+    --color-warning: 247 210 122;
+    --color-warning-bg: 78 61 27;
+    --color-warning-text: 255 220 137;
+    --color-ink: 237 240 255;
+    --color-muted: 166 175 199;
+    --color-hairline: 49 58 91;
+    --shadow-soft: 0 12px 34px rgba(0, 0, 0, 0.28);
+    --shadow-card: 0 18px 48px rgba(0, 0, 0, 0.34);
+    --bg-brand: linear-gradient(135deg, #C4BCFF 0%, #7E6DFF 100%);
+    --bg-aurora:
+      radial-gradient(900px 520px at 50% -10%, rgba(126, 109, 255, 0.28), transparent 72%),
+      linear-gradient(180deg, rgba(11, 16, 32, 0) 0%, rgba(11, 16, 32, 0.2) 100%);
+    --bg-orb: radial-gradient(circle at 30% 26%, #FFFFFF 0%, #C4BCFF 12%, #7E6DFF 42%, #4033C8 70%, #060914 96%);
+    --bg-voice-glow: radial-gradient(480px 480px at 50% 36%, rgba(196, 188, 255, 0.18), transparent 70%);
+  }
+
   html {
     scroll-behavior: smooth;
   }
@@ -24,6 +92,10 @@
 
   h1, h2, h3, h4, h5 {
     @apply font-display;
+  }
+
+  ::selection {
+    @apply bg-primary/20 text-ink;
   }
 
   /* Escala tipográfica base (propuesta del equipo); los componentes pueden
@@ -75,6 +147,19 @@
   }
   .chip-pink {
     @apply inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-[13px] font-medium bg-pink-bg text-navy;
+  }
+
+  .theme-toggle {
+    @apply inline-flex shrink-0 items-center gap-1 rounded-full border border-hairline bg-white/70 p-1 text-xs font-bold text-muted shadow-soft backdrop-blur-md transition;
+  }
+  .theme-toggle__option {
+    @apply inline-flex items-center gap-1.5 rounded-full px-3 py-2 transition;
+  }
+  .theme-toggle__option.is-active {
+    @apply bg-brand text-white shadow-soft;
+  }
+  .theme-toggle__option:not(.is-active) {
+    @apply hover:bg-lavender hover:text-ink;
   }
 
   /* ---- Botones (radio 16px, gradiente de marca y hover-lift) ---- */
@@ -273,6 +358,39 @@
   }
   .room-tile.is-speaking {
     @apply border-green/60 shadow-card;
+  }
+}
+
+@layer utilities {
+  :root[data-theme='dark'] .bg-white {
+    background-color: rgb(var(--color-surface) / 1);
+  }
+  :root[data-theme='dark'] .bg-white\/50 {
+    background-color: rgb(var(--color-surface) / 0.5);
+  }
+  :root[data-theme='dark'] .bg-white\/60 {
+    background-color: rgb(var(--color-surface) / 0.6);
+  }
+  :root[data-theme='dark'] .bg-white\/70 {
+    background-color: rgb(var(--color-surface) / 0.7);
+  }
+  :root[data-theme='dark'] .bg-white\/80 {
+    background-color: rgb(var(--color-surface) / 0.8);
+  }
+  :root[data-theme='dark'] .bg-white\/85 {
+    background-color: rgb(var(--color-surface) / 0.85);
+  }
+  :root[data-theme='dark'] .text-white\/50 {
+    color: rgb(237 240 255 / 0.5);
+  }
+  :root[data-theme='dark'] .text-white\/70 {
+    color: rgb(237 240 255 / 0.7);
+  }
+  :root[data-theme='dark'] .text-white\/80 {
+    color: rgb(237 240 255 / 0.8);
+  }
+  :root[data-theme='dark'] .text-white\/85 {
+    color: rgb(237 240 255 / 0.85);
   }
 }
 

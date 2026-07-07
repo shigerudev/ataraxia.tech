@@ -1,4 +1,4 @@
-import type { ButtonHTMLAttributes, InputHTMLAttributes, ReactNode } from 'react';
+import { useEffect, useState, type ButtonHTMLAttributes, type InputHTMLAttributes, type ReactNode } from 'react';
 
 /* ============================================================
    Iconos — trazos de 24px estilo línea (sin emojis).
@@ -148,6 +148,24 @@ export const IconArrowLeft = createIcon(
   </>,
 );
 
+export const IconSun = createIcon(
+  <>
+    <circle cx="12" cy="12" r="4" />
+    <path d="M12 2v2" />
+    <path d="M12 20v2" />
+    <path d="m4.93 4.93 1.41 1.41" />
+    <path d="m17.66 17.66 1.41 1.41" />
+    <path d="M2 12h2" />
+    <path d="M20 12h2" />
+    <path d="m6.34 17.66-1.41 1.41" />
+    <path d="m19.07 4.93-1.41 1.41" />
+  </>,
+);
+
+export const IconMoon = createIcon(
+  <path d="M12 3a6.8 6.8 0 0 0 8.8 8.8A9 9 0 1 1 12 3Z" />,
+);
+
 /* ============================================================
    Marca
    ============================================================ */
@@ -195,6 +213,51 @@ export function BrandLogo({ tone = 'navy', className = '' }: BrandLogoProps) {
       <BrandMark className="h-8 w-8" gradient={!isWhite} />
       Ataraxia
     </span>
+  );
+}
+
+type ThemeMode = 'daylight' | 'dark';
+
+function getStoredTheme(): ThemeMode {
+  if (typeof document === 'undefined') return 'daylight';
+  return document.documentElement.dataset.theme === 'dark' ? 'dark' : 'daylight';
+}
+
+export function ThemeToggle({ className = '' }: { className?: string }) {
+  const [theme, setTheme] = useState<ThemeMode>(getStoredTheme);
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme;
+    try {
+      localStorage.setItem('ataraxia_theme', theme);
+    } catch {
+      // Theme still works for the current tab if storage is unavailable.
+    }
+  }, [theme]);
+
+  return (
+    <div className={`theme-toggle ${className}`.trim()} role="group" aria-label="Tema visual">
+      <button
+        type="button"
+        className={`theme-toggle__option ${theme === 'daylight' ? 'is-active' : ''}`}
+        aria-pressed={theme === 'daylight'}
+        onClick={() => setTheme('daylight')}
+        title="Daylight theme"
+      >
+        <IconSun className="h-4 w-4" />
+        <span className="hidden sm:inline">Daylight</span>
+      </button>
+      <button
+        type="button"
+        className={`theme-toggle__option ${theme === 'dark' ? 'is-active' : ''}`}
+        aria-pressed={theme === 'dark'}
+        onClick={() => setTheme('dark')}
+        title="Dark theme"
+      >
+        <IconMoon className="h-4 w-4" />
+        <span className="hidden sm:inline">Dark</span>
+      </button>
+    </div>
   );
 }
 
