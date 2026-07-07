@@ -86,7 +86,7 @@ export function ChatWindow() {
     if (step === 'crisis') setVoiceOpen(false);
   }, [step]);
 
-  // Ciclo de foco del diálogo modal: al cerrar la voz, regresa al micrófono.
+  // Ciclo de foco del diálogo modal: al cerrar la voz, regresa al botón de llamada.
   useEffect(() => {
     if (voiceWasOpen.current && !voiceOpen) callButtonRef.current?.focus();
     voiceWasOpen.current = voiceOpen;

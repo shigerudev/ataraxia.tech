@@ -9,7 +9,7 @@ import {
   IconCheck,
   IconHeart,
   IconLock,
-  IconMic,
+  IconPhone,
   IconShield,
   IconUsers,
 } from '@/shared/ui';
@@ -123,14 +123,14 @@ const TRUST: { Icon: IconCmp; label: string }[] = [
   { Icon: IconLock, label: 'Sin registro' },
   { Icon: IconShield, label: 'Conversación privada' },
   { Icon: IconHeart, label: 'Apoyo ante crisis' },
-  { Icon: IconMic, label: 'Chat y voz' },
+  { Icon: IconPhone, label: 'Chat y voz' },
 ];
 
 const PILLARS: { Icon: IconCmp; t: string; d: string }[] = [
   { Icon: IconLock, t: 'Privacidad primero', d: 'Entras y conversas sin identificarte. Tus datos solo existen si decides dar el paso hacia terapia.' },
   { Icon: IconShield, t: 'Seguridad clínica', d: 'Clasificación de riesgo determinística y protocolo de crisis con líneas de ayuda, revisado en cada turno.' },
   { Icon: IconHeart, t: 'Método con respaldo', d: 'Cribado PHQ-9 / GAD-7 y enfoque cognitivo-conductual, con conocimiento clínico curado detrás de cada respuesta.' },
-  { Icon: IconMic, t: 'Chat y voz', d: 'Escribe o habla con una voz natural. Elige el canal en el que te sientas más cómodo/a.' },
+  { Icon: IconPhone, t: 'Chat y voz', d: 'Escribe o habla con una voz natural. Elige el canal en el que te sientas más cómodo/a.' },
   { Icon: IconUsers, t: 'Puente humano', d: 'Cuando quieras, te conectamos con terapia individual o grupal acompañada por profesionales.' },
   { Icon: IconChat, t: 'Siempre disponible', d: 'Sin salas de espera: un primer apoyo el día que lo necesitas, a la hora que sea.' },
 ];

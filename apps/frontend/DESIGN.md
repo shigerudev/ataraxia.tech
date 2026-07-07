@@ -121,7 +121,7 @@ Para "colgar" se usa `IconPhone` con `rotate-[135deg]` (teléfono hacia abajo).
 - **Jerarquía**: eyebrow (`Chip`) → `h1` display → párrafo `text-muted`.
 - **Chat**: avatar del asistente con `BrandMark`, burbujas navy (usuario) / blancas (asistente),
   indicador de escritura con `.typing-dot`, envío con botón circular `IconSend` y botón de
-  micrófono (`IconMic`) que abre el modo voz.
+  llamada (`IconPhone`) que abre el modo voz.
 - **Modo voz**: overlay `absolute` sobre la card del chat (no `fixed`; la voz es una modalidad
   de la conversación) con **velo claro** (`bg` #F7F5FC al 90 % + resplandor violeta), a diferencia
   del velo oscuro reservado para crisis. `role="dialog"` modal con el resto del chat `inert`.
