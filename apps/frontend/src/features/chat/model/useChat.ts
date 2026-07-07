@@ -1,7 +1,7 @@
 import { useCallback, useRef, useState } from 'react';
 import { streamAssistantMessage } from '@/shared/api';
 import { useTherapyFlow } from '@/features/session';
-import { replyToVoice, transcribeVoice } from '@/features/session/api/sessionApi';
+import { replyToVoice } from '@/features/session/api/sessionApi';
 
 export interface ChatMessage {
   role: 'user' | 'assistant';
@@ -61,13 +61,6 @@ export function useChat() {
     [sending, sessionId, accessToken, appendAssistantToken, reportCrisis],
   );
 
-  // Inserta en el hilo mensajes generados localmente (transcripciones del modo
-  // de voz). TODO(voz): estos mensajes no se persisten en el backend ni pasan
-  // por el clasificador de crisis; solo existen en el cliente.
-  const appendLocal = useCallback((message: ChatMessage) => {
-    setMessages((prev) => [...prev, message]);
-  }, []);
-
   const sendVoiceTranscript = useCallback(
     async (transcript: string) => {
       const trimmed = transcript.trim();
@@ -79,12 +72,7 @@ export function useChat() {
       setMessages((prev) => [...prev, { role: 'user' as const, content: trimmed }]);
 
       try {
-        const { transcript: normalizedTranscript } = await transcribeVoice(
-          accessToken,
-          sessionId,
-          trimmed,
-        );
-        const reply = await replyToVoice(accessToken, sessionId, normalizedTranscript);
+        const reply = await replyToVoice(accessToken, sessionId, trimmed);
         setMessages((prev) => [...prev, { role: 'assistant' as const, content: reply.text }]);
         if (reply.crisis) reportCrisis(reply.crisis);
         if (reply.audio) {
@@ -105,5 +93,5 @@ export function useChat() {
     [accessToken, reportCrisis, sending, sessionId],
   );
 
-  return { messages, sending, error, audioSrc, send, appendLocal, sendVoiceTranscript };
+  return { messages, sending, error, audioSrc, send, sendVoiceTranscript };
 }

@@ -8,6 +8,7 @@
     "build": "tsc",
     "start": "node dist/main.js",
     "typecheck": "tsc --noEmit",
+    "test": "tsx --test src/**/*.test.ts",
     "ingest": "tsx src/scripts/ingestKnowledge.ts",
     "n8n:check": "tsx src/scripts/checkN8n.ts"
   },

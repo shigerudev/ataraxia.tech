@@ -57,9 +57,9 @@ export function VoiceOverlay({ onTranscript, onClose }: VoiceOverlayProps) {
     <VoicePortal>
       <ConversationProvider
         agentId={ELEVENLABS_AGENT_ID}
-        onMessage={({ role, message }) =>
-          onTranscript(role === 'user' ? 'user' : 'assistant', message)
-        }
+        onMessage={({ role, message }) => {
+          void onTranscript(role === 'user' ? 'user' : 'assistant', message);
+        }}
       >
         <AgentVoicePanel onClose={onClose} />
       </ConversationProvider>

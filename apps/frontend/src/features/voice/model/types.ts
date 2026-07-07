@@ -31,4 +31,4 @@ export interface VoiceSession {
 }
 
 /** Transcripciones del modo de voz hacia el hilo del chat. */
-export type VoiceTranscriptHandler = (role: 'user' | 'assistant', content: string) => void;
+export type VoiceTranscriptHandler = (role: 'user' | 'assistant', content: string) => void | Promise<void>;
