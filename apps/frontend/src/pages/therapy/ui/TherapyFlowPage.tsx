@@ -1,4 +1,5 @@
 import { lazy, Suspense } from 'react';
+import { Link } from 'react-router-dom';
 import { TherapyFlowProvider, useTherapyFlow, type FlowStep } from '@/features/session';
 import { ChatWindow } from '@/features/chat';
 import { CrisisOverlay } from '@/features/crisis';
@@ -6,6 +7,7 @@ import { RegistrationForm } from '@/features/registration';
 import { WelcomePage } from '@/pages/welcome';
 import { SchedulePage } from '@/pages/schedule';
 import { ThankYouPage } from '@/pages/thank-you';
+import { ROUTES } from '@/shared/config';
 import { BrandLogo, IconLock, ThemeToggle } from '@/shared/ui';
 
 // La sala arrastra el SDK de voz (ElevenLabs) y WebRTC: solo se descarga al entrar.
@@ -102,7 +104,13 @@ function FlowContainer() {
     <div className="flex min-h-dvh flex-col bg-bg bg-aurora bg-no-repeat">
       <header>
         <div className={`mx-auto flex w-full items-center justify-between px-4 py-4 sm:px-5 sm:py-6 ${width}`}>
-          <BrandLogo />
+          <Link
+            to={ROUTES.home}
+            aria-label="Ataraxia — ir a la página principal"
+            className="rounded-full transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/25"
+          >
+            <BrandLogo />
+          </Link>
           <div className="flex items-center gap-2">
             <ThemeToggle />
             <span className="chip-outline hidden sm:inline-flex">
