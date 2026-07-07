@@ -50,15 +50,20 @@ export function useRoomVoice(): RoomVoiceSession {
   const [phase, setPhase] = useState<Phase>('idle');
   const [localError, setLocalError] = useState<string | null>(null);
   const connectedOnceRef = useRef(false);
+  const startSessionRef = useRef(startSession);
+  const endSessionRef = useRef(endSession);
   const genRef = useRef(0);
+
+  startSessionRef.current = startSession;
+  endSessionRef.current = endSession;
 
   if (sdkStatus === 'connected') connectedOnceRef.current = true;
 
   const stop = useCallback(() => {
     genRef.current += 1;
-    endSession();
+    endSessionRef.current();
     setPhase('ended');
-  }, [endSession]);
+  }, []);
 
   const start = useCallback(async () => {
     const gen = ++genRef.current;
@@ -73,14 +78,14 @@ export function useRoomVoice(): RoomVoiceSession {
       if (gen !== genRef.current) return;
       // startSession es fire-and-forget: los fallos de conexión llegan por
       // useConversationStatus (status 'error'), ya mapeado abajo.
-      startSession();
+      startSessionRef.current();
       setPhase('started');
     } catch (err) {
       if (gen !== genRef.current) return;
       setLocalError(micErrorMessage(err));
       setPhase('error');
     }
-  }, [startSession]);
+  }, []);
 
   const toggleMute = useCallback(() => {
     setMuted(!isMuted);
@@ -95,9 +100,9 @@ export function useRoomVoice(): RoomVoiceSession {
     void start();
     return () => {
       genRef.current += 1;
-      endSession();
+      endSessionRef.current();
     };
-  }, [start, endSession]);
+  }, [start]);
 
   let status: RoomVoiceStatus;
   if (phase === 'error' || sdkStatus === 'error') status = 'error';

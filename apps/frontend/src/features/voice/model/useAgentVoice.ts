@@ -36,17 +36,22 @@ export function useAgentVoice(): VoiceSession {
   const [phase, setPhase] = useState<Phase>('idle');
   const [localError, setLocalError] = useState<string | null>(null);
   const connectedOnceRef = useRef(false);
+  const startSessionRef = useRef(startSession);
+  const endSessionRef = useRef(endSession);
   // Generación: invalida arranques en curso ante stop/reintento (y el doble
   // montaje de StrictMode) para no iniciar sesiones duplicadas.
   const genRef = useRef(0);
+
+  startSessionRef.current = startSession;
+  endSessionRef.current = endSession;
 
   if (sdkStatus === 'connected') connectedOnceRef.current = true;
 
   const stop = useCallback(async () => {
     genRef.current += 1;
-    endSession();
+    endSessionRef.current();
     setPhase('ended');
-  }, [endSession]);
+  }, []);
 
   const start = useCallback(async () => {
     const gen = ++genRef.current;
@@ -59,14 +64,14 @@ export function useAgentVoice(): VoiceSession {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       stream.getTracks().forEach((track) => track.stop());
       if (gen !== genRef.current) return;
-      startSession();
+      startSessionRef.current();
       setPhase('started');
     } catch (err) {
       if (gen !== genRef.current) return;
       setLocalError(micErrorMessage(err));
       setPhase('error');
     }
-  }, [startSession]);
+  }, []);
 
   const toggleMute = useCallback(() => {
     setMuted(!isMuted);
@@ -82,9 +87,9 @@ export function useAgentVoice(): VoiceSession {
     void start();
     return () => {
       genRef.current += 1;
-      endSession();
+      endSessionRef.current();
     };
-  }, [start, endSession]);
+  }, [start]);
 
   let status: VoiceStatus;
   if (phase === 'error' || sdkStatus === 'error') status = 'error';
