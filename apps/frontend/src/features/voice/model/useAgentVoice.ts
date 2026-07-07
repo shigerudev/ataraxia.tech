@@ -70,11 +70,6 @@ export function useAgentVoice(): VoiceSession {
     connectedOnceRef.current = false;
     try {
       assertMicSupport();
-      setPhase('requesting-mic');
-      // Materializa el permiso antes de conectar; los tracks se liberan de
-      // inmediato porque el SDK captura su propio audio.
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      stream.getTracks().forEach((track) => track.stop());
       if (gen !== genRef.current) return;
       startSessionRef.current({
         onConnect: () => {

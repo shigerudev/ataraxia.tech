@@ -84,9 +84,6 @@ export function useRoomVoice(): RoomVoiceSession {
       if (!navigator.mediaDevices?.getUserMedia) {
         throw new Error('mic-unsupported');
       }
-      setPhase('requesting-mic');
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      stream.getTracks().forEach((track) => track.stop());
       if (gen !== genRef.current) return;
       // startSession es fire-and-forget: los fallos de conexión llegan por
       // useConversationStatus (status 'error'), ya mapeado abajo.
