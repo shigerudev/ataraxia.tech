@@ -85,7 +85,7 @@ export function VoicePanel({ session, onClose }: VoicePanelProps) {
       aria-label="Conversación por voz con Ataraxia"
       onKeyDown={handleKeyDown}
     >
-      <div className="flex h-full max-h-full w-full max-w-sm animate-scale-in flex-col items-center justify-center gap-4 overflow-hidden px-2 sm:gap-6">
+      <div className="voice-overlay__panel">
         <VoiceOrb state={state} getLevel={session.getLevel} />
 
         <div aria-live="polite" className="flex w-full min-w-0 flex-col items-center gap-2 text-center">

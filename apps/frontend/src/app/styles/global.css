@@ -236,8 +236,12 @@
 
   /* ---- Modo voz: overlay claro sobre la tarjeta del chat ---- */
   .voice-overlay {
-    @apply absolute inset-0 z-40 flex animate-fade-in flex-col items-center justify-center
-           overflow-hidden bg-bg/90 bg-voice-glow px-5 text-center backdrop-blur-md sm:px-6;
+    @apply fixed inset-0 z-50 flex animate-fade-in flex-col items-center justify-center
+           overflow-hidden bg-bg/95 bg-voice-glow px-5 text-center backdrop-blur-md sm:px-6;
+    min-height: 100dvh;
+  }
+  .voice-overlay__panel {
+    @apply flex h-full max-h-[min(760px,calc(100dvh-2rem))] w-full max-w-sm animate-scale-in flex-col items-center justify-center gap-4 overflow-hidden px-2 sm:gap-6;
   }
 
   /* ---- Orbe de voz ----
