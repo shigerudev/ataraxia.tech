@@ -1,6 +1,27 @@
 import { apiClient, apiUrl } from '@/shared/api';
 import type { JoinMode, Session, SessionChannel, TherapyModality } from '@/entities/session';
 
+export type SessionEvaluationChoice = 'yes' | 'somewhat' | 'no';
+
+export interface SessionEvaluationPayload {
+  comfort: 'comfortable' | 'neutral' | 'uncomfortable';
+  feltHeard: SessionEvaluationChoice;
+  responseQualityIssue: 'yes' | 'no';
+  helpedOrganize: SessionEvaluationChoice;
+  wouldUseInRealMoment: SessionEvaluationChoice;
+  understandsProfessionalLimit: 'yes' | 'no';
+  valueSignal: 'real_need' | 'curiosity' | 'not_sure';
+  trustImprovement: string;
+  extended?: {
+    privacyFeltClear?: SessionEvaluationChoice;
+    voiceExperience?: 'natural' | 'useful' | 'strange' | 'not_used';
+    wouldRecommend?: SessionEvaluationChoice;
+    distrustNote?: string;
+    informationNeeded?: string;
+  };
+  submittedAt: string;
+}
+
 export async function createSession(
   token: string,
   channel: SessionChannel,

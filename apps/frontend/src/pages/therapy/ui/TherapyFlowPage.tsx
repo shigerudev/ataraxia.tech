@@ -4,6 +4,7 @@ import { TherapyFlowProvider, useTherapyFlow, type FlowStep } from '@/features/s
 import { ChatWindow } from '@/features/chat';
 import { CrisisOverlay } from '@/features/crisis';
 import { RegistrationForm } from '@/features/registration';
+import { SessionEvaluationForm } from '@/features/session-evaluation';
 import { WelcomePage } from '@/pages/welcome';
 import { SchedulePage } from '@/pages/schedule';
 import { ThankYouPage } from '@/pages/thank-you';
@@ -13,7 +14,7 @@ import { BrandLogo, IconLock, ThemeToggle } from '@/shared/ui';
 // La sala arrastra el SDK de voz (ElevenLabs) y WebRTC: solo se descarga al entrar.
 const RoomPage = lazy(() => import('@/features/room').then((m) => ({ default: m.RoomPage })));
 
-const PROGRESS_STEPS = ['Bienvenida', 'Conversación', 'Registro', 'Agenda'];
+const PROGRESS_STEPS = ['Bienvenida', 'Conversación', 'Evaluación', 'Registro', 'Agenda'];
 
 function progressIndex(step: FlowStep): number {
   switch (step) {
@@ -22,10 +23,12 @@ function progressIndex(step: FlowStep): number {
     case 'chat':
     case 'crisis':
       return 1;
-    case 'registration':
+    case 'evaluation':
       return 2;
-    case 'scheduling':
+    case 'registration':
       return 3;
+    case 'scheduling':
+      return 4;
     default:
       return PROGRESS_STEPS.length;
   }
@@ -72,6 +75,8 @@ function FlowStepView() {
     case 'chat':
     case 'crisis':
       return <ChatWindow />;
+    case 'evaluation':
+      return <SessionEvaluationForm />;
     case 'registration':
       return <RegistrationForm />;
     case 'scheduling':

@@ -14,12 +14,18 @@ import type {
   SessionChannel,
   TherapyModality,
 } from '@/entities/session';
-import { closeSession, createSession, type RegistrationPayload } from '../api/sessionApi';
+import {
+  closeSession,
+  createSession,
+  type RegistrationPayload,
+  type SessionEvaluationPayload,
+} from '../api/sessionApi';
 
 export type FlowStep =
   | 'welcome'
   | 'chat'
   | 'crisis'
+  | 'evaluation'
   | 'registration'
   | 'scheduling'
   | 'room'
@@ -32,6 +38,7 @@ interface FlowState {
   accessToken: string | null;
   riskLevel: RiskLevel | null;
   crisisInfo: CrisisInfo | null;
+  sessionEvaluation: SessionEvaluationPayload | null;
   // Datos capturados en el registro, resueltos al confirmar la agenda.
   pendingRegistration: RegistrationPayload | null;
   alias: string | null;
@@ -46,7 +53,8 @@ interface FlowState {
 interface FlowContextValue extends FlowState {
   acceptConsent: () => Promise<void>;
   reportCrisis: (crisis: CrisisInfo) => void;
-  goToRegistration: () => void;
+  goToEvaluation: () => void;
+  submitSessionEvaluation: (payload: SessionEvaluationPayload) => void;
   goToScheduling: (payload: RegistrationPayload) => void;
   joinNow: () => Promise<void>;
   scheduleForLater: (scheduledAt: string) => Promise<void>;
@@ -61,6 +69,7 @@ const initialState: FlowState = {
   accessToken: null,
   riskLevel: null,
   crisisInfo: null,
+  sessionEvaluation: null,
   pendingRegistration: null,
   alias: null,
   modalidad: null,
@@ -110,9 +119,16 @@ export function TherapyFlowProvider({ children }: { children: ReactNode }) {
     [patch],
   );
 
-  const goToRegistration = useCallback(() => {
-    patch({ step: 'registration', error: null });
+  const goToEvaluation = useCallback(() => {
+    patch({ step: 'evaluation', error: null });
   }, [patch]);
+
+  const submitSessionEvaluation = useCallback(
+    (payload: SessionEvaluationPayload) => {
+      patch({ step: 'registration', sessionEvaluation: payload, error: null });
+    },
+    [patch],
+  );
 
   // El registro ya no cierra la sesión: guarda los datos y pasa a la agenda.
   const goToScheduling = useCallback(
@@ -131,11 +147,18 @@ export function TherapyFlowProvider({ children }: { children: ReactNode }) {
   const finalize = useCallback(
     async (extra: Pick<RegistrationPayload, 'joinMode' | 'scheduledAt'>) => {
       if (!state.accessToken || !state.sessionId || !state.pendingRegistration) return null;
-      const payload: RegistrationPayload = { ...state.pendingRegistration, ...extra };
+      const payload: RegistrationPayload = {
+        ...state.pendingRegistration,
+        ...extra,
+        clinicalSummary: {
+          ...(state.pendingRegistration.clinicalSummary ?? {}),
+          ...(state.sessionEvaluation ? { sessionEvaluation: state.sessionEvaluation } : {}),
+        },
+      };
       await closeSession(state.accessToken, state.sessionId, payload);
       return payload;
     },
-    [state.accessToken, state.sessionId, state.pendingRegistration],
+    [state.accessToken, state.sessionId, state.pendingRegistration, state.sessionEvaluation],
   );
 
   const joinNow = useCallback(async () => {
@@ -185,7 +208,8 @@ export function TherapyFlowProvider({ children }: { children: ReactNode }) {
       ...state,
       acceptConsent,
       reportCrisis,
-      goToRegistration,
+      goToEvaluation,
+      submitSessionEvaluation,
       goToScheduling,
       joinNow,
       scheduleForLater,
@@ -196,7 +220,8 @@ export function TherapyFlowProvider({ children }: { children: ReactNode }) {
       state,
       acceptConsent,
       reportCrisis,
-      goToRegistration,
+      goToEvaluation,
+      submitSessionEvaluation,
       goToScheduling,
       joinNow,
       scheduleForLater,

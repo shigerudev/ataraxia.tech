@@ -30,7 +30,7 @@ function normalizeForIntent(value: string): string {
 }
 
 export function ChatWindow() {
-  const { goToRegistration, step } = useTherapyFlow();
+  const { goToEvaluation, step } = useTherapyFlow();
   const { messages, sending, error, send, sendVoiceTranscript } = useChat();
   const [draft, setDraft] = useState('');
   const [voiceOpen, setVoiceOpen] = useState(false);
@@ -94,9 +94,9 @@ export function ChatWindow() {
           <button
             type="button"
             className="btn--light whitespace-nowrap px-3 py-2 text-sm sm:px-4"
-            onClick={goToRegistration}
+            onClick={goToEvaluation}
           >
-            Continuar a registro
+            Finalizar sesión
           </button>
         </header>
 
