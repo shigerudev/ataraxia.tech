@@ -1,6 +1,7 @@
 import type { RiskLevel } from './Session.js';
 
 export type ChatRole = 'system' | 'user' | 'assistant';
+export type ConversationTurnSource = 'message' | 'voice_transcript';
 
 export interface ChatMessage {
   role: ChatRole;
@@ -14,6 +15,7 @@ export interface ConversationTurn {
   content: string;
   emotionTags: string[];
   riskSignal: RiskLevel | null;
+  source: ConversationTurnSource;
   createdAt: string;
 }
 

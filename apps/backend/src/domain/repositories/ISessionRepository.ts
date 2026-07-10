@@ -1,5 +1,5 @@
 import type { RiskLevel, Session, SessionChannel } from '../entities/Session.js';
-import type { ConversationTurn } from '../entities/Conversation.js';
+import type { ConversationTurn, ConversationTurnSource } from '../entities/Conversation.js';
 import type { JoinMode, Profile, TherapyModality } from '../entities/Profile.js';
 
 export interface CreateSessionInput {
@@ -13,6 +13,7 @@ export interface AddTurnInput {
   content: string;
   emotionTags?: string[];
   riskSignal?: RiskLevel | null;
+  source?: ConversationTurnSource;
 }
 
 export interface AddRiskEventInput {

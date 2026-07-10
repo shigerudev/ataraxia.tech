@@ -12,6 +12,7 @@ Persistencia del flujo clínico: Auth anónima, Postgres, pgvector (RAG) y RLS.
 | `migrations/0004_conversational_intake.sql` | Migración desde cribado por formulario a indagación conversacional |
 | `migrations/0005_session_scheduling.sql` | Campos de agenda de sesión en `profiles` |
 | `migrations/0006_scheduling_consistency.sql` | Constraint de consistencia para agenda |
+| `migrations/0007_conversation_turn_source.sql` | Origen por turno (`message` vs `voice_transcript`) para analítica |
 
 ## Puesta en marcha
 

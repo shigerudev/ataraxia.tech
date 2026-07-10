@@ -52,7 +52,9 @@ test('high-risk voice transcript persists crisis and skips regular assistant gen
   assert.equal(sessionRepository.turns.length, 2);
   assert.equal(sessionRepository.turns[0]?.role, 'user');
   assert.equal(sessionRepository.turns[0]?.riskSignal, 'high');
+  assert.equal(sessionRepository.turns[0]?.source, 'voice_transcript');
   assert.equal(sessionRepository.turns[1]?.role, 'assistant');
+  assert.equal(sessionRepository.turns[1]?.source, 'message');
   assert.match(sessionRepository.turns[1]?.content ?? '', /hacerte daño ahora mismo/);
   assert.equal(sessionRepository.riskEvents[0]?.source, 'voice_transcript');
   assert.equal(sessionRepository.riskEvents[0]?.level, 'high');
@@ -98,6 +100,7 @@ class InMemorySessionRepository implements ISessionRepository {
       content: input.content,
       emotionTags: input.emotionTags ?? [],
       riskSignal: input.riskSignal ?? null,
+      source: input.source ?? 'message',
       createdAt: new Date(this.turns.length + 1).toISOString(),
     };
     this.turns.push(turn);

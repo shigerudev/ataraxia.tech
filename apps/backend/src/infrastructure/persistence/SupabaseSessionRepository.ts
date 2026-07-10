@@ -27,6 +27,7 @@ interface TurnRow {
   content: string;
   emotion_tags: string[];
   risk_signal: 'low' | 'medium' | 'high' | null;
+  source: 'message' | 'voice_transcript' | null;
   created_at: string;
 }
 
@@ -68,17 +69,27 @@ export class SupabaseSessionRepository implements ISessionRepository {
   }
 
   async addTurn(input: AddTurnInput): Promise<ConversationTurn> {
-    const { data, error } = await this.client
+    const row = {
+      session_id: input.sessionId,
+      role: input.role,
+      content: input.content,
+      emotion_tags: input.emotionTags ?? [],
+      risk_signal: input.riskSignal ?? null,
+      source: input.source ?? 'message',
+    };
+
+    let result = await this.client
       .from('conversation_turns')
-      .insert({
-        session_id: input.sessionId,
-        role: input.role,
-        content: input.content,
-        emotion_tags: input.emotionTags ?? [],
-        risk_signal: input.riskSignal ?? null,
-      })
+      .insert(row)
       .select()
       .single();
+
+    if (result.error && this.isMissingSourceColumnError(result.error)) {
+      const { source: _source, ...legacyRow } = row;
+      result = await this.client.from('conversation_turns').insert(legacyRow).select().single();
+    }
+
+    const { data, error } = result;
     if (error) throw new Error(`addTurn failed: ${error.message}`);
     return this.toTurn(data as TurnRow);
   }
@@ -152,7 +163,13 @@ export class SupabaseSessionRepository implements ISessionRepository {
       content: row.content,
       emotionTags: row.emotion_tags ?? [],
       riskSignal: row.risk_signal,
+      source: row.source ?? 'message',
       createdAt: row.created_at,
     };
+  }
+
+  private isMissingSourceColumnError(error: { code?: string; message?: string }): boolean {
+    const message = error.message ?? '';
+    return message.includes("'source' column") || message.includes('schema cache');
   }
 }

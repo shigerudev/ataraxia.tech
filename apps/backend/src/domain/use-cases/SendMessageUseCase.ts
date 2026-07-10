@@ -51,6 +51,7 @@ export class SendMessageUseCase {
       role: 'user',
       content,
       riskSignal: assessment.level,
+      source,
     });
 
     if (assessment.level === 'high') {
